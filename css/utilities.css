@@ -1,12 +1,7 @@
-/* Cursor: native OS cursor for proper UX (no revert on body*) */
-body {
-  cursor: default;
-}
-a, button, [role="button"], .nav-link, .nav-brand, .am-tab, .am-close, .am-mood-chip, .am-submit, .am-social-btn, .am-forgot, .form-submit, .h11-submit-btn, .h11-mood-chip, .form-mood-chip, .mobile-nav-links a, .mobile-nav-signin, .mobile-nav-signup, .hero-cta-primary, .hero-cta-secondary, .nf-learn-more {
-  cursor: pointer;
-}
-input:not([type=button]):not([type=submit]):not([type=reset]), textarea {
-  cursor: text;
+/* Cursor: use native OS cursor (revert on body* can break some UIs) */
+body,
+body * {
+  cursor: revert !important;
 }
 
 /* Input fix — ensure inputs work on mobile (tap, focus, type) */

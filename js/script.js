@@ -842,16 +842,14 @@ function showPage(name) {
     target.style.animation = 'none';
     target.offsetHeight; // reflow
     target.style.animation = '';
-    // Re-trigger reveals inside this page (shorter delay on mobile)
-    var revealDelay = document.documentElement.classList.contains('mobile-perf') ? 20 : 80;
+    // Re-trigger reveals inside this page
     target.querySelectorAll('.reveal').forEach(el => {
       el.classList.remove('in');
-      setTimeout(() => el.classList.add('in'), revealDelay);
+      setTimeout(() => el.classList.add('in'), 80);
     });
   }
-  // Scroll to top (instant on touch for snappier feel)
-  var isTouch = document.documentElement.classList.contains('touch-device') || document.documentElement.classList.contains('mobile-perf');
-  window.scrollTo({ top: 0, behavior: isTouch ? 'auto' : 'smooth' });
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   // Update nav active state
   document.querySelectorAll('.nav-link').forEach(a => {
     a.classList.toggle('active', a.dataset.page === name);

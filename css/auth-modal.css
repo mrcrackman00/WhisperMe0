@@ -12,13 +12,9 @@
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.28s ease;
+  transition: opacity 0.35s ease;
   padding: 24px;
   box-sizing: border-box;
-}
-.mobile-perf .auth-modal-overlay,
-.touch-device .auth-modal-overlay {
-  transition: opacity 0.2s ease;
 }
 
 .auth-modal-backdrop {
@@ -30,8 +26,7 @@
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   cursor: pointer;
 }
-.mobile-perf .auth-modal-backdrop,
-.touch-device .auth-modal-backdrop {
+.mobile-perf .auth-modal-backdrop {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   background: rgba(18, 16, 14, 0.88);
@@ -67,10 +62,6 @@
 
 .auth-modal-overlay.active .auth-modal {
   transform: scale(1) translateY(0);
-}
-.mobile-perf .auth-modal,
-.touch-device .auth-modal {
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Compact modal - Forgot Password, Set New Password - single panel, fits on screen */
