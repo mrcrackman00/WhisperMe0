@@ -112,25 +112,3 @@
     display: none;
   }
 }
-
-/* Touch targets: min 44x44px for mobile accessibility */
-@media (max-width: 768px) {
-  .hero-cta-primary,
-  .hero-cta-secondary,
-  .hero-badge,
-  .nav-signin,
-  .nav-signup,
-  .nav-mobile-toggle,
-  .mobile-nav-links a,
-  .mobile-nav-signin,
-  .mobile-nav-signup {
-    min-height: 44px;
-    min-width: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .nav-mobile-toggle {
-    padding: 0;
-  }
-}

@@ -1311,14 +1311,10 @@ function selectFormMood(el) {
 }
 
 function switchAuthTab(tab) {
-  var signupTab = document.getElementById('signupTab');
-  var signinTab = document.getElementById('signinTab');
-  var formSignup = document.getElementById('authFormSignup');
-  var formSignin = document.getElementById('authFormSignin');
-  if (signupTab) signupTab.classList.toggle('active', tab === 'signup');
-  if (signinTab) signinTab.classList.toggle('active', tab === 'signin');
-  if (formSignup) formSignup.style.display = tab === 'signup' ? 'flex' : 'none';
-  if (formSignin) formSignin.style.display = tab === 'signin' ? 'flex' : 'none';
+  document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
+  document.getElementById('signinTab').classList.toggle('active', tab === 'signin');
+  document.getElementById('authFormSignup').style.display = tab === 'signup' ? 'flex' : 'none';
+  document.getElementById('authFormSignin').style.display = tab === 'signin' ? 'flex' : 'none';
   if (tab === 'signup') loadHCaptchaScript();
 }
 function selectMood(el) {
@@ -1463,7 +1459,6 @@ function openAuthModal(tab) {
     showPage('join-beta');
     return;
   }
-  closeMobileMenu();
   document.getElementById('authModalOverlay').classList.add('active');
   switchAmTab(tab || 'signin');
   if (!window.matchMedia('(max-width: 440px)').matches) document.body.style.overflow = 'hidden';
