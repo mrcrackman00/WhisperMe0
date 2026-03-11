@@ -1,0 +1,77 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --cream: #FAF7F2;
+  --warm: #F5EFE4;
+  --petal: #F2C4CE;
+  --rose: #D4607A;
+  --coral: #E8846A;
+  --amber: #C9853A;
+  --sage: #7A9E87;
+  --charcoal: #1C1A18;
+  --ink: #2D2B28;
+  --mist: #8C8880;
+  --border: rgba(28, 26, 24, 0.1);
+  --shadow: rgba(28, 26, 24, 0.08);
+  --violet: #8B5CF6;
+  --sky: #60A5FA;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+  cursor: auto;
+}
+
+/* Custom cursor — disabled, using normal browser cursor */
+.cursor,
+.cursor-ring {
+  display: none !important;
+}
+
+/* ── Performance: pause non-critical animations when off-screen ── */
+.perf-lite [class*="orb"],
+.perf-lite [class*="blob"],
+.perf-lite .sp-bubble {
+  animation-duration: 60s !important;
+}
+
+/* ── During scroll: reduce animations for smoother feel ── */
+.scroll-active [class*="orb"],
+.scroll-active [class*="blob"],
+.scroll-active .sp-bubble,
+.scroll-active [class*="marquee"],
+.scroll-active .hg-blob {
+  animation-play-state: paused !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--warm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--petal);
+  border-radius: 4px;
+}

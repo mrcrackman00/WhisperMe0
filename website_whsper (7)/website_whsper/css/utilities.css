@@ -1,0 +1,221 @@
+/* Cursor hard reset: use native OS cursor everywhere */
+body,
+body * {
+  cursor: revert !important;
+}
+
+.cursor,
+.cursor-ring {
+  display: none !important;
+}
+
+/* Informational pages (About, Blog, Careers, Press, Legal) */
+.wm-page-shell {
+  min-height: calc(100vh - 220px);
+  padding: 140px 24px 96px;
+}
+
+.wm-page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.wm-page-narrow {
+  max-width: 880px;
+}
+
+.wm-page-cream {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(215, 145, 165, 0.08), transparent 48%),
+    radial-gradient(circle at 85% 28%, rgba(178, 154, 125, 0.1), transparent 42%),
+    var(--cream);
+}
+
+.wm-page-dark {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(118, 130, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 80% 100%, rgba(224, 132, 150, 0.1), transparent 44%),
+    #0d1017;
+}
+
+.wm-page-eyebrow {
+  margin: 0 0 14px;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(49, 44, 39, 0.55);
+  font-weight: 700;
+}
+
+.wm-page-title {
+  margin: 0;
+  font-family: 'Canela', 'Playfair Display', serif;
+  font-size: clamp(2.1rem, 5vw, 4.4rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: #171514;
+}
+
+.wm-page-dark .wm-page-eyebrow {
+  color: rgba(247, 244, 236, 0.62);
+}
+
+.wm-page-dark .wm-page-title {
+  color: #f6f3ed;
+}
+
+.wm-page-lead {
+  margin: 24px 0 0;
+  max-width: 860px;
+  font-size: clamp(1.06rem, 1.7vw, 1.5rem);
+  line-height: 1.7;
+  color: rgba(34, 31, 29, 0.72);
+}
+
+.wm-page-dark .wm-page-lead {
+  color: rgba(240, 236, 228, 0.76);
+}
+
+.wm-block-grid {
+  margin-top: 46px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.wm-block,
+.wm-note,
+.wm-blog-card {
+  border-radius: 22px;
+  border: 1px solid rgba(64, 52, 41, 0.1);
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: 0 18px 40px rgba(35, 29, 24, 0.08);
+}
+
+.wm-block,
+.wm-note {
+  padding: 28px;
+}
+
+.wm-block h2,
+.wm-note h2,
+.wm-legal h2 {
+  margin: 0 0 10px;
+  font-size: 1.16rem;
+  letter-spacing: -0.01em;
+}
+
+.wm-block ul,
+.wm-legal ul {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  color: rgba(37, 31, 26, 0.76);
+}
+
+.wm-note {
+  margin-top: 18px;
+}
+
+.wm-note p,
+.wm-legal p,
+.wm-block p {
+  margin: 0;
+  line-height: 1.75;
+  color: rgba(37, 31, 26, 0.74);
+}
+
+.wm-page-email a,
+.wm-legal a,
+.wm-note a {
+  color: #bc5f7a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.wm-page-email a:hover,
+.wm-legal a:hover,
+.wm-note a:hover {
+  text-decoration: underline;
+}
+
+.wm-blog-grid {
+  margin-top: 44px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wm-blog-card {
+  background: rgba(19, 24, 34, 0.8);
+  border: 1px solid rgba(223, 228, 250, 0.14);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
+  padding: 28px;
+}
+
+.wm-blog-kicker {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(247, 244, 236, 0.58);
+  font-weight: 700;
+}
+
+.wm-blog-card h2 {
+  margin: 0;
+  font-size: clamp(1.15rem, 1.7vw, 1.52rem);
+  line-height: 1.5;
+  color: rgba(247, 244, 236, 0.9);
+}
+
+.wm-page-email {
+  margin-top: 22px;
+  font-size: 1.1rem;
+}
+
+.wm-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  border: 1px solid rgba(58, 45, 36, 0.22);
+  background: rgba(255, 255, 255, 0.76);
+  color: #2a2320;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.wm-legal {
+  margin-top: 34px;
+  border-radius: 22px;
+  border: 1px solid rgba(64, 52, 41, 0.1);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: 0 18px 40px rgba(35, 29, 24, 0.08);
+  padding: 28px;
+  display: grid;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .wm-page-shell {
+    padding: 120px 18px 72px;
+  }
+
+  .wm-block-grid,
+  .wm-blog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wm-block,
+  .wm-note,
+  .wm-blog-card,
+  .wm-legal {
+    padding: 22px;
+    border-radius: 18px;
+  }
+}

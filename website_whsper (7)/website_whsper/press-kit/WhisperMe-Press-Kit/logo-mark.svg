@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="WhisperMe logo mark">
+  <defs>
+    <linearGradient id="wmGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5DE9EF"/>
+      <stop offset="42%" stop-color="#4D8CFF"/>
+      <stop offset="100%" stop-color="#DE69FF"/>
+    </linearGradient>
+    <radialGradient id="wmDot" cx="35%" cy="25%" r="75%">
+      <stop offset="0%" stop-color="#F6FDFF"/>
+      <stop offset="100%" stop-color="#ACEFFF"/>
+    </radialGradient>
+    <filter id="wmGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g fill="none" stroke="url(#wmGrad)" stroke-linecap="round" filter="url(#wmGlow)">
+    <path d="M137 36 C188 36 221 70 223 128 C224 176 203 209 171 222" stroke-width="14"/>
+    <path d="M124 58 C169 56 199 87 200 129 C201 161 187 186 163 201" stroke-width="12"/>
+    <path d="M40 104 C35 143 49 174 81 184 C102 190 122 179 129 159 C133 147 133 134 130 116" stroke-width="13"/>
+    <path d="M79 94 C66 110 63 130 69 149 C75 167 89 176 103 173 C116 170 123 156 123 140" stroke-width="11"/>
+    <path d="M126 137 C127 154 121 169 110 180" stroke-width="11"/>
+  </g>
+
+  <circle cx="110" cy="116" r="18" fill="url(#wmDot)" filter="url(#wmGlow)"/>
+</svg>
