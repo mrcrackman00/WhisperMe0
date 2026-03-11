@@ -36,7 +36,7 @@ const securityHeaders = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data:",
-    "connect-src 'self' http://localhost:3000 https://*.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://hcaptcha.com https://api.hcaptcha.com",
+    "connect-src 'self' http://localhost:3000 https://*.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://hcaptcha.com https://api.hcaptcha.com",
     "frame-src 'self' https://newassets.hcaptcha.com https://hcaptcha.com",
     "frame-ancestors 'none'",
   ].join('; '),
