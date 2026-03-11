@@ -39,17 +39,22 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ——— CORS ———
+const allowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (CORS_ORIGINS.includes(origin)) return true;
+  if (isDev && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  if (/^https:\/\/[\w.-]+\.vercel\.app$/.test(origin)) return true;
+  return false;
+};
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (CORS_ORIGINS.includes(origin)) return callback(null, true);
-    if (isDev && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return callback(null, true);
-    if (/^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)) return callback(null, true);
+    if (allowedOrigin(origin)) return callback(null, origin || true);
     callback(new Error('Blocked by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
 }));
 
 // ——— Body parsing: strict limit to prevent DOS ———
