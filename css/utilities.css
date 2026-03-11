@@ -1,13 +1,7 @@
-/* Cursor: minimal rules — avoid body * which can block clicks/scroll */
-body {
-  cursor: default;
-}
-a, button, [onclick], [role="button"], label[for], select {
-  cursor: pointer;
-}
-input:not([type=button]):not([type=submit]):not([type=reset]):not([type=image]),
-textarea {
-  cursor: text;
+/* Cursor hard reset: use native OS cursor everywhere */
+body,
+body * {
+  cursor: revert !important;
 }
 
 /* Input fix — ensure inputs work on mobile (tap, focus, type) */

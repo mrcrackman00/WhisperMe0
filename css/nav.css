@@ -267,17 +267,10 @@ nav.scrolled {
   transform: translateX(calc(100% + 24px));
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: manipulation;
 }
 
 .mobile-nav-overlay.open .mobile-nav-panel {
   transform: translateX(0);
-}
-
-.mobile-nav-panel a,
-.mobile-nav-panel button {
-  touch-action: manipulation;
 }
 
 .mobile-nav-head {
