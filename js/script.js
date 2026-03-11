@@ -1637,11 +1637,14 @@ function h11HandleSignup(e) {
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
   var apiBase = window.API_BASE_URL || 'http://localhost:3000';
+  var ctrl = new AbortController();
+  var t = setTimeout(function() { ctrl.abort(); }, 90000);
   fetch(apiBase + '/api/waitlist', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, name: name, a_password: aPassword })
-  }).then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    body: JSON.stringify({ email: email, name: name, a_password: aPassword }),
+    signal: ctrl.signal,
+  }).then(function(r) { clearTimeout(t); return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
   .then(function(res) {
     if (!res.ok) {
       var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
@@ -1657,9 +1660,10 @@ function h11HandleSignup(e) {
     if (emailEl) emailEl.value = '';
   })
   .catch(function() {
+    clearTimeout(t);
     var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
       ? 'Connection error. Is the backend running? (npm start in whisper-backend)'
-      : 'Connection error. Backend may be warming up (free tier). Try again in 1 min.';
+      : 'Connection error. Backend may be warming up (free tier). Wait 30–60 sec and try again.';
     showToast('⚠️ ' + msg);
     if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
   });
