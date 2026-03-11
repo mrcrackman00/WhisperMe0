@@ -46,9 +46,11 @@
   width: 100%;
   max-width: 920px;
   min-height: 520px;
+  height: 90vh;
   max-height: 90vh;
   display: grid;
   grid-template-columns: 300px 1fr;
+  grid-template-rows: minmax(0, 1fr);
   border-radius: 28px;
   overflow: hidden;
   margin: auto;
@@ -136,6 +138,7 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  min-height: 0;
 }
 
 .am-side::after {
@@ -288,6 +291,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 /* Tab switcher */
@@ -793,20 +798,30 @@
   .auth-modal {
     width: calc(100% - 24px);
     max-width: 420px;
-    max-height: min(88dvh, 88vh, 500px);
+    height: 85vh;
+    max-height: 85vh;
     border-radius: 22px;
     overflow: hidden;
     margin: auto;
-    display: grid;
-    grid-template-rows: 1fr;
-    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .auth-modal .am-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 30;
+    flex-shrink: 0;
   }
 
   .auth-modal .am-form-side {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    min-height: 0;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   .am-form-side {

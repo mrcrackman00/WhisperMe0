@@ -1461,7 +1461,7 @@ function openAuthModal(tab) {
   }
   document.getElementById('authModalOverlay').classList.add('active');
   switchAmTab(tab || 'signin');
-  document.body.style.overflow = 'hidden';
+  if (!window.matchMedia('(max-width: 440px)').matches) document.body.style.overflow = 'hidden';
   if (tab === 'signup') loadHCaptchaScript();
 }
 function closeAuthModal() {
