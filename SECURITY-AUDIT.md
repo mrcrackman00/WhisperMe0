@@ -20,6 +20,7 @@
 | **Body limit** | 10kb max JSON payload (DoS prevention) |
 | **JWT auth** | All protected routes verify Supabase JWT |
 | **Admin** | requireAdmin checks ADMIN_EMAILS |
+| **IDOR protection** | Profile uses req.user.id from JWT (no user ID in URL) |
 | **Input validation** | express-validator on waitlist, profile |
 | **SQL injection** | Supabase client uses parameterized queries |
 | **Secrets** | .env in .gitignore, never committed |
