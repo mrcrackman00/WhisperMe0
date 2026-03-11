@@ -520,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('page-app-preview') && !document.getElementById('apvFeedScroll').dataset.built) {
     buildApvFeed();
   }
+  if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
 });
 
 const perfLite = (() => {
@@ -848,6 +849,7 @@ function showPage(name) {
   const nav = document.getElementById('nav');
   if (name === 'home') {
     nav.classList.remove('scrolled');
+    if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
   } else {
     nav.classList.add('scrolled');
   }
@@ -1622,6 +1624,14 @@ function h11HandleSignup(e) {
     showToast('⚠️ Please enter a valid email address.');
     if (emailEl) { emailEl.focus(); emailEl.style.borderColor = '#D4607A'; setTimeout(function(){ emailEl.style.borderColor = ''; }, 1500); }
     return;
+  }
+
+  if (fromH11) {
+    var captchaToken = document.querySelector('#h11FormCard [name="h-captcha-response"]')?.value || '';
+    if (!captchaToken) {
+      showToast('⚠️ Please complete the verification check above.');
+      return;
+    }
   }
   
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
