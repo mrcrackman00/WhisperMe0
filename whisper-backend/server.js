@@ -63,13 +63,13 @@ app.use(express.json({ limit: '10kb' }));
 // ——— Request logging ———
 app.use(requestLogger);
 
-// ——— Static files ———
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ——— Health check ———
+// ——— Health check (before static so it always works) ———
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'whisper-backend' });
 });
+
+// ——— Static files ———
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ——— Landing (optional) ———
 app.get('/', (req, res) => {

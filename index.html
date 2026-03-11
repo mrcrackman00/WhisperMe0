@@ -3536,12 +3536,17 @@
     var origin = window.location.origin;
     var redirectTo = (origin && origin !== 'null' && origin !== 'file://') ? (origin + '/') : 'http://localhost:5500/';
     var apiUrl = (typeof window !== 'undefined' && window.API_BASE_URL) || 'https://whisperme0.onrender.com';
+    var timeoutId;
     try {
+      var ctrl = new AbortController();
+      timeoutId = setTimeout(function() { ctrl.abort(); }, 90000);
       var res = await fetch(apiUrl + '/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, redirectTo: redirectTo }),
+        signal: ctrl.signal,
       });
+      if (timeoutId) clearTimeout(timeoutId);
       var data = await res.json().catch(function() { return {}; });
       if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
       if (!res.ok) {
@@ -3555,8 +3560,10 @@
       closeForgotPasswordModal();
       if (typeof showToast === 'function') showToast('✉️ Check your email (and spam folder) for the reset link!');
     } catch (e) {
+      if (timeoutId) clearTimeout(timeoutId);
       if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
-      if (errEl) { errEl.textContent = 'Network error. Please try again.'; errEl.style.display = 'block'; }
+      var msg = 'Network error. If the server was idle, it may be waking up—wait 30 seconds and try again.';
+      if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
     }
   };
 
