@@ -1,0 +1,8 @@
+whisper-backend/
+node_modules/
+.env
+.env.*
+*.md
+!README.md
+capture_screenshots.py
+_archive/
