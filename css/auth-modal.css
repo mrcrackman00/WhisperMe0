@@ -25,7 +25,6 @@
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   cursor: pointer;
-  pointer-events: none; /* Don't block modal inputs — overlay handles outside click */
 }
 .mobile-perf .auth-modal-backdrop {
   backdrop-filter: none;
@@ -288,6 +287,9 @@
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
 }
 
 /* Tab switcher */
