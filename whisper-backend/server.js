@@ -17,9 +17,13 @@ const { requestLogger } = require('./utils/logger');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5500,http://localhost:5502,https://whisper-me-flame.vercel.app';
-const CORS_ORIGINS = FRONTEND_URL.split(',').map(s => s.trim()).filter(Boolean);
-const isDev = process.env.NODE_ENV !== 'production';
+// ——— CORS ———
+const CORS_ORIGINS = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(s => s.trim()).filter(Boolean)
+  : [
+      'https://whisper-me-flame.vercel.app',
+      'http://localhost:5500',
+    ];
 
 // ——— Security: Helmet & Basics ———
 app.disable('x-powered-by');
@@ -38,19 +42,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// ——— CORS ———
-const allowedOrigin = (origin) => {
-  if (!origin) return true;
-  if (CORS_ORIGINS.includes(origin)) return true;
-  if (isDev && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
-  if (/^https:\/\/[\w.-]+\.vercel\.app$/.test(origin)) return true;
-  return false;
-};
 app.use(cors({
-  origin: function (origin, callback) {
-    if (allowedOrigin(origin)) return callback(null, origin || true);
-    callback(new Error('Blocked by CORS'));
-  },
+  origin: CORS_ORIGINS,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

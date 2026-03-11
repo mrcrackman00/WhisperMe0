@@ -5,7 +5,7 @@
  * - Override: Set window.__API_BASE_URL__ before this script loads to force a URL.
  */
 (function() {
-  var PRODUCTION_API_URL = 'https://whisperme0.onrender.com';
+  var PRODUCTION_API_URL = 'https://whisperme0-production.up.railway.app';
   var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   window.API_BASE_URL = window.__API_BASE_URL__ || (isLocal ? 'http://localhost:3000' : PRODUCTION_API_URL);
 
