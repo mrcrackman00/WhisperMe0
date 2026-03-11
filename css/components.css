@@ -1028,6 +1028,14 @@ footer {
   background: var(--charcoal);
   padding: 60px 5% 40px;
   color: var(--cream);
+  position: relative;
+  z-index: 50;
+}
+
+footer a,
+footer button {
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .footer-top {
@@ -1099,6 +1107,8 @@ footer {
   font-size: 0.88rem;
   margin-bottom: 12px;
   transition: color 0.2s;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .footer-col a:hover {

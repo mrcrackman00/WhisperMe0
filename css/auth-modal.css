@@ -38,19 +38,20 @@
   pointer-events: all;
 }
 
-/* Modal container — z-index above backdrop, centered, good proportions */
+/* Modal container — z-index above backdrop, centered, fit content to reduce empty space */
 .auth-modal {
   position: relative;
   z-index: 1;
   pointer-events: auto;
   width: 100%;
   max-width: 920px;
-  min-height: 520px;
-  height: 90vh;
+  min-height: 400px;
+  height: fit-content;
   max-height: 90vh;
   display: grid;
   grid-template-columns: 300px 1fr;
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: auto;
+  align-items: start;
   border-radius: 28px;
   overflow: hidden;
   margin: auto;
@@ -295,6 +296,17 @@
   overscroll-behavior-y: contain;
 }
 
+/* Ensure all interactive elements receive clicks */
+.am-form-side a,
+.am-form-side button,
+.am-form-side .am-tab,
+.am-form-side .am-submit,
+.am-form-side .am-forgot,
+.am-form-side .am-social-btn {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
 /* Tab switcher */
 .am-tabs {
   display: flex;
@@ -332,12 +344,11 @@
   background: rgba(28, 26, 24, 0.04);
 }
 
-/* Panel */
+/* Panel — no flex:1 so form doesn't stretch and create empty space */
 .am-panel {
   display: none;
   flex-direction: column;
   gap: 14px;
-  flex: 1;
 }
 
 .am-panel.active {
@@ -397,7 +408,6 @@
 }
 
 .am-signup-step {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 14px;
