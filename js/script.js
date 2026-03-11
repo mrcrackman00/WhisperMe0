@@ -540,9 +540,7 @@ const isMobilePerf = (() => {
 if (perfLite) {
   document.documentElement.classList.add('perf-lite');
 }
-if (isMobilePerf) {
-  document.documentElement.classList.add('mobile-perf');
-}
+/* mobile-perf disabled — restores full CSS/UI/UX (blur, animations, smooth scroll) */
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 

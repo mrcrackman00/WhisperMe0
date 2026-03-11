@@ -1,6 +1,8 @@
-/* Cursor: minimal — avoid revert on body* which can block interactions in some browsers */
-body { cursor: default; }
-a, button, [onclick], [role="button"] { cursor: pointer; }
+/* Cursor hard reset: use native OS cursor everywhere */
+body,
+body * {
+  cursor: revert !important;
+}
 
 /* Input fix — ensure inputs work on mobile (tap, focus, type) */
 input:not([type=button]):not([type=submit]):not([type=reset]):not([type=image]),
