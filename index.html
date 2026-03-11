@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://js.hcaptcha.com; frame-src 'self' https://newassets.hcaptcha.com https://hcaptcha.com; connect-src 'self' http://localhost:3000 https://*.supabase.co https://hcaptcha.com https://api.hcaptcha.com;">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://js.hcaptcha.com; frame-src 'self' https://newassets.hcaptcha.com https://hcaptcha.com; connect-src 'self' http://localhost:3000 https://*.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://hcaptcha.com https://api.hcaptcha.com;">
 <title>WhisperMe — Say What You Can't Say</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cabinet+Grotesk:wght@300;400;500;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -3445,11 +3445,12 @@
 </div>
 
 
+<script src="js/config.js"></script>
 <script src="js/script.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function() {
-  var API_BASE = 'http://localhost:3000';
+  var API_BASE = window.API_BASE_URL || 'http://localhost:3000';
   var supabase = null;
   var FALLBACK_CONFIG = { supabaseUrl: 'https://gkeemcezdbfplwhocwzx.supabase.co', supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWVtY2V6ZGJmcGx3aG9jd3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDk3NjYsImV4cCI6MjA4ODgyNTc2Nn0.vCdI5ZEPvTP98VOM_-s1WY_qLmTnVD8BQvHrpQPuCvw' };
   async function getSupabase() {

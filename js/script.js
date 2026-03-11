@@ -1525,7 +1525,7 @@ function handleAmSignin() {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       if (result.error) { showToast('❌ ' + (result.error.message || 'Sign in failed.')); return; }
       var token = result.data.session && result.data.session.access_token;
-      if (token) { fetch('http://localhost:3000/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
+      if (token && window.API_BASE_URL) { fetch(window.API_BASE_URL + '/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
       closeAuthModal();
       updateNavUser(email, '');
       showToast('👋 Welcome back!');
@@ -1585,7 +1585,7 @@ function handleAmSignup() {
       // Supabase may return no session if email confirmation is required
       var token = result.data.session && result.data.session.access_token;
       if (token) { 
-        fetch('http://localhost:3000/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
+        fetch((window.API_BASE_URL || 'http://localhost:3000') + '/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
         closeAuthModal();
         updateNavUser(email, displayName || name);
         if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
@@ -1626,7 +1626,8 @@ function h11HandleSignup(e) {
   
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
-  fetch('http://localhost:3000/api/waitlist', {
+  var apiBase = window.API_BASE_URL || 'http://localhost:3000';
+  fetch(apiBase + '/api/waitlist', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, name: name, a_password: aPassword })
