@@ -1459,6 +1459,7 @@ function openAuthModal(tab) {
     showPage('join-beta');
     return;
   }
+  closeMobileMenu();
   document.getElementById('authModalOverlay').classList.add('active');
   switchAmTab(tab || 'signin');
   if (!window.matchMedia('(max-width: 440px)').matches) document.body.style.overflow = 'hidden';
