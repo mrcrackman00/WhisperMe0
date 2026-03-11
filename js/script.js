@@ -1488,7 +1488,41 @@ function switchAmTab(tab) {
     if (tabEl) tabEl.classList.toggle('active', t === tab);
     if (panelEl) panelEl.classList.toggle('active', t === tab);
   });
-  if (tab === 'signup') loadHCaptchaScript();
+  if (tab === 'signup') {
+    loadHCaptchaScript();
+    showSignupStep(1);
+  }
+}
+function showSignupStep(step) {
+  var s1 = document.getElementById('amSignupStep1');
+  var s2 = document.getElementById('amSignupStep2');
+  var d1 = document.getElementById('amStepDot1');
+  var d2 = document.getElementById('amStepDot2');
+  if (!s1 || !s2) return;
+  if (step === 1) {
+    s1.style.display = '';
+    s2.style.display = 'none';
+    if (d1) d1.classList.add('active');
+    if (d2) d2.classList.remove('active');
+  } else {
+    s1.style.display = 'none';
+    s2.style.display = '';
+    if (d1) d1.classList.remove('active');
+    if (d2) d2.classList.add('active');
+    loadHCaptchaScript();
+  }
+}
+function amSignupNextStep() {
+  var emailEl = document.getElementById('amSignupEmail');
+  var pwEl = document.getElementById('amSignupPw');
+  var email = emailEl ? emailEl.value.trim() : '';
+  var password = pwEl ? pwEl.value : '';
+  if (!email || !password) { showToast('⚠️ Email and password required.'); return; }
+  if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters.'); return; }
+  showSignupStep(2);
+}
+function amSignupPrevStep() {
+  showSignupStep(1);
 }
 function selectAmMood(el) {
   el.closest('.am-mood-row').querySelectorAll('.am-mood-chip').forEach(c => c.classList.remove('selected'));

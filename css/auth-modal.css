@@ -42,10 +42,10 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 860px;
-  min-height: 520px;
+  max-width: 960px;
+  min-height: 560px;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 300px 1fr;
   border-radius: 28px;
   overflow: hidden;
   box-shadow:
@@ -352,6 +352,61 @@
   color: rgba(44, 40, 36, 0.5);
   margin: 0;
   line-height: 1.4;
+}
+
+/* Step indicator (Sign Up 2-step) */
+.am-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.am-step-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(28, 26, 24, 0.08);
+  color: rgba(44, 40, 36, 0.4);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+.am-step-dot.active {
+  background: var(--rose, #D4607A);
+  color: #fff;
+}
+.am-step-line {
+  width: 24px;
+  height: 2px;
+  background: rgba(28, 26, 24, 0.12);
+  border-radius: 1px;
+}
+
+.am-signup-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.am-submit-next {
+  margin-top: 6px;
+}
+.am-step-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: rgba(44, 40, 36, 0.6);
+  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+.am-step-back:hover {
+  color: var(--rose, #D4607A);
 }
 
 /* ── Field ── */
@@ -688,7 +743,7 @@
 @media (max-width: 720px) {
   .auth-modal {
     grid-template-columns: 1fr;
-    max-width: 460px;
+    max-width: 520px;
     min-height: unset;
   }
 
