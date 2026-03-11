@@ -8,6 +8,26 @@ function showToast(msg) {
   showToast._tid = setTimeout(() => t.classList.remove('active'), 4000);
 }
 
+/* ── API base URL (production: Railway) ── */
+function getApiBase() {
+  var base = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || '';
+  if (base) return base.replace(/\/$/, '');
+  return (/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app';
+}
+
+/* ── Safe API fetch with error handling ── */
+async function apiFetch(path, options) {
+  try {
+    var url = getApiBase() + (path.startsWith('/') ? path : '/' + path);
+    var res = await fetch(url, options);
+    var data = await res.json().catch(function() { return {}; });
+    return { ok: res.ok, status: res.status, data: data };
+  } catch (err) {
+    console.error('API fetch error:', err);
+    return { ok: false, status: 0, data: { error: err.message || 'Network error' } };
+  }
+}
+
 /* ── Email validation helper ── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -922,9 +942,14 @@ const io = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 reveals.forEach(el => io.observe(el));
 
-/* ── LANDING SIGNUP ── */
-document.getElementById('emailInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') handleSignup(e); });
-document.getElementById('h11EmailInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') h11HandleSignup(e); });
+/* ── LANDING SIGNUP (guard against duplicate listeners) ── */
+if (!window._wmSignupBound) {
+  window._wmSignupBound = true;
+  var emailInp = document.getElementById('emailInput');
+  var h11Inp = document.getElementById('h11EmailInput');
+  if (emailInp) emailInp.addEventListener('keydown', function(e) { if (e.key === 'Enter') h11HandleSignup(e); });
+  if (h11Inp) h11Inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') h11HandleSignup(e); });
+}
 
 /* ─────────────────────────────────────────
    APP OVERLAY SYSTEM
@@ -1570,8 +1595,7 @@ function handleAmSignin() {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       if (result.error) { showToast('❌ ' + (result.error.message || 'Sign in failed.')); return; }
       var token = result.data.session && result.data.session.access_token;
-      var apiBase = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || ((/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app');
-      if (token && apiBase) { fetch(apiBase + '/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
+      if (token) { apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
       closeAuthModal();
       updateNavUser(email, '');
       showToast('👋 Welcome back!');
@@ -1631,8 +1655,7 @@ function handleAmSignup() {
       // Supabase may return no session if email confirmation is required
       var token = result.data.session && result.data.session.access_token;
       if (token) { 
-        var ab = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || ((/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app');
-        fetch(ab + '/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
+        apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
         closeAuthModal();
         updateNavUser(email, displayName || name);
         if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
@@ -1681,17 +1704,13 @@ function h11HandleSignup(e) {
   
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
-  var apiBase = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || ((/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app');
-  function doWaitlist(retry) {
-    var ctrl = new AbortController();
-    var t = setTimeout(function() { ctrl.abort(); }, 90000);
-    fetch(apiBase + '/api/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, name: name, a_password: aPassword }),
-      signal: ctrl.signal,
-    }).then(function(r) { clearTimeout(t); return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
-    .then(function(res) {
+  async function doWaitlist(retry) {
+    try {
+      var res = await apiFetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, name: name, a_password: aPassword }),
+      });
       if (!res.ok) {
         var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
         if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
@@ -1703,21 +1722,19 @@ function h11HandleSignup(e) {
       showToast('🎉 You\'re on the waitlist! Your voice will be heard.');
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';
-    })
-    .catch(function(err) {
-      clearTimeout(t);
+    } catch (err) {
       if (retry) {
         showToast('⚠️ Server waking up… Retrying in 5 sec…');
         if (btn) { btn.innerHTML = 'Retrying…'; }
         setTimeout(function() { doWaitlist(false); }, 5000);
       } else {
         var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
-          ? 'Connection error. Is the backend running? (npm start in whisper-backend)'
+          ? 'Connection error. Is the backend running?'
           : 'Server may be sleeping. Tap again—second try usually works.';
         showToast('⚠️ ' + msg);
         if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
       }
-    });
+    }
   }
   doWaitlist(true);
 }
@@ -1732,10 +1749,13 @@ function heroSignup() {
 
 function handleSignup(e) { h11HandleSignup(e); }
 function handleAmEarlyAccess() { showPage('join-beta'); }
-/* Also close auth modal on ESC */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeAuthModal(); closeApp(); closeMobileMenu(); }
-});
+/* Also close auth modal on ESC (guard against duplicate listeners) */
+if (!window._wmEscapeBound) {
+  window._wmEscapeBound = true;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeAuthModal(); closeApp(); closeMobileMenu(); }
+  });
+}
 
 /* // HERO PARALLAX: dark ambient depth */
 (function heroAmbientParallax(){

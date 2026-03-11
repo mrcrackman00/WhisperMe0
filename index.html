@@ -3471,13 +3471,18 @@
 </div>
 
 
-<script src="js/config.js"></script>
-<script src="js/script.js" defer></script>
+<script src="./js/config.js"></script>
+<script src="./js/script.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function() {
   var isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  var API_BASE = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || (isLocalHost ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app');
+  function getApiBaseInline() {
+    var b = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || '';
+    if (b) return b.replace(/\/$/, '');
+    return isLocalHost ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app';
+  }
+  var API_BASE = getApiBaseInline();
   var supabase = null;
   var FALLBACK_CONFIG = { supabaseUrl: 'https://gkeemcezdbfplwhocwzx.supabase.co', supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWVtY2V6ZGJmcGx3aG9jd3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDk3NjYsImV4cCI6MjA4ODgyNTc2Nn0.vCdI5ZEPvTP98VOM_-s1WY_qLmTnVD8BQvHrpQPuCvw' };
   async function getSupabase() {
@@ -3587,7 +3592,8 @@
     if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Sending…'; }
     var origin = window.location.origin;
     var redirectTo = (origin && origin !== 'null' && origin !== 'file://') ? (origin + '/') : 'http://localhost:5500/';
-    var apiUrl = (typeof window !== 'undefined' && window.API_BASE_URL && String(window.API_BASE_URL).trim()) || 'https://whisperme0-production.up.railway.app';
+    var apiUrl = (typeof getApiBaseInline === 'function' ? getApiBaseInline() : API_BASE) || 'https://whisperme0-production.up.railway.app';
+    apiUrl = String(apiUrl).replace(/\/$/, '');
     var timeoutId;
     async function trySubmit(retry) {
       try {

@@ -1,7 +1,7 @@
 /**
  * API configuration for WhisperMe frontend.
  * - Local: http://localhost:3000
- * - Production: https://whisperme0.onrender.com
+ * - Production: https://whisperme0-production.up.railway.app
  * - Override: Set window.__API_BASE_URL__ before this script loads to force a URL.
  */
 (function() {

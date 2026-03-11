@@ -460,10 +460,15 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 <div class="p-toast" id="pToastEl"></div>
 
 <!-- Supabase -->
-<script src="js/config.js"></script>
+<script src="./js/config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const API_BASE = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || (/localhost|127\.0\.0\.1/.test(location.hostname) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app');
+function getApiBase() {
+  var b = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || '';
+  if (b) return b.replace(/\/$/, '');
+  return (/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app';
+}
+const API_BASE = getApiBase();
 const FALLBACK_CONFIG = { supabaseUrl: 'https://gkeemcezdbfplwhocwzx.supabase.co', supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWVtY2V6ZGJmcGx3aG9jd3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDk3NjYsImV4cCI6MjA4ODgyNTc2Nn0.vCdI5ZEPvTP98VOM_-s1WY_qLmTnVD8BQvHrpQPuCvw' };
 let sb = null;
 let currentUser = null;
@@ -476,10 +481,15 @@ const DEMO_POSTS = [
 
 async function initSupabase() {
   let c = null;
-  const r = await fetch(API_BASE + '/api/public-config').catch(() => null);
-  if (r && r.ok) { c = await r.json(); }
-  if (!c || !c.supabaseUrl || !c.supabaseAnonKey) c = FALLBACK_CONFIG;
-  if (!c.supabaseUrl || !c.supabaseAnonKey) return null;
+  try {
+    const r = await fetch(API_BASE + '/api/public-config');
+    if (r && r.ok) c = await r.json();
+    if (!c || !c.supabaseUrl || !c.supabaseAnonKey) c = FALLBACK_CONFIG;
+  } catch (err) {
+    console.error('API fetch error:', err);
+    c = FALLBACK_CONFIG;
+  }
+  if (!c || !c.supabaseUrl || !c.supabaseAnonKey) return null;
   return window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey);
 }
 
