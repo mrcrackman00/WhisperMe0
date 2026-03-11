@@ -259,6 +259,9 @@
   font-size: 0.92rem;
   outline: none;
   transition: all 0.25s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
 }
 
 .auth-input::placeholder {

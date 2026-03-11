@@ -356,6 +356,7 @@
   color: rgba(44, 40, 36, 0.5);
   font-family: 'Cabinet Grotesk', sans-serif;
 }
+.am-label[for] { cursor: pointer; }
 
 .am-label-row {
   display: flex;
@@ -368,6 +369,7 @@
   display: flex;
   align-items: center;
 }
+.am-input-wrap:focus-within { z-index: 2; }
 
 .am-field-icon {
   position: absolute;
@@ -394,6 +396,10 @@
   outline: none;
   transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
   cursor: text;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .am-input::placeholder {
@@ -519,6 +525,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 48px;
   gap: 9px;
   box-shadow: 0 4px 16px rgba(28, 26, 24, 0.16);
   position: relative;
@@ -624,6 +633,19 @@
 
 .am-note a:hover { text-decoration: underline; }
 
+/* hCaptcha — mobile tap fix: more space, no overflow clip */
+.am-panel .h-captcha,
+.am-form-side .h-captcha {
+  min-height: 78px;
+  padding: 14px 0;
+  margin: 4px 0 8px;
+  overflow: visible;
+}
+.am-panel .h-captcha iframe,
+.am-form-side .h-captcha iframe {
+  max-width: 100%;
+}
+
 /* ═══════════════════════════
    RESPONSIVE
    ═══════════════════════════ */
@@ -707,8 +729,9 @@
   }
 
   .am-input {
-    padding: 10px 12px 10px 38px;
+    padding: 12px 12px 12px 38px;
     font-size: 0.88rem;
+    min-height: 44px;
   }
 
   .am-field-icon {
@@ -724,9 +747,11 @@
     font-size: 0.7rem;
   }
 
-  .am-submit {
-    padding: 12px 16px;
-    font-size: 0.88rem;
+.am-submit {
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  touch-action: manipulation;
+  min-height: 48px;
   }
 
   .am-social-row {

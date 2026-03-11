@@ -94,6 +94,7 @@ async function sendPasswordResetEmail(to, resetLink) {
         <p><a href="${resetLink}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
         <p>Or copy this link: ${resetLink}</p>
         <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+        <p><small>If this landed in spam, mark as "Not spam" so future emails reach your inbox.</small></p>
         <p>— The WhisperMe team</p>
       `;
     }

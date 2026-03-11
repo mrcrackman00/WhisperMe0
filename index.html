@@ -3055,7 +3055,7 @@
           </div>
         </div>
 
-        <div class="h-captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a"></div>
+        <div class="h-captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a" data-size="normal" aria-label="Security check"></div>
         <button class="am-submit" onclick="handleAmSignup()">
           <span>Create Account</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="am-submit-icon"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -3458,8 +3458,13 @@
   async function getSupabase() {
     if (supabase) return supabase;
     var c = null;
-    var r = await fetch(API_BASE + '/api/public-config').catch(function() { return null; });
-    if (r && r.ok) { c = await r.json(); }
+    var hasOAuthHash = (window.location.hash || '').indexOf('access_token') !== -1;
+    if (hasOAuthHash) {
+      c = FALLBACK_CONFIG;
+    } else {
+      var r = await fetch(API_BASE + '/api/public-config').catch(function() { return null; });
+      if (r && r.ok) { c = await r.json(); }
+    }
     if (!c || !c.supabaseUrl || !c.supabaseAnonKey) c = FALLBACK_CONFIG;
     if (!c.supabaseUrl || !c.supabaseAnonKey) return null;
     supabase = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey);
@@ -3486,11 +3491,33 @@
     return supabase;
   }
   
-  // Initialize on load to catch returning email confirmations
+  // Initialize on load to catch returning email confirmations + OAuth callback
+  function initAuth() {
+    getSupabase().then(function(sb) {
+      if (!sb) return;
+      return sb.auth.getSession().then(function(_ref) {
+        var session = _ref.data && _ref.data.session;
+        var hash = window.location.hash || '';
+        var isOAuthCallback = hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1;
+        if (session && session.access_token) {
+          var userEmail = (session.user && session.user.email) || '';
+          var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
+          if (typeof updateNavUser === 'function') updateNavUser(userEmail, userName);
+          if (isOAuthCallback && typeof showRegistrationSuccess === 'function') showRegistrationSuccess(userEmail, false);
+          if (isOAuthCallback && API_BASE) {
+            fetch(API_BASE + '/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
+          }
+        }
+        if (isOAuthCallback) {
+          window.history.replaceState('', document.title, window.location.pathname + window.location.search);
+        }
+      });
+    }).catch(function() {});
+  }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', getSupabase);
+    document.addEventListener('DOMContentLoaded', initAuth);
   } else {
-    getSupabase();
+    initAuth();
   }
   function showAuthError(msg, isSignin) {
     var el = document.getElementById(isSignin ? 'authErrorSignin' : 'authError');
@@ -3537,34 +3564,42 @@
     var redirectTo = (origin && origin !== 'null' && origin !== 'file://') ? (origin + '/') : 'http://localhost:5500/';
     var apiUrl = (typeof window !== 'undefined' && window.API_BASE_URL) || 'https://whisperme0.onrender.com';
     var timeoutId;
-    try {
-      var ctrl = new AbortController();
-      timeoutId = setTimeout(function() { ctrl.abort(); }, 90000);
-      var res = await fetch(apiUrl + '/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, redirectTo: redirectTo }),
-        signal: ctrl.signal,
-      });
-      if (timeoutId) clearTimeout(timeoutId);
-      var data = await res.json().catch(function() { return {}; });
-      if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
-      if (!res.ok) {
-        var msg = data.error || 'Failed to send. Try again.';
-        if (msg.toLowerCase().includes('not configured') || msg.toLowerCase().includes('email not')) {
-          msg = 'Email service not configured. Add RESEND_API_KEY and FROM_EMAIL to Render env vars.';
+    async function trySubmit(retry) {
+      try {
+        var ctrl = new AbortController();
+        timeoutId = setTimeout(function() { ctrl.abort(); }, 90000);
+        var res = await fetch(apiUrl + '/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, redirectTo: redirectTo }),
+          signal: ctrl.signal,
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+        var data = await res.json().catch(function() { return {}; });
+        if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
+        if (!res.ok) {
+          var msg = data.error || 'Failed to send. Try again.';
+          if (msg.toLowerCase().includes('not configured') || msg.toLowerCase().includes('email not')) {
+            msg = 'Email service not configured. Add RESEND_API_KEY and FROM_EMAIL to Render env vars.';
+          }
+          if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+          return;
         }
-        if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
-        return;
+        closeForgotPasswordModal();
+        if (typeof showToast === 'function') showToast('✉️ Email sent! Check inbox AND spam/junk folder.');
+      } catch (e) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (retry) {
+          if (errEl) { errEl.textContent = 'Server waking up… Retrying in 5 sec…'; errEl.style.display = 'block'; }
+          if (btn) { btn.querySelector('span').textContent = 'Retrying…'; }
+          setTimeout(function() { trySubmit(false); }, 5000);
+        } else {
+          if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
+          if (errEl) { errEl.textContent = 'Server may be sleeping. Tap again—second try usually works.'; errEl.style.display = 'block'; }
+        }
       }
-      closeForgotPasswordModal();
-      if (typeof showToast === 'function') showToast('✉️ Check your email (and spam folder) for the reset link!');
-    } catch (e) {
-      if (timeoutId) clearTimeout(timeoutId);
-      if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
-      var msg = 'Network error. If the server was idle, it may be waking up—wait 30 seconds and try again.';
-      if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
     }
+    trySubmit(true);
   };
 
   window.openSetNewPasswordModal = function() {

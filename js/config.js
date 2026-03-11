@@ -15,4 +15,10 @@
       if (d && d.API_BASE_URL) window.API_BASE_URL = d.API_BASE_URL;
     }).catch(function() {});
   }
+
+  // Warm up Render backend on page load (wakes free-tier server so forms work faster)
+  if (!isLocal) {
+    var api = window.API_BASE_URL || PRODUCTION_API_URL;
+    fetch(api + '/api/health', { method: 'GET' }).catch(function() {});
+  }
 })();

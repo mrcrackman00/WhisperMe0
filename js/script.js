@@ -853,6 +853,13 @@ function showPage(name) {
   } else {
     nav.classList.add('scrolled');
   }
+  // Warm backend when user goes to waitlist (wakes Render free tier)
+  if (name === 'join-beta') {
+    var api = window.API_BASE_URL || 'https://whisperme0.onrender.com';
+    if (!/localhost|127\.0\.0\.1/.test(location.hostname)) {
+      fetch(api + '/api/health', { method: 'GET' }).catch(function() {});
+    }
+  }
   // Rebuild app preview cards if needed
   if (name === 'app-preview') {
     rebuildSpCards();
@@ -1454,6 +1461,11 @@ function openAuthModal(tab) {
   switchAmTab(tab || 'signin');
   document.body.style.overflow = 'hidden';
   if (tab === 'signup') loadHCaptchaScript();
+  // Warm backend when auth modal opens (for forgot password, sign in)
+  var api = window.API_BASE_URL || 'https://whisperme0.onrender.com';
+  if (!/localhost|127\.0\.0\.1/.test(location.hostname)) {
+    fetch(api + '/api/health', { method: 'GET' }).catch(function() {});
+  }
 }
 function closeAuthModal() {
   document.getElementById('authModalOverlay').classList.remove('active');
@@ -1637,36 +1649,44 @@ function h11HandleSignup(e) {
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
   var apiBase = window.API_BASE_URL || 'http://localhost:3000';
-  var ctrl = new AbortController();
-  var t = setTimeout(function() { ctrl.abort(); }, 90000);
-  fetch(apiBase + '/api/waitlist', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, name: name, a_password: aPassword }),
-    signal: ctrl.signal,
-  }).then(function(r) { clearTimeout(t); return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
-  .then(function(res) {
-    if (!res.ok) {
-      var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
-      if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
-      showToast('❌ ' + msg);
-      if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
-      return;
-    }
-    // Success
-    if (btn) { btn.innerHTML = '✓ You\'re on the list!'; btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)'; }
-    showToast('🎉 You\'re on the waitlist! Your voice will be heard.');
-    if (nameEl) nameEl.value = '';
-    if (emailEl) emailEl.value = '';
-  })
-  .catch(function() {
-    clearTimeout(t);
-    var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
-      ? 'Connection error. Is the backend running? (npm start in whisper-backend)'
-      : 'Connection error. Backend may be warming up (free tier). Wait 30–60 sec and try again.';
-    showToast('⚠️ ' + msg);
-    if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
-  });
+  function doWaitlist(retry) {
+    var ctrl = new AbortController();
+    var t = setTimeout(function() { ctrl.abort(); }, 90000);
+    fetch(apiBase + '/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, name: name, a_password: aPassword }),
+      signal: ctrl.signal,
+    }).then(function(r) { clearTimeout(t); return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(res) {
+      if (!res.ok) {
+        var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
+        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
+        showToast('❌ ' + msg);
+        if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
+        return;
+      }
+      if (btn) { btn.innerHTML = '✓ You\'re on the list!'; btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)'; }
+      showToast('🎉 You\'re on the waitlist! Your voice will be heard.');
+      if (nameEl) nameEl.value = '';
+      if (emailEl) emailEl.value = '';
+    })
+    .catch(function() {
+      clearTimeout(t);
+      if (retry) {
+        showToast('⚠️ Server waking up… Retrying in 5 sec…');
+        if (btn) { btn.innerHTML = 'Retrying…'; }
+        setTimeout(function() { doWaitlist(false); }, 5000);
+      } else {
+        var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
+          ? 'Connection error. Is the backend running? (npm start in whisper-backend)'
+          : 'Server may be sleeping. Tap again—second try usually works.';
+        showToast('⚠️ ' + msg);
+        if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
+      }
+    });
+  }
+  doWaitlist(true);
 }
 
 function heroSignup() {
