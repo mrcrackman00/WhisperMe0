@@ -1570,7 +1570,8 @@ function handleAmSignin() {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       if (result.error) { showToast('❌ ' + (result.error.message || 'Sign in failed.')); return; }
       var token = result.data.session && result.data.session.access_token;
-      if (token && window.API_BASE_URL) { fetch(window.API_BASE_URL + '/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
+      var apiBase = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || ((/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0.onrender.com');
+      if (token && apiBase) { fetch(apiBase + '/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
       closeAuthModal();
       updateNavUser(email, '');
       showToast('👋 Welcome back!');
@@ -1630,7 +1631,8 @@ function handleAmSignup() {
       // Supabase may return no session if email confirmation is required
       var token = result.data.session && result.data.session.access_token;
       if (token) { 
-        fetch((window.API_BASE_URL || 'http://localhost:3000') + '/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
+        var ab = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || ((/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0.onrender.com');
+        fetch(ab + '/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
         closeAuthModal();
         updateNavUser(email, displayName || name);
         if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
@@ -1679,7 +1681,7 @@ function h11HandleSignup(e) {
   
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
-  var apiBase = window.API_BASE_URL || 'http://localhost:3000';
+  var apiBase = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || ((/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0.onrender.com');
   function doWaitlist(retry) {
     var ctrl = new AbortController();
     var t = setTimeout(function() { ctrl.abort(); }, 90000);

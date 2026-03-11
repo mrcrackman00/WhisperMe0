@@ -17,7 +17,7 @@ const { requestLogger } = require('./utils/logger');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5500,http://localhost:5502';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5500,http://localhost:5502,https://whisper-me-flame.vercel.app';
 const CORS_ORIGINS = FRONTEND_URL.split(',').map(s => s.trim()).filter(Boolean);
 const isDev = process.env.NODE_ENV !== 'production';
 
