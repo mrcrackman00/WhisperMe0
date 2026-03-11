@@ -12,8 +12,12 @@ if (!supabaseUrl) {
   throw new Error('Missing SUPABASE_URL');
 }
 
+if (!supabaseServiceKey) {
+  throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY (required for admin operations)');
+}
+
 /** Service role client — full access; use only on server */
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey, {
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: { persistSession: false },
 });
 

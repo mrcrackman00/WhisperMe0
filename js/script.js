@@ -1489,7 +1489,6 @@ function switchAmTab(tab) {
     if (panelEl) panelEl.classList.toggle('active', t === tab);
   });
   if (tab === 'signup') {
-    loadHCaptchaScript();
     showSignupStep(1);
   }
 }
@@ -1702,7 +1701,7 @@ function h11HandleSignup(e) {
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';
     })
-    .catch(function() {
+    .catch(function(err) {
       clearTimeout(t);
       if (retry) {
         showToast('⚠️ Server waking up… Retrying in 5 sec…');

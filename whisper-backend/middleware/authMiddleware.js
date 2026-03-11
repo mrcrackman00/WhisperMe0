@@ -20,7 +20,8 @@ function authMiddleware(req, res, next) {
     auth: { persistSession: false },
   });
   supabase.auth.getUser(token)
-    .then(({ data: { user }, error }) => {
+    .then(({ data, error }) => {
+      const user = data?.user;
       if (error || !user) {
         return res.status(401).json({ error: 'Invalid or expired token' });
       }

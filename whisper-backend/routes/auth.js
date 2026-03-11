@@ -58,8 +58,24 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const frontendUrl = process.env.FRONTEND_URL?.split(',')[0]?.trim() || 'https://whisper-me-flame.vercel.app';
-  let redirectTo = (req.body?.redirectTo || frontendUrl).replace(/\/index\.html\/?$/, '/');
+  const allowedOrigins = (process.env.FRONTEND_URL || '')
+    .split(',')
+    .map((s) => s.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+  if (!allowedOrigins.length) allowedOrigins.push('https://whisper-me-flame.vercel.app');
+
+  let rawRedirect = req.body?.redirectTo;
+  let redirectTo = (typeof rawRedirect === 'string' ? rawRedirect : frontendUrl)
+    .trim()
+    .replace(/\/index\.html\/?$/, '/');
   if (!redirectTo.endsWith('/')) redirectTo += '/';
+
+  // Prevent open redirect: only allow redirectTo from our domains (exact origin or subpath)
+  const isAllowed = allowedOrigins.some((origin) => {
+    const base = origin.replace(/\/$/, '');
+    return redirectTo.startsWith(base + '/');
+  });
+  if (!isAllowed) redirectTo = frontendUrl.replace(/\/$/, '') + '/';
 
   if (!supabaseUrl || !serviceKey) {
     return res.status(503).json({ error: 'Auth not configured.' });
@@ -74,8 +90,9 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
   });
 
   if (error) {
-    // Don't reveal if user exists (security)
-    if (error.message?.toLowerCase().includes('user not found')) {
+    // Don't reveal if user exists (security) — Supabase may return "User with this email not found"
+    const msg = error.message?.toLowerCase() || '';
+    if (msg.includes('user not found') || msg.includes('email not found') || msg.includes('user with this email not found')) {
       return res.json({ ok: true });
     }
     console.error('generateLink error:', error.message);

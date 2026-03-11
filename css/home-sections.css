@@ -656,6 +656,7 @@
   display: block;
   cursor: text;
   touch-action: manipulation;
+  pointer-events: auto;
 }
 
 .h11-form-input {
@@ -673,6 +674,9 @@
   cursor: text;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: text;
+  user-select: text;
+  pointer-events: auto;
 }
 
 .h11-form-input::placeholder {

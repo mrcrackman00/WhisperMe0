@@ -69,9 +69,10 @@ router.get('/analytics', async (req, res) => {
       .select('*', { count: 'exact', head: true });
     if (wErr) throw wErr;
 
-    const { count: totalUsers } = await supabaseAdmin
+    const { count: totalUsers, error: usersErr } = await supabaseAdmin
       .from('profiles')
       .select('*', { count: 'exact', head: true });
+    if (usersErr) throw usersErr;
 
     const { data: profiles } = await supabaseAdmin
       .from('profiles')

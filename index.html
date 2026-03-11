@@ -2881,8 +2881,8 @@
 <!-- ═══════════════════════════════════
      AUTH MODAL — Sign In / Sign Up
      ═══════════════════════════════════ -->
-<div class="auth-modal-overlay" id="authModalOverlay">
-  <div class="auth-modal-backdrop" onclick="closeAuthModal()"></div>
+<div class="auth-modal-overlay" id="authModalOverlay" onclick="if(event.target===this)closeAuthModal()">
+  <div class="auth-modal-backdrop"></div>
   <div class="auth-modal" id="authModal">
 
     <!-- Close -->
@@ -3078,7 +3078,7 @@
             </div>
           </div>
 
-          <div class="h-captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a" data-size="normal" aria-label="Security check"></div>
+          <div class="h-captcha" id="amSignupStep2Captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a" data-size="normal" aria-label="Security check"></div>
           <button class="am-submit" onclick="handleAmSignup()">
             <span>Create Account</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="am-submit-icon"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

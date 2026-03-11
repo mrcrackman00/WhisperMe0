@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 
 const gmailUser = process.env.GMAIL_USER;
 const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
-const fromEmail = process.env.FROM_EMAIL || `WhisperMe <${gmailUser}>`;
+const fromEmail = process.env.FROM_EMAIL || (gmailUser ? `WhisperMe <${gmailUser}>` : 'WhisperMe <noreply@whisperme.app>');
 
 let transporter = null;
 if (gmailUser && gmailAppPassword) {

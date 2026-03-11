@@ -907,10 +907,12 @@
 
 .form-field {
   margin-bottom: 14px;
+  pointer-events: auto;
 }
 
 .form-input {
   width: 100%;
+  min-height: 48px;
   background: var(--warm);
   border: 1.5px solid var(--border);
   border-radius: 14px;
@@ -920,7 +922,11 @@
   font-size: 0.95rem;
   outline: none;
   transition: all 0.25s;
-  cursor: auto;
+  cursor: text;
+  touch-action: manipulation;
+  -webkit-user-select: text;
+  user-select: text;
+  pointer-events: auto;
 }
 
 .form-input::placeholder {
