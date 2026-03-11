@@ -17,6 +17,7 @@
   pointer-events: none;
   transition: opacity 0.35s ease;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .auth-modal-overlay.active {
@@ -40,6 +41,7 @@
   transform: scale(0.95) translateY(20px);
   transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  margin: 0 auto;
 }
 
 .auth-modal-overlay.active .auth-modal {
@@ -661,7 +663,8 @@
 @media (max-width: 440px) {
   .auth-modal-overlay {
     padding: 12px;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
   }
 
   .auth-modal {
