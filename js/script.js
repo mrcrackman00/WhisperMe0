@@ -1612,7 +1612,7 @@ function h11HandleSignup(e) {
   var nameEl = fromH11 ? document.getElementById('h11NameInput') : (document.getElementById('join-beta')?.querySelector('#nameInput') || document.getElementById('nameInput'));
   var emailEl = fromH11 ? document.getElementById('h11EmailInput') : (document.getElementById('join-beta')?.querySelector('#emailInput') || document.getElementById('emailInput'));
   var btn = fromH11 ? document.querySelector('.h11-submit-btn') : (document.getElementById('join-beta')?.querySelector('.form-submit') || document.querySelector('.form-submit'));
-  var aPasswordEl = document.querySelector('[name="a_password"]');
+  var aPasswordEl = fromH11 ? document.getElementById('h11_a_password') : document.querySelector('#join-beta [name="a_password"]') || document.querySelector('[name="a_password"]');
   var aPassword = aPasswordEl ? aPasswordEl.value : '';
   var name = nameEl ? nameEl.value.trim() : '';
   var email = emailEl ? emailEl.value.trim() : '';

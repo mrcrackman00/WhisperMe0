@@ -2,11 +2,18 @@
  * Admin API — users, waitlist list, analytics. Protected by auth + requireAdmin.
  */
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { authMiddleware, requireAdmin } = require('../middleware/authMiddleware');
 const { supabaseAdmin } = require('../config/supabase');
 
 const router = express.Router();
 
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many admin requests. Try again later.' },
+});
+router.use(adminLimiter);
 router.use(authMiddleware);
 router.use(requireAdmin);
 
