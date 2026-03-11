@@ -1,8 +1,4 @@
-/* Cursor hard reset: use native OS cursor everywhere */
-body,
-body * {
-  cursor: revert !important;
-}
+/* Cursor — removed cursor:revert (can block clicks on some browsers) */
 
 /* Input fix — ensure inputs work on mobile (tap, focus, type) */
 input:not([type=button]):not([type=submit]):not([type=reset]):not([type=image]),
@@ -25,6 +21,36 @@ a {
 .cursor,
 .cursor-ring {
   display: none !important;
+  pointer-events: none !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   SITE-WIDE CLICK FIX — ensure all interactive elements work
+   ═══════════════════════════════════════════════════ */
+
+/* Inactive overlays must NEVER block clicks */
+.auth-modal-overlay:not(.active),
+.app-overlay:not(.active),
+.mobile-nav-overlay:not(.open) {
+  pointer-events: none !important;
+}
+
+/* All clickable elements — nav, hero, footer, auth, app-sim, etc. */
+a, button, input, select, textarea, [role="button"], label[for],
+.nav-brand, .nav-link, .nav-signin, .nav-signup, .nav-user, .nav-mobile-toggle,
+.mobile-nav-panel a, .mobile-nav-panel button,
+.hero-badge, .hero-cta-primary, .hero-cta-secondary, .hero-signin-link a,
+.footer-col a, .f-badge, .f-social-btn,
+.am-tab, .am-submit, .am-forgot, .am-social-btn, .am-note a, .am-mood-chip, .am-step-back, .am-pw-toggle,
+.h11-submit-btn, .h11-cta,
+.aps-step, .aps-s1-cta, .aps-s2-btn, .aps-s3-post-btn, .aps-s5-rec-btn, .aps-s6-join-btn,
+[onclick] {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+a, button, [role="button"], label[for], input[type="submit"], input[type="button"], input[type="reset"],
+.nav-brand, .nav-link, .nav-signin, .nav-signup, .f-badge, .am-tab, .am-submit, [onclick] {
+  cursor: pointer;
 }
 
 /* Informational pages (About, Blog, Careers, Press, Legal) */
