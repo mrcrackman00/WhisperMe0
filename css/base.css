@@ -28,7 +28,8 @@ html {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
-html.mobile-perf {
+html.mobile-perf,
+html.scroll-fix {
   scroll-behavior: auto;
 }
 @media (prefers-reduced-motion: reduce) {

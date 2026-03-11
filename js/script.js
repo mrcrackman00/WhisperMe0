@@ -540,7 +540,10 @@ const isMobilePerf = (() => {
 if (perfLite) {
   document.documentElement.classList.add('perf-lite');
 }
-/* mobile-perf disabled — restores full CSS/UI/UX (blur, animations, smooth scroll) */
+/* scroll-fix: auto scroll on touch/narrow — fixes scroll without stripping UI */
+if (isMobilePerf) {
+  document.documentElement.classList.add('scroll-fix');
+}
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
