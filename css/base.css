@@ -40,7 +40,8 @@ body {
   background: var(--cream);
   color: var(--ink);
   overflow-x: hidden;
-  cursor: auto;
+  overflow-y: auto;
+  min-height: 100vh;
 }
 
 /* Custom cursor — disabled, using normal browser cursor */
