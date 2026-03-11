@@ -64,12 +64,13 @@ app.use(express.json({ limit: '10kb' }));
 app.use(requestLogger);
 
 // ——— Health check (before static; support GET + HEAD for UptimeRobot) ———
-app.get('/health', (req, res) => {
+function healthOk(req, res) {
   res.status(200).json({ status: 'ok', service: 'whisper-backend' });
-});
-app.head('/health', (req, res) => {
-  res.status(200).end();
-});
+}
+app.get('/health', healthOk);
+app.head('/health', (req, res) => res.status(200).end());
+app.get('/api/health', healthOk);
+app.head('/api/health', (req, res) => res.status(200).end());
 
 // ——— Static files ———
 app.use(express.static(path.join(__dirname, 'public')));
