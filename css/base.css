@@ -28,8 +28,7 @@ html {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
-html.mobile-perf,
-html.scroll-fix {
+html.mobile-perf {
   scroll-behavior: auto;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -85,7 +84,6 @@ body {
 .mobile-perf .sp-bubble {
   animation-play-state: paused !important;
 }
-
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {

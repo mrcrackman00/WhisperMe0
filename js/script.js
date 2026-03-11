@@ -540,9 +540,8 @@ const isMobilePerf = (() => {
 if (perfLite) {
   document.documentElement.classList.add('perf-lite');
 }
-/* scroll-fix: auto scroll on touch/narrow — fixes scroll without stripping UI */
 if (isMobilePerf) {
-  document.documentElement.classList.add('scroll-fix');
+  document.documentElement.classList.add('mobile-perf');
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
