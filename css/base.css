@@ -24,13 +24,11 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-}
-html.mobile-perf,
-html.scroll-fix {
-  scroll-behavior: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -41,7 +39,8 @@ body {
   background: var(--cream);
   color: var(--ink);
   overflow-x: hidden;
-  cursor: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Custom cursor — disabled, using normal browser cursor */
