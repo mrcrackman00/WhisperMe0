@@ -44,6 +44,7 @@ app.use(cors({
     if (!origin) return callback(null, true);
     if (CORS_ORIGINS.includes(origin)) return callback(null, true);
     if (isDev && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return callback(null, true);
+    if (/^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)) return callback(null, true);
     callback(new Error('Blocked by CORS'));
   },
   credentials: true,

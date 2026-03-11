@@ -1649,7 +1649,7 @@ function h11HandleSignup(e) {
   .catch(function() {
     var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
       ? 'Connection error. Is the backend running? (npm start in whisper-backend)'
-      : 'Connection error. Please try again later.';
+      : 'Connection error. Backend may be warming up (free tier). Try again in 1 min.';
     showToast('⚠️ ' + msg);
     if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
   });
