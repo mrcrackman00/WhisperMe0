@@ -28,6 +28,9 @@ html {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
+html.mobile-perf {
+  scroll-behavior: auto;
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
@@ -59,6 +62,26 @@ body {
 .scroll-active .sp-bubble,
 .scroll-active [class*="marquee"],
 .scroll-active .hg-blob {
+  animation-play-state: paused !important;
+}
+
+/* ── Mobile perf: Instagram/Snapchat-level smoothness ── */
+.mobile-perf #hero-v11 {
+  animation: none !important;
+  background-position: 50% 50% !important;
+}
+.mobile-perf .hg-blob {
+  filter: none !important;
+  animation: none !important;
+  opacity: 0.85;
+}
+.mobile-perf .hg-noise {
+  animation: none !important;
+}
+.mobile-perf [class*="marquee"],
+.mobile-perf [class*="Marquee"],
+.mobile-perf .h11-usp-inner,
+.mobile-perf .sp-bubble {
   animation-play-state: paused !important;
 }
 

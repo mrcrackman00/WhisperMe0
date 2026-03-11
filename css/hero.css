@@ -53,6 +53,16 @@
 .perf-lite .hg-blob-6 { display: none; }
 .perf-lite .hg-blob { animation-duration: 40s; }
 
+/* ── Mobile perf: stop floating animation, keep fade-in only ── */
+.mobile-perf .hero-vcard-1 { animation: heroFadeUp 0.7s 0.2s ease both !important; }
+.mobile-perf .hero-vcard-2 { animation: heroFadeUp 0.7s 0.35s ease both !important; }
+.mobile-perf .hero-vcard-3 { animation: heroFadeUp 0.7s 0.5s ease both !important; }
+.mobile-perf .hero-vcard-4 { animation: heroFadeUp 0.7s 0.65s ease both !important; }
+.mobile-perf .hero-vcard-5 { animation: heroFadeUp 0.7s 0.8s ease both !important; }
+.mobile-perf .hero-marquee-strip .hero-marquee-track {
+  animation: none !important;
+}
+
 /* ── Shared blob ── */
 .hg-blob {
   position: absolute;

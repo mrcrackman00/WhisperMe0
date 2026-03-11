@@ -653,10 +653,14 @@
 
 .h11-form-field {
   margin-bottom: 14px;
+  display: block;
+  cursor: text;
+  touch-action: manipulation;
 }
 
 .h11-form-input {
   width: 100%;
+  min-height: 48px;
   background: var(--warm);
   border: 1.5px solid var(--border);
   border-radius: 14px;
@@ -666,7 +670,9 @@
   font-size: 0.95rem;
   outline: none;
   transition: all 0.25s;
-  cursor: auto;
+  cursor: text;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .h11-form-input::placeholder {

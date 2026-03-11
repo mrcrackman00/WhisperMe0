@@ -23,11 +23,11 @@ nav {
     0 8px 28px rgba(28, 26, 24, 0.07);
   backdrop-filter: blur(24px) saturate(1.8);
   -webkit-backdrop-filter: blur(24px) saturate(1.8);
-  transition:
-    top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.35s ease,
-    box-shadow 0.35s ease;
+}
+.mobile-perf nav {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(252, 250, 246, 0.98);
 }
 
 nav.scrolled {
@@ -239,12 +239,13 @@ nav.scrolled {
   -webkit-backdrop-filter: blur(6px);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-
 .mobile-nav-overlay.open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .mobile-nav-panel {

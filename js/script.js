@@ -531,8 +531,17 @@ const perfLite = (() => {
   return lowCores || lowMemory || reduceMotion || smallScreen;
 })();
 
+const isMobilePerf = (() => {
+  const touchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const narrowScreen = window.matchMedia('(max-width: 768px)').matches;
+  return touchDevice || narrowScreen;
+})();
+
 if (perfLite) {
   document.documentElement.classList.add('perf-lite');
+}
+if (isMobilePerf) {
+  document.documentElement.classList.add('mobile-perf');
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
@@ -852,13 +861,6 @@ function showPage(name) {
     if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
   } else {
     nav.classList.add('scrolled');
-  }
-  // Warm backend when user goes to waitlist (wakes Render free tier)
-  if (name === 'join-beta') {
-    var api = window.API_BASE_URL || 'https://whisperme0.onrender.com';
-    if (!/localhost|127\.0\.0\.1/.test(location.hostname)) {
-      fetch(api + '/api/health', { method: 'GET' }).catch(function() {});
-    }
   }
   // Rebuild app preview cards if needed
   if (name === 'app-preview') {
@@ -1461,11 +1463,6 @@ function openAuthModal(tab) {
   switchAmTab(tab || 'signin');
   document.body.style.overflow = 'hidden';
   if (tab === 'signup') loadHCaptchaScript();
-  // Warm backend when auth modal opens (for forgot password, sign in)
-  var api = window.API_BASE_URL || 'https://whisperme0.onrender.com';
-  if (!/localhost|127\.0\.0\.1/.test(location.hostname)) {
-    fetch(api + '/api/health', { method: 'GET' }).catch(function() {});
-  }
 }
 function closeAuthModal() {
   document.getElementById('authModalOverlay').classList.remove('active');

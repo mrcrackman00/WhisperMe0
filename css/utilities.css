@@ -4,6 +4,22 @@ body * {
   cursor: revert !important;
 }
 
+/* Input fix — ensure inputs work on mobile (tap, focus, type) */
+input:not([type=button]):not([type=submit]):not([type=reset]):not([type=image]),
+textarea {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+input[type=button],
+input[type=submit],
+input[type=reset],
+select {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+
 .cursor,
 .cursor-ring {
   display: none !important;

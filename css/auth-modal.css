@@ -7,9 +7,6 @@
   position: fixed;
   inset: 0;
   z-index: 800;
-  background: rgba(18, 16, 14, 0.72);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,13 +17,30 @@
   box-sizing: border-box;
 }
 
+.auth-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(18, 16, 14, 0.72);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  cursor: pointer;
+}
+.mobile-perf .auth-modal-backdrop {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(18, 16, 14, 0.88);
+}
+
 .auth-modal-overlay.active {
   opacity: 1;
   pointer-events: all;
 }
 
-/* Modal container */
+/* Modal container — z-index above backdrop so inputs receive taps */
 .auth-modal {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 860px;
   min-height: 520px;
@@ -40,7 +54,6 @@
     0 8px 24px rgba(18, 16, 14, 0.16);
   transform: scale(0.95) translateY(20px);
   transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
   margin: 0 auto;
 }
 
@@ -357,6 +370,25 @@
   font-family: 'Cabinet Grotesk', sans-serif;
 }
 .am-label[for] { cursor: pointer; }
+.am-field-tappable {
+  cursor: text;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.am-field-tappable .am-input-wrap { cursor: text; }
+
+/* Password field — extra space for autofill/password-manager popup */
+.am-password-field {
+  margin-top: 20px;
+}
+@media (max-width: 440px) {
+  .am-password-field {
+    margin-top: 32px;
+  }
+}
 
 .am-label-row {
   display: flex;
@@ -386,6 +418,7 @@
 
 .am-input {
   width: 100%;
+  min-height: 48px;
   padding: 12px 14px 12px 42px;
   background: #fff;
   border: 1.5px solid rgba(28, 26, 24, 0.1);
@@ -400,6 +433,7 @@
   -webkit-tap-highlight-color: transparent;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .am-input::placeholder {
@@ -681,25 +715,27 @@
   .am-social-apple { flex: 0 0 auto; }
 }
 
-/* Phone: compact modal */
+/* Phone: compact modal — chota, pura phone na le */
 @media (max-width: 440px) {
   .auth-modal-overlay {
-    padding: 12px;
-    align-items: center;
+    padding: 16px 12px;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: max(12px, env(safe-area-inset-top));
   }
 
   .auth-modal {
-    width: 100%;
-    max-width: 100%;
-    max-height: calc(100vh - 24px);
-    max-height: calc(100dvh - 24px);
+    width: calc(100% - 24px);
+    max-width: 400px;
+    max-height: min(85vh, 85dvh, 560px);
     border-radius: 20px;
     overflow-y: auto;
+    margin-top: 0;
+    -webkit-overflow-scrolling: touch;
   }
 
   .am-form-side {
-    padding: 20px 16px 24px;
+    padding: 18px 16px 20px;
   }
 
   .am-tabs {
@@ -721,17 +757,30 @@
   }
 
   .am-panel {
-    gap: 10px;
+    gap: 8px;
   }
 
   .am-field {
     gap: 4px;
   }
 
-  .am-input {
-    padding: 12px 12px 12px 38px;
-    font-size: 0.88rem;
-    min-height: 44px;
+  .am-divider { margin: 12px 0; }
+  .am-divtext { font-size: 0.68rem; }
+
+  /* Email/input tap fix — z-index, pointer-events, larger tap area */
+  .am-form-side .am-field-tappable,
+  .am-form-side .am-input-wrap,
+  .am-form-side .am-input {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+  }
+  .am-form-side .am-input {
+    padding: 14px 12px 14px 38px;
+    font-size: 16px;
+    min-height: 48px;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .am-field-icon {
