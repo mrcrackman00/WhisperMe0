@@ -1,34 +1,26 @@
 # Password Reset Email Fix
 
-"Error sending recovery email" usually means Supabase SMTP (Resend) config needs adjustment.
+**WhisperMe now uses a custom backend flow** — reset emails are sent via Resend from our backend, bypassing Supabase SMTP entirely.
 
-## 1. Sender Email (most common fix)
+## Backend Setup (Required)
 
-**Supabase Dashboard → Authentication → Emails → SMTP Settings**
+Ensure these env vars are set on **Render** (whisper-backend):
 
-- **Sender email:** Use `onboarding@resend.dev` for testing (no domain verification needed)
-- If you have a verified domain in Resend, use e.g. `noreply@yourdomain.com`
+- `RESEND_API_KEY` — from [resend.com/api-keys](https://resend.com/api-keys)
+- `FROM_EMAIL` — e.g. `WhisperMe <onboarding@resend.dev>` (Resend testing, no domain verification)
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — for generating reset links
+- `FRONTEND_URL` — e.g. `https://whisper-me-flame.vercel.app`
 
-## 2. Redirect URLs
+## Supabase Redirect URLs (Required)
+
+The reset link redirects users back to your app. Add these in:
 
 **Supabase Dashboard → Authentication → URL Configuration → Redirect URLs**
 
-Add:
-- `http://localhost:5500`
-- `http://localhost:5500/`
-- Your production URL when you deploy (e.g. `https://whisperme.co`)
+- `https://whisper-me-flame.vercel.app`
+- `https://whisper-me-flame.vercel.app/`
+- `http://localhost:5500` (for local dev)
 
-## 3. Resend SMTP Credentials
+## Legacy: Supabase SMTP (Optional)
 
-In Supabase SMTP settings:
-- **Host:** `smtp.resend.com`
-- **Port:** `465`
-- **Username:** `resend`
-- **Password:** Your Resend API key (from [resend.com/api-keys](https://resend.com/api-keys))
-
-## 4. Domain Verification (for production)
-
-To send from your own domain (e.g. `noreply@whisperme.com`):
-1. Go to [Resend Domains](https://resend.com/domains)
-2. Add and verify your domain (add DNS records)
-3. Use that email as sender in Supabase
+If you prefer Supabase to send emails directly, configure SMTP in Supabase Dashboard → Authentication → Emails → SMTP Settings. Our custom flow does not use this.

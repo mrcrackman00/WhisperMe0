@@ -4,10 +4,11 @@
  * These endpoints help the backend know the current user and track events.
  */
 const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const { trackEvent, EVENTS } = require('../utils/analytics');
-const { sendWelcomeEmail } = require('../services/emailService');
-const { authLimiter } = require('../middleware/rateLimiters');
+const { sendWelcomeEmail, sendPasswordResetEmail } = require('../services/emailService');
+const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimiters');
 
 const router = express.Router();
 
@@ -40,6 +41,58 @@ router.post('/on-signup', authMiddleware, authLimiter, async (req, res) => {
   if (req.user?.email) {
     await sendWelcomeEmail(req.user.email, displayName || 'there');
   }
+  res.json({ ok: true });
+});
+
+/**
+ * POST /api/auth/forgot-password — generate reset link via Supabase Admin, send via Resend.
+ * Bypasses Supabase SMTP (which often fails). Body: { email, redirectTo?, captchaToken? }
+ */
+router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
+  const email = (req.body?.email || '').trim().toLowerCase();
+  const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+  if (!email || !emailRe.test(email)) {
+    return res.status(400).json({ error: 'Please enter a valid email address.' });
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const frontendUrl = process.env.FRONTEND_URL?.split(',')[0]?.trim() || 'https://whisper-me-flame.vercel.app';
+  let redirectTo = (req.body?.redirectTo || frontendUrl).replace(/\/index\.html\/?$/, '/');
+  if (!redirectTo.endsWith('/')) redirectTo += '/';
+
+  if (!supabaseUrl || !serviceKey) {
+    return res.status(503).json({ error: 'Auth not configured.' });
+  }
+
+  const supabase = createClient(supabaseUrl, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
+
+  const { data, error } = await supabase.auth.admin.generateLink({
+    type: 'recovery',
+    email,
+    options: { redirectTo },
+  });
+
+  if (error) {
+    // Don't reveal if user exists (security)
+    if (error.message?.toLowerCase().includes('user not found')) {
+      return res.json({ ok: true });
+    }
+    console.error('generateLink error:', error.message);
+    return res.status(400).json({ error: error.message || 'Failed to generate reset link.' });
+  }
+
+  const actionLink = data?.properties?.action_link || data?.action_link;
+  if (!actionLink) {
+    console.error('No action_link in generateLink response:', Object.keys(data || {}));
+    return res.status(500).json({ error: 'Could not generate reset link.' });
+  }
+
+  const sendResult = await sendPasswordResetEmail(email, actionLink);
+  if (!sendResult.ok) {
+    return res.status(500).json({ error: sendResult.error || 'Email failed to send.' });
+  }
+
   res.json({ ok: true });
 });
 

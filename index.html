@@ -3533,33 +3533,31 @@
     }
     if (errEl) errEl.style.display = 'none';
     if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Sending…'; }
-    var sb = await getSupabase();
-    if (!sb) {
-      if (errEl) { errEl.textContent = 'Auth not configured.'; errEl.style.display = 'block'; }
-      if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
-      return;
-    }
     var origin = window.location.origin;
-    var redirectTo = origin + window.location.pathname + (window.location.search || '');
-    if (!origin || origin === 'null' || origin === 'file://') {
-      redirectTo = 'http://localhost:5500/';
-    }
-    var { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectTo, captchaToken: captchaToken });
-    if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
-    if (error) {
-      var errMsg = error.message || 'Failed to send. Try again.';
-      if (errMsg.toLowerCase().includes('captcha')) {
-        errMsg = 'Please complete the verification check above and try again.';
-      } else if (errMsg.toLowerCase().includes('redirect') || errMsg.toLowerCase().includes('url')) {
-        errMsg = 'Redirect URL not configured. Add ' + (redirectTo || origin) + ' in Supabase Dashboard → Auth → URL Configuration → Redirect URLs.';
-      } else if (errMsg.toLowerCase().includes('recovery') || errMsg.toLowerCase().includes('sending')) {
-        errMsg = 'Email failed to send. Fix: Supabase → Emails → SMTP. Use sender onboarding@resend.dev (Resend testing) or a verified domain. Add ' + redirectTo + ' to Auth → Redirect URLs.';
+    var redirectTo = (origin && origin !== 'null' && origin !== 'file://') ? (origin + '/') : 'http://localhost:5500/';
+    var apiUrl = (typeof window !== 'undefined' && window.API_BASE_URL) || 'https://whisperme0.onrender.com';
+    try {
+      var res = await fetch(apiUrl + '/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, redirectTo: redirectTo }),
+      });
+      var data = await res.json().catch(function() { return {}; });
+      if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
+      if (!res.ok) {
+        var msg = data.error || 'Failed to send. Try again.';
+        if (msg.toLowerCase().includes('not configured') || msg.toLowerCase().includes('email not')) {
+          msg = 'Email service not configured. Add RESEND_API_KEY and FROM_EMAIL to Render env vars.';
+        }
+        if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+        return;
       }
-      if (errEl) { errEl.textContent = errMsg; errEl.style.display = 'block'; }
-      return;
+      closeForgotPasswordModal();
+      if (typeof showToast === 'function') showToast('✉️ Check your email (and spam folder) for the reset link!');
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Reset Link'; }
+      if (errEl) { errEl.textContent = 'Network error. Please try again.'; errEl.style.display = 'block'; }
     }
-    closeForgotPasswordModal();
-    if (typeof showToast === 'function') showToast('✉️ Check your email (and spam folder) for the reset link!');
   };
 
   window.openSetNewPasswordModal = function() {

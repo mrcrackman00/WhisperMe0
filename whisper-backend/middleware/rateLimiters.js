@@ -24,7 +24,20 @@ const waitlistLimiter = rateLimit({
   message: { error: 'Too many waitlist submissions from this IP, please try again later.' },
 });
 
+/**
+ * Rate limiter for forgot-password (prevents abuse)
+ * Limits: 5 requests per 15 minutes per IP
+ */
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many reset requests. Try again in 15 minutes.' },
+});
+
 module.exports = {
   authLimiter,
-  waitlistLimiter
+  waitlistLimiter,
+  forgotPasswordLimiter,
 };

@@ -65,8 +65,53 @@ async function sendVerificationEmail(to, verificationLink) {
   `);
 }
 
+/**
+ * Send password reset email via Resend (bypasses Supabase SMTP).
+ * Uses RESEND_API_KEY and FROM_EMAIL from env.
+ */
+async function sendPasswordResetEmail(to, resetLink) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.FROM_EMAIL || 'WhisperMe <onboarding@resend.dev>';
+  const templateId = process.env.RESEND_PASSWORD_RESET_TEMPLATE_ID;
+  if (!apiKey) {
+    console.warn('RESEND_API_KEY not set; cannot send password reset email');
+    return { ok: false, error: 'Email not configured' };
+  }
+  try {
+    const { Resend } = require('resend');
+    const resend = new Resend(apiKey);
+    const payload = {
+      from: fromEmail,
+      to,
+      subject: 'Reset your WhisperMe password',
+    };
+    if (templateId) {
+      payload.template = { id: templateId, variables: { RESET_LINK: resetLink } };
+    } else {
+      payload.html = `
+        <h1>Reset your password</h1>
+        <p>Click the link below to set a new password:</p>
+        <p><a href="${resetLink}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
+        <p>Or copy this link: ${resetLink}</p>
+        <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+        <p>— The WhisperMe team</p>
+      `;
+    }
+    const { data, error } = await resend.emails.send(payload);
+    if (error) {
+      console.error('Resend error:', error);
+      return { ok: false, error: error.message };
+    }
+    return { ok: true, id: data?.id };
+  } catch (err) {
+    console.error('Password reset email error:', err.message);
+    return { ok: false, error: err.message };
+  }
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendWaitlistConfirmation,
   sendVerificationEmail,
+  sendPasswordResetEmail,
 };
