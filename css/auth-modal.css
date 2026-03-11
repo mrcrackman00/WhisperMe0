@@ -66,9 +66,19 @@
   .auth-modal-compact {
     width: calc(100% - 24px);
     max-height: 85vh;
+    max-height: 85dvh;
   }
   .auth-modal-compact .am-form-side-compact {
     padding: 24px 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-modal-compact {
+    width: calc(100% - 16px);
+  }
+  .auth-modal-compact .am-form-side-compact {
+    padding: 20px 16px;
   }
 }
 
@@ -647,14 +657,120 @@
   .am-social-apple { flex: 0 0 auto; }
 }
 
+/* Phone: compact modal */
 @media (max-width: 440px) {
-  .auth-modal { border-radius: 20px; }
+  .auth-modal-overlay {
+    padding: 12px;
+    align-items: flex-start;
+  }
 
-  .am-form-side { padding: 22px 18px 24px; }
+  .auth-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    border-radius: 20px;
+    overflow-y: auto;
+  }
 
-  .am-panel-title { font-size: 1.3rem; }
+  .am-form-side {
+    padding: 20px 16px 24px;
+  }
 
-  .am-social-row { flex-direction: column; }
+  .am-tabs {
+    margin-bottom: 20px;
+    padding: 2px;
+  }
 
-  .am-social-apple { flex: unset; padding: 10px 12px; }
+  .am-tab {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+  }
+
+  .am-panel-title {
+    font-size: 1.2rem;
+  }
+
+  .am-panel-sub {
+    font-size: 0.78rem;
+  }
+
+  .am-panel {
+    gap: 10px;
+  }
+
+  .am-field {
+    gap: 4px;
+  }
+
+  .am-input {
+    padding: 10px 12px 10px 38px;
+    font-size: 0.88rem;
+  }
+
+  .am-field-icon {
+    left: 12px;
+  }
+
+  .am-mood-row {
+    gap: 6px;
+  }
+
+  .am-mood-chip {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .am-submit {
+    padding: 12px 16px;
+    font-size: 0.88rem;
+  }
+
+  .am-social-row {
+    flex-direction: column;
+  }
+
+  .am-social-btn {
+    padding: 10px 12px;
+    font-size: 0.78rem;
+  }
+
+  .am-social-apple {
+    flex: unset;
+    padding: 10px 12px;
+  }
+
+  .am-note {
+    font-size: 0.72rem;
+  }
+
+  .am-close {
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .auth-modal-overlay {
+    padding: 8px;
+  }
+
+  .auth-modal {
+    max-height: calc(100vh - 16px);
+  }
+
+  .am-form-side {
+    padding: 16px 14px 20px;
+  }
+
+  .am-panel-title {
+    font-size: 1.1rem;
+  }
+
+  .am-panel-head {
+    margin-bottom: 2px;
+  }
 }
