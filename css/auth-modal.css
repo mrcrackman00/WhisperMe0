@@ -2,7 +2,7 @@
    AUTH MODAL — Split Two-Panel Design
    ═══════════════════════════════════════════════════ */
 
-/* Overlay */
+/* Overlay — centered on all screens */
 .auth-modal-overlay {
   position: fixed;
   inset: 0;
@@ -13,7 +13,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
-  padding: 20px;
+  padding: 24px;
   box-sizing: border-box;
 }
 
@@ -37,17 +37,19 @@
   pointer-events: all;
 }
 
-/* Modal container — z-index above backdrop so inputs receive taps */
+/* Modal container — z-index above backdrop, centered, good proportions */
 .auth-modal {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 960px;
-  min-height: 560px;
+  max-width: 920px;
+  min-height: 520px;
+  max-height: 90vh;
   display: grid;
   grid-template-columns: 300px 1fr;
   border-radius: 28px;
   overflow: hidden;
+  margin: auto;
   box-shadow:
     0 0 0 1px rgba(28, 26, 24, 0.06),
     0 32px 80px rgba(18, 16, 14, 0.32),
@@ -282,6 +284,8 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 /* Tab switcher */
@@ -751,6 +755,7 @@
 
   .am-form-side {
     padding: 28px 24px 28px;
+    min-height: 0;
   }
 
   .am-tabs {
@@ -770,27 +775,37 @@
   .am-social-apple { flex: 0 0 auto; }
 }
 
-/* Phone: compact modal — chota, pura phone na le */
+/* Phone: centered, fits screen, scroll if needed */
 @media (max-width: 440px) {
   .auth-modal-overlay {
     padding: 16px 12px;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .auth-modal {
     width: calc(100% - 24px);
-    max-width: 400px;
-    max-height: min(85vh, 85dvh, 560px);
-    border-radius: 20px;
+    max-width: 420px;
+    max-height: min(88dvh, 88vh, 500px);
+    border-radius: 22px;
+    overflow: hidden;
+    margin: auto;
+    display: grid;
+    grid-template-rows: 1fr;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .auth-modal .am-form-side {
     overflow-y: auto;
-    margin-top: 0;
+    overflow-x: hidden;
+    min-height: 0;
     -webkit-overflow-scrolling: touch;
   }
 
   .am-form-side {
-    padding: 18px 16px 20px;
+    padding: 20px 18px 24px;
   }
 
   .am-tabs {
