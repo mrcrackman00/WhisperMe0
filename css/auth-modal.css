@@ -35,6 +35,19 @@
   background: rgba(18, 16, 14, 0.88);
 }
 
+/* Light backdrop for forgot/set-new — dims background, no dark patch */
+.auth-modal-backdrop-light {
+  background: rgba(18, 16, 14, 0.4) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Hide footer when forgot/set-new password modals are open */
+body.auth-modal-open footer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .auth-modal-overlay.active {
   opacity: 1;
   pointer-events: auto;
@@ -69,43 +82,69 @@
   transform: scale(1) translateY(0);
 }
 
-/* Compact modal - Forgot Password, Set New Password - single panel, fits on screen */
+/* Compact modal - Forgot Password, Set New Password - smaller, centered, fits content */
 .auth-modal-compact {
-  max-width: 400px !important;
-  min-width: 280px;
+  max-width: 340px !important;
+  min-width: 260px;
   min-height: auto !important;
-  width: calc(100% - 40px);
-  max-height: 90vh;
+  height: auto !important;
+  width: calc(100% - 48px);
+  max-height: 85vh;
   display: block !important;
   grid-template-columns: none !important;
   overflow-y: auto;
   overflow-x: hidden;
+  margin: auto;
 }
 
 .auth-modal-compact .am-form-side-compact {
-  padding: 32px 28px;
+  padding: 24px 22px;
   overflow: visible;
+}
+
+.auth-modal-compact .am-panel-title {
+  font-size: 1.25rem;
+}
+
+.auth-modal-compact .am-panel-sub {
+  font-size: 0.8rem;
+}
+
+.auth-modal-compact .am-submit {
+  margin-top: 14px;
+}
+
+.auth-modal-compact .am-note {
+  margin-top: 14px;
+}
+
+#forgotPasswordCaptchaContainer .h-captcha,
+.auth-modal-compact #forgotPasswordCaptchaContainer .h-captcha {
+  margin: 8px 0 4px;
+  padding: 10px 0;
+  min-height: 68px;
 }
 
 @media (max-width: 480px) {
   .auth-modal-compact {
-    width: calc(100% - 24px);
-    max-height: 85vh;
-    max-height: 85dvh;
+    width: calc(100% - 32px);
+    max-height: 82vh;
+    max-height: 82dvh;
   }
 
   .auth-modal-compact .am-form-side-compact {
-    padding: 24px 20px;
+    padding: 20px 18px;
   }
 }
 
 @media (max-width: 360px) {
   .auth-modal-compact {
-    width: calc(100% - 16px);
+    width: calc(100% - 24px);
+    min-width: 240px;
   }
 
   .auth-modal-compact .am-form-side-compact {
-    padding: 20px 16px;
+    padding: 18px 16px;
   }
 }
 
@@ -788,7 +827,8 @@
 
 /* hCaptcha — mobile tap fix: more space, no overflow clip */
 .am-panel .h-captcha,
-.am-form-side .h-captcha {
+.am-form-side .h-captcha,
+#forgotPasswordCaptchaContainer .h-captcha {
   min-height: 78px;
   padding: 14px 0;
   margin: 4px 0 8px;

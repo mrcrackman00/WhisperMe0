@@ -6,7 +6,7 @@
 <script>
 (function(){var t='ontouchstart'in window||navigator.maxTouchPoints>0;var n=window.matchMedia&&matchMedia('(max-width:768px)').matches;if(t||n)document.documentElement.classList.add('mobile-perf');})();
 </script>
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://js.hcaptcha.com; frame-src 'self' https://newassets.hcaptcha.com https://hcaptcha.com; connect-src 'self' http://localhost:3000 https://*.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://hcaptcha.com https://api.hcaptcha.com;">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://js.hcaptcha.com; frame-src 'self' https://newassets.hcaptcha.com https://hcaptcha.com https://accounts.google.com; connect-src 'self' http://localhost:3000 https://*.supabase.co https://gkeemcezdbfplwhocwzx.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://hcaptcha.com https://api.hcaptcha.com https://accounts.google.com https://www.googleapis.com;">
 <title>WhisperMe — Say What You Can't Say</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cabinet+Grotesk:wght@300;400;500;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -3098,6 +3098,7 @@
 
 <!-- Forgot Password Modal - compact single panel -->
 <div class="auth-modal-overlay" id="forgotPasswordOverlay" style="z-index:99998;" onclick="if(event.target===this)closeForgotPasswordModal()">
+  <div class="auth-modal-backdrop auth-modal-backdrop-light"></div>
   <div class="auth-modal auth-modal-compact" onclick="event.stopPropagation()">
     <button class="am-close" onclick="closeForgotPasswordModal()" aria-label="Close">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -3113,7 +3114,7 @@
           <input type="email" id="forgotPasswordEmail" class="am-input" placeholder="you@example.com" autocomplete="email" />
         </div>
       </div>
-      <div class="h-captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a"></div>
+      <div id="forgotPasswordCaptchaContainer"></div>
       <button type="button" class="am-submit" id="forgotPasswordBtn" onclick="handleForgotPasswordSubmit()" style="margin-top:20px;">
         <span>Send Reset Link</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="am-submit-icon"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -3125,6 +3126,7 @@
 
 <!-- Set New Password (recovery) Modal -->
 <div class="auth-modal-overlay" id="setNewPasswordOverlay" style="z-index:99999;" onclick="if(event.target===this)closeSetNewPasswordModal()">
+  <div class="auth-modal-backdrop auth-modal-backdrop-light"></div>
   <div class="auth-modal auth-modal-compact" onclick="event.stopPropagation()">
     <button class="am-close" onclick="closeSetNewPasswordModal()" aria-label="Close">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -3522,11 +3524,12 @@
 
   window.openForgotPasswordModal = function() {
     if (typeof closeAuthModal === 'function') closeAuthModal();
-    if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
     var overlay = document.getElementById('forgotPasswordOverlay');
     var emailInput = document.getElementById('forgotPasswordEmail');
     var errEl = document.getElementById('forgotPasswordError');
+    var captchaContainer = document.getElementById('forgotPasswordCaptchaContainer');
     if (overlay) overlay.classList.add('active');
+    document.body.classList.add('auth-modal-open');
     document.body.style.overflow = 'hidden';
     if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
     if (emailInput) {
@@ -3534,10 +3537,22 @@
       emailInput.value = signinEmail ? signinEmail.value : '';
       emailInput.focus();
     }
+    if (captchaContainer) {
+      captchaContainer.innerHTML = '<div class="h-captcha" id="forgotPasswordCaptchaEl" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a"></div>';
+      if (typeof loadHCaptchaScript === 'function') {
+        loadHCaptchaScript(function() {
+          var el = document.getElementById('forgotPasswordCaptchaEl');
+          if (el && typeof hcaptcha !== 'undefined' && !el.getAttribute('data-rendered')) {
+            try { hcaptcha.render(el, { sitekey: '86365536-db66-431c-bdaa-e14a1ae8e08a' }); el.setAttribute('data-rendered', '1'); } catch (e) { console.warn('hCaptcha render:', e); }
+          }
+        });
+      }
+    }
   };
   window.closeForgotPasswordModal = function() {
     var overlay = document.getElementById('forgotPasswordOverlay');
     if (overlay) overlay.classList.remove('active');
+    if (!document.getElementById('setNewPasswordOverlay')?.classList.contains('active')) document.body.classList.remove('auth-modal-open');
     document.body.style.overflow = '';
   };
   window.handleForgotPasswordSubmit = async function() {
@@ -3569,7 +3584,7 @@
           ? await window.apiFetch('/api/auth/forgot-password', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email, redirectTo: redirectTo }),
+              body: JSON.stringify({ email: email, redirectTo: redirectTo, captchaToken: captchaToken }),
               signal: ctrl.signal,
             })
           : { ok: false, data: {} };
@@ -3606,6 +3621,7 @@
     var errEl = document.getElementById('setNewPasswordError');
     var input = document.getElementById('newPasswordInput');
     if (overlay) overlay.classList.add('active');
+    document.body.classList.add('auth-modal-open');
     document.body.style.overflow = 'hidden';
     if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
     if (input) { input.value = ''; input.focus(); }
@@ -3614,6 +3630,7 @@
   window.closeSetNewPasswordModal = function() {
     var overlay = document.getElementById('setNewPasswordOverlay');
     if (overlay) overlay.classList.remove('active');
+    if (!document.getElementById('forgotPasswordOverlay')?.classList.contains('active')) document.body.classList.remove('auth-modal-open');
     document.body.style.overflow = '';
   };
   window.handleSetNewPassword = async function() {
@@ -3814,28 +3831,30 @@
 
   /** Sign in with Google (Supabase OAuth). Redirects to Google then back here. */
   window.handleAuthGoogle = async function() {
-    var sb = await window._getSupabaseClient();
-    if (!sb) { alert('Auth not configured. Is the backend running?'); return; }
-    var redirectTo = window.location.origin + window.location.pathname + window.location.search;
-    var { data, error } = await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: redirectTo }
-    });
-    if (error) { alert(error.message || 'Google sign-in failed.'); return; }
-    if (data && data.url) window.location.href = data.url;
+    try {
+      var sb = await window._getSupabaseClient();
+      if (!sb) { if (typeof showToast === 'function') showToast('⚠️ Auth not configured.'); return; }
+      var redirectTo = window.location.origin + (window.location.pathname || '/');
+      var result = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo } });
+      if (result.error) { if (typeof showToast === 'function') showToast('❌ ' + (result.error.message || 'Google sign-in failed.')); return; }
+      if (result.data && result.data.url) window.location.href = result.data.url;
+    } catch (e) {
+      if (typeof showToast === 'function') showToast('❌ ' + (e.message || 'Google sign-in failed.'));
+    }
   };
 
   /** Sign in with Apple (Supabase OAuth). */
   window.handleAuthApple = async function() {
-    var sb = await window._getSupabaseClient();
-    if (!sb) { alert('Auth not configured. Is the backend running?'); return; }
-    var redirectTo = window.location.origin + window.location.pathname + window.location.search;
-    var { data, error } = await sb.auth.signInWithOAuth({
-      provider: 'apple',
-      options: { redirectTo: redirectTo }
-    });
-    if (error) { alert(error.message || 'Apple sign-in failed.'); return; }
-    if (data && data.url) window.location.href = data.url;
+    try {
+      var sb = await window._getSupabaseClient();
+      if (!sb) { if (typeof showToast === 'function') showToast('⚠️ Auth not configured.'); return; }
+      var redirectTo = window.location.origin + (window.location.pathname || '/');
+      var result = await sb.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: redirectTo } });
+      if (result.error) { if (typeof showToast === 'function') showToast('❌ ' + (result.error.message || 'Apple sign-in failed.')); return; }
+      if (result.data && result.data.url) window.location.href = result.data.url;
+    } catch (e) {
+      if (typeof showToast === 'function') showToast('❌ ' + (e.message || 'Apple sign-in failed.'));
+    }
   };
 
   window.showRegistrationSuccess = showRegistrationSuccess;
