@@ -31,8 +31,17 @@ a {
 /* Inactive overlays must NEVER block clicks */
 .auth-modal-overlay:not(.active),
 .app-overlay:not(.active),
-.mobile-nav-overlay:not(.open) {
+.mobile-nav-overlay:not(.open),
+.record-modal:not(.active) {
   pointer-events: none !important;
+}
+
+/* Active overlays must block background clicks */
+.auth-modal-overlay.active,
+.app-overlay.active,
+.mobile-nav-overlay.open,
+.record-modal.active {
+  pointer-events: auto !important;
 }
 
 /* All clickable elements — nav, hero, footer, auth, app-sim, etc. */

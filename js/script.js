@@ -8,21 +8,20 @@ function showToast(msg) {
   showToast._tid = setTimeout(() => t.classList.remove('active'), 4000);
 }
 
-/* ── API helpers: use centralized config (config.js) ── */
-function getApiBase() {
-  return (typeof window.getApiBase === 'function') ? window.getApiBase() : ((window.API_BASE_URL && String(window.API_BASE_URL).trim()) || 'https://whisperme0-production.up.railway.app').replace(/\/$/, '');
-}
-async function apiFetch(path, options) {
-  if (typeof window.apiFetch === 'function') return window.apiFetch(path, options);
-  try {
-    var url = getApiBase() + (path.startsWith('/') ? path : '/' + path);
-    var res = await fetch(url, options);
-    var data = await res.json().catch(function() { return {}; });
-    return { ok: res.ok, status: res.status, data: data };
-  } catch (err) {
+/* ── API: use window.apiFetch from config.js only (single source, no recursion) ── */
+function apiFetch(path, options) {
+  var fn = window.apiFetch;
+  if (typeof fn === 'function' && fn !== apiFetch) return fn(path, options);
+  var base = (typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE_URL || 'https://whisperme0-production.up.railway.app')).replace(/\/$/, '');
+  var url = base + (path.startsWith('/') ? path : '/' + path);
+  return fetch(url, options || {}).then(function(res) {
+    return res.json().catch(function() { return {}; }).then(function(data) {
+      return { ok: res.ok, status: res.status, data: data };
+    });
+  }).catch(function(err) {
     console.error('API fetch error:', err);
     return { ok: false, status: 0, data: { error: err.message || 'Network error' } };
-  }
+  });
 }
 
 /* ── Email validation helper ── */
@@ -1290,10 +1289,12 @@ function buildNotifWaves() {
 /* Record Modal */
 function openRecord() {
   document.getElementById('recordModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
   buildRecordWave();
 }
 function closeRecord() {
   document.getElementById('recordModal').classList.remove('active', 'recording');
+  document.body.style.overflow = '';
   stopRecording();
 }
 function buildRecordWave() {
@@ -1807,6 +1808,7 @@ if (!window._wmEscapeBound) {
         if (typeof closeAuthModal === 'function') closeAuthModal();
         if (typeof closeApp === 'function') closeApp();
         if (typeof closeMobileMenu === 'function') closeMobileMenu();
+        if (typeof closeRecord === 'function') closeRecord();
       } catch (err) {
         console.error('[WM] Escape handler error:', err);
       }

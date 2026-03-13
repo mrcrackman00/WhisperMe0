@@ -1173,9 +1173,15 @@ footer button {
 
 /* ── SCROLL PERFORMANCE: content-visibility for smoother scroll ── */
 section,
-.page > section,
-#features, #how-it-works, #stories, #join-beta, #community,
-.nf-section, .hiw-section, .testi-section {
+.page>section,
+#features,
+#how-it-works,
+#stories,
+#join-beta,
+#community,
+.nf-section,
+.hiw-section,
+.testi-section {
   content-visibility: auto;
   contain-intrinsic-size: auto 400px;
 }
@@ -1308,7 +1314,8 @@ section,
 
 .app-overlay.active {
   opacity: 1;
-  pointer-events: all;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* ══════════════════════════════════════════════
@@ -1320,6 +1327,7 @@ section,
     grid-template-columns: 1fr 1fr;
     gap: 40px;
   }
+
   .footer-brand {
     grid-column: 1 / -1;
   }
@@ -1329,36 +1337,45 @@ section,
   footer {
     padding: 56px 5% 32px;
   }
+
   .footer-top {
     grid-template-columns: 1fr;
     gap: 32px;
     margin-bottom: 40px;
   }
+
   .footer-brand {
     grid-column: auto;
   }
+
   .f-logo {
     font-size: 1.3rem;
   }
+
   .f-tagline {
     font-size: 0.82rem;
   }
+
   .footer-col h4 {
     font-size: 0.7rem;
     margin-bottom: 10px;
   }
+
   .footer-col a {
     font-size: 0.85rem;
   }
+
   .footer-bottom {
     flex-direction: column;
     gap: 8px;
     text-align: center;
     padding-top: 20px;
   }
+
   .f-social {
     gap: 8px;
   }
+
   .f-social-btn {
     width: 34px;
     height: 34px;
