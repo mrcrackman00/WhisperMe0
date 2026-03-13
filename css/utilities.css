@@ -44,7 +44,19 @@ a {
   pointer-events: auto !important;
 }
 
-/* All clickable elements — nav, hero, footer, auth, app-sim, etc. */
+/* Auth modal: ensure form and all inputs are always interactive when modal is active */
+.auth-modal-overlay.active .auth-modal,
+.auth-modal-overlay.active .auth-modal .am-form-side,
+.auth-modal-overlay.active .auth-modal .am-form-side input,
+.auth-modal-overlay.active .auth-modal .am-form-side button,
+.auth-modal-overlay.active .auth-modal .am-form-side a,
+.auth-modal-overlay.active .auth-modal .am-form-side label,
+.auth-modal-overlay.active .auth-modal .am-close {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+
+/* All clickable elements — nav, hero, footer, auth, app-sim, join-beta, etc. */
 a, button, input, select, textarea, [role="button"], label[for],
 .nav-brand, .nav-link, .nav-signin, .nav-signup, .nav-user, .nav-mobile-toggle,
 .mobile-nav-panel a, .mobile-nav-panel button,
@@ -53,6 +65,8 @@ a, button, input, select, textarea, [role="button"], label[for],
 .am-tab, .am-submit, .am-forgot, .am-social-btn, .am-note a, .am-mood-chip, .am-step-back, .am-pw-toggle,
 .h11-submit-btn, .h11-cta,
 .aps-step, .aps-s1-cta, .aps-s2-btn, .aps-s3-post-btn, .aps-s5-rec-btn, .aps-s6-join-btn,
+.form-submit, .form-mood-chip, .form-input, .form-field input,
+.beta-right input, .beta-right button,
 [onclick] {
   pointer-events: auto !important;
   touch-action: manipulation;
