@@ -25,27 +25,34 @@ function isValidEmail(email) {
   return trimmed.length <= EMAIL_MAX && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }
 
-/** POST /api/waitlist — add name, email, mood; prevent duplicates. */
+/** POST /api/waitlist — add name, email, mood; prevent duplicates. Always returns JSON. */
 router.post('/', waitlistLimiter, [
   body('email').isEmail().withMessage('Invalid email address').isLength({ max: EMAIL_MAX }).normalizeEmail(),
   body('name').optional({ checkFalsy: true }).isString().trim().isLength({ max: NAME_MAX }).escape(),
   body('mood').optional({ checkFalsy: true }).isString().trim().isLength({ max: MOOD_MAX }).escape(),
   body('a_password').optional() // Honeypot field for bot protection
 ], async (req, res) => {
+  const sendJson = (status, body) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(status).json(body);
+  };
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array()[0].msg });
+      return sendJson(400, { error: errors.array()[0].msg });
     }
 
-    // Bot protection: Reject if honeypot is filled, but fake success!
     if (req.body.a_password) {
-      return res.status(201).json({ message: "You're on the list! We'll notify you when WhisperMe launches." });
+      return sendJson(201, { success: true, message: "You're on the list! We'll notify you when WhisperMe launches." });
     }
 
-    const name = req.body.name || '';
-    const email = req.body.email;
-    const mood = req.body.mood || '';
+    const name = (req.body.name || '').trim().slice(0, NAME_MAX) || null;
+    const email = (req.body.email || '').trim().toLowerCase();
+    const mood = (req.body.mood || '').trim().slice(0, MOOD_MAX) || null;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return sendJson(400, { error: 'Invalid email address' });
+    }
 
     const { data: existing } = await supabaseAdmin
       .from('waitlist')
@@ -54,33 +61,38 @@ router.post('/', waitlistLimiter, [
       .maybeSingle();
 
     if (existing) {
-      return res.status(409).json({
-        error: 'This email is already on the waitlist.',
-        code: 'DUPLICATE_EMAIL',
-      });
+      return sendJson(409, { error: 'This email is already on the waitlist.', code: 'DUPLICATE_EMAIL' });
     }
 
     const { error: insertErr } = await supabaseAdmin
       .from('waitlist')
-      .insert({ name: name || null, email, mood: mood || null });
+      .insert({ name, email, mood });
 
     if (insertErr) {
       if (insertErr.code === '23505') {
-        return res.status(409).json({ error: 'This email is already on the waitlist.', code: 'DUPLICATE_EMAIL' });
+        return sendJson(409, { error: 'This email is already on the waitlist.', code: 'DUPLICATE_EMAIL' });
       }
-      console.error('Waitlist insert error:', insertErr);
-      return res.status(500).json({ error: 'Could not join waitlist. Try again later.' });
+      const msg = (insertErr.message || '').toLowerCase();
+      const isHtml = msg.includes('<') || msg.includes('html');
+      console.error('[waitlist] Insert error:', isHtml ? 'Supabase returned non-JSON' : insertErr.message, 'code:', insertErr.code, 'details:', insertErr.details);
+      return sendJson(500, { error: 'Could not join waitlist. Try again later.' });
     }
 
-    await trackEvent(EVENTS.WAITLIST_JOIN, null, { email, mood: mood || null });
-    await sendWaitlistConfirmation(email, name || 'there');
+    try {
+      await trackEvent(EVENTS.WAITLIST_JOIN, null, { email, mood });
+    } catch (trackErr) {
+      console.error('[waitlist] trackEvent error:', trackErr);
+    }
+    try {
+      await sendWaitlistConfirmation(email, name || 'there');
+    } catch (mailErr) {
+      console.error('[waitlist] sendWaitlistConfirmation error:', mailErr);
+    }
 
-    res.status(201).json({
-      message: "You're on the list! We'll notify you when WhisperMe launches.",
-    });
+    return sendJson(201, { success: true, message: "You're on the list! We'll notify you when WhisperMe launches." });
   } catch (err) {
-    console.error('Waitlist error:', err);
-    res.status(500).json({ error: 'Something went wrong. Try again later.' });
+    console.error('[waitlist] Unexpected error:', err.message || err, err.stack);
+    return sendJson(500, { error: 'Could not join waitlist. Try again later.' });
   }
 });
 

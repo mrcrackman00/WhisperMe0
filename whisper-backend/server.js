@@ -9,6 +9,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+const { supabaseUrl } = require('./config/supabase');
 const authRoutes = require('./routes/auth');
 const waitlistRoutes = require('./routes/waitlist');
 const profileRoutes = require('./routes/profile');
@@ -17,6 +18,10 @@ const { requestLogger } = require('./utils/logger');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
+
+// ——— Trust proxy (required for rate limit behind Railway/Vercel/nginx) ———
+app.set('trust proxy', 1);
+
 // ——— CORS ———
 const CORS_ORIGINS = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(s => s.trim()).filter(Boolean)
@@ -53,6 +58,16 @@ app.use(cors({
 // ——— Body parsing: strict limit to prevent DOS ———
 app.use(express.json({ limit: '10kb' }));
 
+// ——— JSON parse error handler (prevents HTML error pages) ———
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('[server] Invalid JSON body:', err.message);
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(400).json({ error: 'Invalid JSON in request body.' });
+  }
+  next(err);
+});
+
 // ——— Request logging ———
 app.use(requestLogger);
 
@@ -75,9 +90,10 @@ app.get('/', (req, res) => {
 
 // ——— Public config (Supabase anon key + API URL for frontend) ———
 app.get('/api/public-config', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
   res.json({
-    supabaseUrl: process.env.SUPABASE_URL || '',
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+    supabaseUrl,
+    supabaseAnonKey: (process.env.SUPABASE_ANON_KEY || '').trim() || '',
     apiUrl: process.env.API_URL || `http://localhost:${PORT}`,
   });
 });
@@ -93,19 +109,22 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// ——— Central error handler ———
+// ——— Central error handler — always JSON ———
 app.use((err, req, res, next) => {
-  const status = err.statusCode || 500;
+  const status = err.statusCode || err.status || 500;
   const message = err.message || 'Internal server error';
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(err.stack);
-  }
+  console.error('[server] Error:', message, err.stack || '');
+  res.setHeader('Content-Type', 'application/json');
   res.status(status).json({ error: message, code: err.code });
 });
 
 app.listen(PORT, () => {
-  console.log(`WhisperMe API running at http://localhost:${PORT}`);
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn('Warning: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set. DB and auth may fail.');
+  console.log(`[WhisperMe] API running at http://localhost:${PORT}`);
+  console.log('[WhisperMe] trust proxy: enabled');
+  const sbUrl = (process.env.SUPABASE_URL || '').trim();
+  if (sbUrl && sbUrl.indexOf('dashboard') === -1) {
+    console.log('[WhisperMe] Supabase URL:', sbUrl.replace(/\/$/, ''));
+  } else if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn('[WhisperMe] Warning: SUPABASE_SERVICE_ROLE_KEY not set. Auth and DB may fail.');
   }
 });
