@@ -61,7 +61,7 @@ a, button, input, select, textarea, [role="button"], label[for],
 .nav-brand, .nav-link, .nav-signin, .nav-signup, .nav-user, .nav-mobile-toggle,
 .mobile-nav-panel a, .mobile-nav-panel button,
 .hero-badge, .hero-cta-primary, .hero-cta-secondary, .hero-signin-link a,
-.footer-col a, .f-badge, .f-social-btn,
+footer a, footer button, .footer-col a, .footer-col h4, .f-badge, .f-social-btn,
 .am-tab, .am-submit, .am-forgot, .am-social-btn, .am-note a, .am-mood-chip, .am-step-back, .am-pw-toggle,
 .h11-submit-btn, .h11-cta,
 .aps-step, .aps-s1-cta, .aps-s2-btn, .aps-s3-post-btn, .aps-s5-rec-btn, .aps-s6-join-btn,
@@ -74,6 +74,15 @@ a, button, input, select, textarea, [role="button"], label[for],
 a, button, [role="button"], label[for], input[type="submit"], input[type="button"], input[type="reset"],
 .nav-brand, .nav-link, .nav-signin, .nav-signup, .f-badge, .am-tab, .am-submit, [onclick] {
   cursor: pointer;
+}
+
+/* Footer — ensure always clickable, never blocked by overlays */
+footer,
+footer * {
+  pointer-events: auto !important;
+}
+footer a {
+  cursor: pointer !important;
 }
 
 /* Informational pages (About, Blog, Careers, Press, Legal) */
