@@ -8,15 +8,12 @@ function showToast(msg) {
   showToast._tid = setTimeout(() => t.classList.remove('active'), 4000);
 }
 
-/* ── API base URL (production: Railway) ── */
+/* ── API helpers: use centralized config (config.js) ── */
 function getApiBase() {
-  var base = (window.API_BASE_URL && String(window.API_BASE_URL).trim()) || '';
-  if (base) return base.replace(/\/$/, '');
-  return (/localhost|127\.0\.0\.1/.test(location.hostname)) ? 'http://localhost:3000' : 'https://whisperme0-production.up.railway.app';
+  return (typeof window.getApiBase === 'function') ? window.getApiBase() : ((window.API_BASE_URL && String(window.API_BASE_URL).trim()) || 'https://whisperme0-production.up.railway.app').replace(/\/$/, '');
 }
-
-/* ── Safe API fetch with error handling ── */
 async function apiFetch(path, options) {
+  if (typeof window.apiFetch === 'function') return window.apiFetch(path, options);
   try {
     var url = getApiBase() + (path.startsWith('/') ? path : '/' + path);
     var res = await fetch(url, options);
@@ -530,18 +527,27 @@ function buildApvChat() {
   });
 }
 
-// Initialize feed on first load of this page
-document.addEventListener('DOMContentLoaded', () => {
-  const navLogoImg = document.querySelector('.nav-logo-mark img');
-  if (navLogoImg && navLogoImg.src.startsWith('data:image/')) {
-    navLogoImg.src = 'assets/logo-mark.svg';
+// Initialize feed on first load of this page (DOM ready safety)
+function onDOMReady() {
+  try {
+    const navLogoImg = document.querySelector('.nav-logo-mark img');
+    if (navLogoImg && navLogoImg.src && navLogoImg.src.startsWith('data:image/')) {
+      navLogoImg.src = 'assets/logo-mark.svg';
+    }
+    var apvFeed = document.getElementById('apvFeedScroll');
+    if (document.getElementById('page-app-preview') && apvFeed && !apvFeed.dataset.built) {
+      buildApvFeed();
+    }
+    if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
+  } catch (e) {
+    console.error('[WM] DOM ready init error:', e);
   }
-
-  if (document.getElementById('page-app-preview') && !document.getElementById('apvFeedScroll').dataset.built) {
-    buildApvFeed();
-  }
-  if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
-});
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', onDOMReady);
+} else {
+  onDOMReady();
+}
 
 const perfLite = (() => {
   const lowCores = (navigator.hardwareConcurrency || 8) <= 4;
@@ -602,19 +608,25 @@ if (cursor && ring && enableCustomCursor) {
 const nav = document.getElementById('nav');
 let navTicking = false;
 let scrollEndTimer = null;
-window.addEventListener('scroll', () => {
-  if (navTicking || !nav) return;
-  navTicking = true;
-  requestAnimationFrame(() => {
-    nav.classList.toggle('scrolled', window.scrollY > 30);
+window.addEventListener('scroll', function() {
+  try {
+    if (navTicking || !nav) return;
+    navTicking = true;
+    requestAnimationFrame(function() {
+      try {
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 30);
+      } finally {
+        navTicking = false;
+      }
+    });
+    document.documentElement.classList.add('scroll-active');
+    clearTimeout(scrollEndTimer);
+    scrollEndTimer = setTimeout(function() {
+      document.documentElement.classList.remove('scroll-active');
+    }, 150);
+  } catch (e) {
     navTicking = false;
-  });
-  /* During scroll: add scroll-active to reduce heavy animations for smoother feel */
-  document.documentElement.classList.add('scroll-active');
-  clearTimeout(scrollEndTimer);
-  scrollEndTimer = setTimeout(() => {
-    document.documentElement.classList.remove('scroll-active');
-  }, 150);
+  }
 }, { passive: true });
 
 /* ── BENTO WAVEFORM ── */
@@ -698,9 +710,12 @@ for (let i = 0; i < 3; i++) {
   });
 })();
 
-/* ── HERO SIGNUP ── */
+/* ── HERO SIGNUP (guard against duplicate listeners) ── */
 const heroInput = document.getElementById('heroEmailInput');
-if (heroInput) heroInput.addEventListener('keydown', e => { if (e.key === 'Enter') heroSignup(); });
+if (heroInput && !heroInput.dataset.wmBound) {
+  heroInput.dataset.wmBound = '1';
+  heroInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') heroSignup(); });
+}
 
 // ── HERO RIGHT: auto-rotating modes (Record → Thread → Explore → Live)
 (function heroRightAutoModes() {
@@ -846,6 +861,7 @@ function toggleMobileMenu() {
 }
 
 function handleMobileNavOverlay(e) {
+  if (!e) return;
   if (e.target && e.target.id === 'mobileNavOverlay') closeMobileMenu();
 }
 
@@ -1347,9 +1363,6 @@ function selectMood(el) {
   el.classList.add('selected');
 }
 
-/* ESC key close */
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeApp(); });
-
 /* Build new features page waveforms */
 function buildNfWaveforms() {
   // ── FV Hero wave bars ──
@@ -1485,13 +1498,15 @@ function openAuthModal(tab) {
     return;
   }
   closeMobileMenu();
-  document.getElementById('authModalOverlay').classList.add('active');
+  var overlay = document.getElementById('authModalOverlay');
+  if (overlay) overlay.classList.add('active');
   switchAmTab(tab || 'signin');
   if (!window.matchMedia('(max-width: 440px)').matches) document.body.style.overflow = 'hidden';
   if (tab === 'signup') loadHCaptchaScript();
 }
 function closeAuthModal() {
-  document.getElementById('authModalOverlay').classList.remove('active');
+  var el = document.getElementById('authModalOverlay');
+  if (el) el.classList.remove('active');
   document.body.style.overflow = '';
 }
 function handleAuthOverlayClick(e) {
@@ -1603,7 +1618,10 @@ function handleAmSignin() {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       showToast('❌ ' + (err.message || 'Sign in failed. Please try again.'));
     });
-  }).catch(function() { showToast('⚠️ Cannot connect to auth service.'); });
+  }).catch(function() {
+    showToast('⚠️ Cannot connect to auth service.');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
+  });
 }
 function handleAmSignup() {
   var nameEl = document.getElementById('amSignupName');
@@ -1673,7 +1691,10 @@ function handleAmSignup() {
       if (msg.toLowerCase().includes('429') || msg.toLowerCase().includes('rate')) msg = 'Too many attempts. Please wait a few minutes.';
       showToast('❌ ' + msg);
     });
-  }).catch(function() { showToast('⚠️ Cannot connect to auth service.'); });
+  }).catch(function() {
+    showToast('⚠️ Cannot connect to auth service.');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
+  });
 }
 /* ── JOIN BETA / EARLY ACCESS SUBMISSION ── */
 function h11HandleSignup(e) {
@@ -1749,11 +1770,47 @@ function heroSignup() {
 
 function handleSignup(e) { h11HandleSignup(e); }
 function handleAmEarlyAccess() { showPage('join-beta'); }
+
+/* ── Safety wrappers: prevent UI freeze on errors ── */
+(function wrapCriticalFunctions() {
+  function safeWrap(fn, name) {
+    if (!fn) return fn;
+    return function() {
+      try {
+        if (window._wmLog) window._wmLog(name, arguments.length ? Array.prototype.slice.call(arguments) : '');
+        return fn.apply(this, arguments);
+      } catch (e) {
+        console.error('[WM]', name, 'error:', e);
+        if (typeof showToast === 'function') showToast('Something went wrong. Please try again.');
+      }
+    };
+  }
+  openAuthModal = safeWrap(openAuthModal, 'openAuthModal');
+  closeAuthModal = safeWrap(closeAuthModal, 'closeAuthModal');
+  showPage = safeWrap(showPage, 'showPage');
+  toggleMobileMenu = safeWrap(toggleMobileMenu, 'toggleMobileMenu');
+  closeApp = safeWrap(closeApp, 'closeApp');
+  handleAmSignin = safeWrap(handleAmSignin, 'handleAmSignin');
+  handleAmSignup = safeWrap(handleAmSignup, 'handleAmSignup');
+  h11HandleSignup = safeWrap(h11HandleSignup, 'h11HandleSignup');
+  heroSignup = safeWrap(heroSignup, 'heroSignup');
+  openMobileMenu = safeWrap(openMobileMenu, 'openMobileMenu');
+  handleMobileNavOverlay = safeWrap(handleMobileNavOverlay, 'handleMobileNavOverlay');
+})();
+
 /* Also close auth modal on ESC (guard against duplicate listeners) */
 if (!window._wmEscapeBound) {
   window._wmEscapeBound = true;
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeAuthModal(); closeApp(); closeMobileMenu(); }
+    if (e.key === 'Escape') {
+      try {
+        if (typeof closeAuthModal === 'function') closeAuthModal();
+        if (typeof closeApp === 'function') closeApp();
+        if (typeof closeMobileMenu === 'function') closeMobileMenu();
+      } catch (err) {
+        console.error('[WM] Escape handler error:', err);
+      }
+    }
   });
 }
 
