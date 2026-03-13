@@ -3527,6 +3527,7 @@
     var emailInput = document.getElementById('forgotPasswordEmail');
     var errEl = document.getElementById('forgotPasswordError');
     if (overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
     if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
     if (emailInput) {
       var signinEmail = document.getElementById('amSigninEmail') || document.getElementById('authSigninEmail');
@@ -3537,6 +3538,7 @@
   window.closeForgotPasswordModal = function() {
     var overlay = document.getElementById('forgotPasswordOverlay');
     if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
   };
   window.handleForgotPasswordSubmit = async function() {
     var emailInput = document.getElementById('forgotPasswordEmail');
@@ -3604,6 +3606,7 @@
     var errEl = document.getElementById('setNewPasswordError');
     var input = document.getElementById('newPasswordInput');
     if (overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
     if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
     if (input) { input.value = ''; input.focus(); }
     history.replaceState(null, document.title, window.location.pathname + window.location.search);
@@ -3611,6 +3614,7 @@
   window.closeSetNewPasswordModal = function() {
     var overlay = document.getElementById('setNewPasswordOverlay');
     if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
   };
   window.handleSetNewPassword = async function() {
     var input = document.getElementById('newPasswordInput');
@@ -3648,13 +3652,16 @@
   }
 
   /** ── Success popup after registration/login ── */
+  window.closeRegSuccessOverlay = function() {
+    var el = document.getElementById('regSuccessOverlay');
+    if (el) { el.remove(); document.body.style.overflow = ''; }
+  };
   window.showRegistrationSuccess = function(email, isLogin) {
     // Close auth modal if open
     if (typeof closeAuthModal === 'function') closeAuthModal();
 
     // Remove existing popup if any
-    var existing = document.getElementById('regSuccessOverlay');
-    if (existing) existing.remove();
+    closeRegSuccessOverlay();
 
     var title = isLogin ? 'Welcome Back!' : 'You\'re Registered!';
     var msg = isLogin
@@ -3672,9 +3679,10 @@
       + '<p style="font-family:inherit;font-size:1rem;color:rgba(245,239,228,0.7);margin:0 0 6px;line-height:1.5;">' + msg + '</p>'
       + (sub ? '<p style="font-family:inherit;font-size:0.85rem;color:rgba(245,239,228,0.5);margin:0 0 28px;">' + sub + '</p>' : '<div style="height:28px;"></div>')
       + '<p style="font-family:inherit;font-size:0.9rem;color:rgba(245,239,228,0.6);margin:0 0 24px;line-height:1.5;">🎙️ We\'ll notify you when WhisperMe is ready.<br>Your voice matters.</p>'
-      + '<button onclick="this.closest(\'#regSuccessOverlay\').remove();" style="background:linear-gradient(135deg,#D4607A,#C9853A);border:none;color:white;padding:14px 40px;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.2s,opacity 0.2s;" onmouseover="this.style.transform=\'scale(1.04)\'" onmouseout="this.style.transform=\'scale(1)\'">Got it ✨</button>'
+      + '<button onclick="closeRegSuccessOverlay();" style="background:linear-gradient(135deg,#D4607A,#C9853A);border:none;color:white;padding:14px 40px;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.2s,opacity 0.2s;" onmouseover="this.style.transform=\'scale(1.04)\'" onmouseout="this.style.transform=\'scale(1)\'">Got it ✨</button>'
       + '</div>';
 
+    document.body.style.overflow = 'hidden';
     // Add keyframes
     if (!document.getElementById('regSuccessStyles')) {
       var style = document.createElement('style');
@@ -3686,16 +3694,15 @@
     document.body.appendChild(overlay);
 
     // Click outside to close
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeRegSuccessOverlay(); });
 
     // Auto-dismiss after 10 seconds
-    setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 10000);
+    setTimeout(function() { if (overlay.parentNode) closeRegSuccessOverlay(); }, 10000);
   }
 
   window.showVerificationPending = function(email) {
     if (typeof closeAuthModal === 'function') closeAuthModal();
-    var existing = document.getElementById('regSuccessOverlay');
-    if (existing) existing.remove();
+    closeRegSuccessOverlay();
 
     var overlay = document.createElement('div');
     overlay.id = 'regSuccessOverlay';
@@ -3709,9 +3716,10 @@
       + '<p style="font-family:inherit;font-size:1rem;color:rgba(245,239,228,0.7);margin:0 0 6px;line-height:1.5;">Please check your inbox to activate your account.</p>'
       + (sub ? '<p style="font-family:inherit;font-size:0.85rem;color:rgba(245,239,228,0.5);margin:0 0 28px;">' + sub + '</p>' : '<div style="height:28px;"></div>')
       + '<p style="font-family:inherit;font-size:0.9rem;color:rgba(245,239,228,0.6);margin:0 0 24px;line-height:1.5;">Click the link in the email to complete registration.<br>Your voice matters.</p>'
-      + '<button onclick="this.closest(\'#regSuccessOverlay\').remove();" style="background:linear-gradient(135deg,#7C5CBF,#4A6F8C);border:none;color:white;padding:14px 40px;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.2s,opacity 0.2s;" onmouseover="this.style.transform=\'scale(1.04)\'" onmouseout="this.style.transform=\'scale(1)\'">Got it ✨</button>'
+      + '<button onclick="closeRegSuccessOverlay();" style="background:linear-gradient(135deg,#7C5CBF,#4A6F8C);border:none;color:white;padding:14px 40px;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.2s,opacity 0.2s;" onmouseover="this.style.transform=\'scale(1.04)\'" onmouseout="this.style.transform=\'scale(1)\'">Got it ✨</button>'
       + '</div>';
 
+    document.body.style.overflow = 'hidden';
     if (!document.getElementById('regSuccessStyles2')) {
       var style = document.createElement('style');
       style.id = 'regSuccessStyles2';
@@ -3720,7 +3728,7 @@
     }
 
     document.body.appendChild(overlay);
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeRegSuccessOverlay(); });
   };
 
   window.handleAuthSignup = async function() {

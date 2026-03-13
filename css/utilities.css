@@ -28,20 +28,26 @@ a {
    SITE-WIDE CLICK FIX — ensure all interactive elements work
    ═══════════════════════════════════════════════════ */
 
-/* Inactive overlays must NEVER block clicks */
+/* Inactive overlays must NEVER block clicks — critical for production */
 .auth-modal-overlay:not(.active),
 .app-overlay:not(.active),
 .mobile-nav-overlay:not(.open),
-.record-modal:not(.active) {
+.record-modal:not(.active),
+#forgotPasswordOverlay:not(.active),
+#setNewPasswordOverlay:not(.active) {
   pointer-events: none !important;
+  visibility: hidden !important;
 }
 
-/* Active overlays must block background clicks */
+/* Active overlays must block background clicks and be visible */
 .auth-modal-overlay.active,
 .app-overlay.active,
 .mobile-nav-overlay.open,
-.record-modal.active {
+.record-modal.active,
+#forgotPasswordOverlay.active,
+#setNewPasswordOverlay.active {
   pointer-events: auto !important;
+  visibility: visible !important;
 }
 
 /* Auth modal: ensure form and all inputs are always interactive when modal is active */

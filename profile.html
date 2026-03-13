@@ -157,8 +157,8 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 .p-footer-note{font-size:0.8rem;color:var(--mist)}
 
 /* ── Edit Profile Modal ── */
-.p-modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(18,16,14,0.55);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.3s,visibility 0.3s}
-.p-modal-overlay.open{opacity:1;visibility:visible}
+.p-modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(18,16,14,0.55);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 0.3s,visibility 0.3s}
+.p-modal-overlay.open{opacity:1;visibility:visible;pointer-events:auto}
 .p-modal{background:#fff;border-radius:22px;padding:36px;width:min(520px,94vw);box-shadow:0 24px 80px rgba(0,0,0,0.2);transform:translateY(20px) scale(0.97);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
 .p-modal-overlay.open .p-modal{transform:none}
 .p-modal-title{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;font-weight:700;color:var(--charcoal);margin-bottom:6px}
@@ -701,6 +701,11 @@ function pToast(msg) {
 window.addEventListener('scroll', () => {
   document.querySelector('.p-nav').style.background = window.scrollY > 30
     ? 'rgba(252,250,246,0.96)' : 'rgba(252,250,246,0.85)';
+});
+
+// ESC closes edit modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('editModal')?.classList.contains('open')) closeEditModal();
 });
 
 // Init

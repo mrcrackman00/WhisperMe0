@@ -1799,12 +1799,17 @@ function handleAmEarlyAccess() { showPage('join-beta'); }
   handleMobileNavOverlay = safeWrap(handleMobileNavOverlay, 'handleMobileNavOverlay');
 })();
 
-/* Also close auth modal on ESC (guard against duplicate listeners) */
+/* Also close modals on ESC (guard against duplicate listeners) */
 if (!window._wmEscapeBound) {
   window._wmEscapeBound = true;
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
+      if (e.key === 'Escape') {
       try {
+        if (document.getElementById('regSuccessOverlay')) { if (typeof closeRegSuccessOverlay === 'function') closeRegSuccessOverlay(); return; }
+        var fp = document.getElementById('forgotPasswordOverlay');
+        var sp = document.getElementById('setNewPasswordOverlay');
+        if (fp && fp.classList.contains('active')) { if (typeof closeForgotPasswordModal === 'function') closeForgotPasswordModal(); return; }
+        if (sp && sp.classList.contains('active')) { if (typeof closeSetNewPasswordModal === 'function') closeSetNewPasswordModal(); return; }
         if (typeof closeAuthModal === 'function') closeAuthModal();
         if (typeof closeApp === 'function') closeApp();
         if (typeof closeMobileMenu === 'function') closeMobileMenu();
