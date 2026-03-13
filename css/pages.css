@@ -1,4 +1,4 @@
-﻿/* ── NEXT-LEVEL FEATURES PAGE ── */
+/* ── NEXT-LEVEL FEATURES PAGE ── */
 .nf-section {
   padding: 100px 5% 120px;
   position: relative;
@@ -227,12 +227,39 @@
 }
 
 /* Waveform animation for card 1 */
+.nf-waveform-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  position: relative;
+  z-index: 1;
+}
+.nf-play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), var(--coral));
+  border: none;
+  color: white;
+  font-size: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 2px;
+  flex-shrink: 0;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(212, 96, 122, 0.35);
+}
+.nf-play-btn:hover { transform: scale(1.08); }
+.nf-play-btn.fv-pc-play-active { background: var(--sage); }
 .nf-waveform {
   display: flex;
   align-items: center;
   gap: 3px;
   height: 44px;
-  margin: 16px 0;
+  flex: 1;
   position: relative;
   z-index: 1;
 }
@@ -3787,6 +3814,39 @@
   color: rgba(255, 255, 255, 0.35);
 }
 
+.comm-vc-play-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.comm-play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), var(--coral));
+  border: none;
+  color: white;
+  font-size: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 2px;
+  flex-shrink: 0;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(212, 96, 122, 0.4);
+}
+
+.comm-play-btn:hover { transform: scale(1.08); }
+.comm-play-btn.fv-pc-play-active { background: var(--sage); }
+.comm-vc-dur {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 /* Waveform visual */
 .comm-waveform {
   display: flex;
@@ -4457,16 +4517,18 @@
   width: 28px;
   height: 28px;
   background: var(--rose);
+  border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.55rem;
   color: white;
-  padding-left: 2px;
+  padding: 0 0 0 2px;
   cursor: pointer;
   flex-shrink: 0;
 }
+.fv-vc-play.fv-pc-play-active { background: var(--sage); }
 .fv-vc-dur {
   font-size: 0.7rem;
   font-weight: 600;

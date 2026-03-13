@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════
+   BLOG.CSS — Blog listing & card interactions
+   ═══════════════════════════════════════════ */
+
+/* ── Clickable blog cards ── */
+.sp-post-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease,
+    border-color 0.2s ease;
+  outline: none;
+}
+.sp-post-link:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 3px;
+}
+.sp-post-link:hover,
+.sp-post-link:focus {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(28, 26, 24, 0.12);
+  border-color: rgba(28, 26, 24, 0.12);
+}
+
+/* Override subpages hover for cards that are links */
+.sp-post.sp-post-link {
+  border: 1px solid rgba(28, 26, 24, 0.07);
+}
+.sp-post.sp-post-link:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(28, 26, 24, 0.12);
+}
+
+/* Icon container for animation */
+.sp-post-img-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.sp-post-icon {
+  transition: transform 0.3s ease;
+}
+@keyframes blog-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.sp-post-link:hover .sp-post-icon,
+.sp-post-link:focus .sp-post-icon {
+  animation: blog-icon-float 2s ease-in-out infinite;
+}
+
+/* Read Article link */
+.sp-post-read {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rose);
+  margin-top: 8px;
+  transition: color 0.2s, transform 0.2s;
+}
+.sp-post-link:hover .sp-post-read,
+.sp-post-link:focus .sp-post-read {
+  color: var(--charcoal);
+}
+
+/* Mobile: stack vertically, tap-friendly */
+@media (max-width: 768px) {
+  .sp-blog-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .sp-post-link {
+    min-height: 44px;
+  }
+  .sp-post-link:active {
+    transform: scale(0.98);
+  }
+}
+@media (max-width: 600px) {
+  .sp-blog-grid {
+    gap: 16px;
+  }
+}
+.sp-trending-item {
+  color: inherit;
+  transition: color 0.2s;
+}
+.sp-trending-item:hover .sp-trending-title {
+  color: var(--rose);
+}
+.sp-trending-title {
+  transition: color 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-post-link,
+  .sp-post-icon {
+    transition: none;
+  }
+  .sp-post-link:hover .sp-post-icon {
+    animation: none;
+  }
+}

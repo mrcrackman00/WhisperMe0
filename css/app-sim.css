@@ -1807,6 +1807,7 @@
   flex-shrink: 0;
   box-shadow: 0 4px 16px rgba(212, 96, 122, 0.4);
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .ww-card:hover .ww-play-btn {

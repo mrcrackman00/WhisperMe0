@@ -969,17 +969,18 @@ if (!window._wmSignupBound) {
 /* ─────────────────────────────────────────
    APP OVERLAY SYSTEM
    ───────────────────────────────────────── */
+const FEED_AUDIO_BASE = 'audio/';
 const FEED_DATA = [
-  { id: 1, letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', name: 'Maya Rivera', handle: '@mayavoices', mood: '💙 Open', time: '2 min ago', dur: '0:47', likes: 84, replies: 12, waves: [12, 20, 34, 52, 44, 28, 38, 50, 42, 30, 18, 24, 40, 56, 48, 32, 20, 14, 22, 36, 50, 44, 28, 16, 10], anon: false, saved: false },
-  { id: 2, letter: '?', bg: 'rgba(255,255,255,0.07)', name: 'Anonymous', handle: '', mood: '🌙 Reflective', time: '15 min ago', dur: '1:12', likes: 231, replies: 28, waves: [8, 16, 28, 44, 36, 52, 40, 24, 18, 30, 46, 38, 22, 14, 10, 20, 34, 48, 56, 42, 28, 16, 10, 8, 18], anon: true, saved: true },
-  { id: 3, letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', handle: '@jkspeaks', mood: '🔥 Bold', time: '32 min ago', dur: '0:38', likes: 47, replies: 6, waves: [20, 32, 48, 60, 44, 36, 50, 42, 28, 22, 34, 52, 46, 30, 18, 14, 24, 40, 54, 48, 32, 20, 12, 10, 16], anon: false, saved: false },
-  { id: 4, letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', handle: '@sofiatalk', mood: '🌱 Calm', time: '1 hr ago', dur: '1:05', likes: 168, replies: 19, waves: [6, 12, 22, 38, 50, 42, 30, 20, 14, 26, 40, 54, 46, 28, 16, 10, 18, 32, 48, 56, 44, 30, 18, 12, 8], anon: false, saved: false },
+  { id: 1, letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', name: 'Maya Rivera', handle: '@mayavoices', mood: '💙 Open', time: '2 min ago', dur: '0:47', audio: 'quiet-joy.mp3', likes: 84, replies: 12, waves: [12, 20, 34, 52, 44, 28, 38, 50, 42, 30, 18, 24, 40, 56, 48, 32, 20, 14, 22, 36, 50, 44, 28, 16, 10], anon: false, saved: false },
+  { id: 2, letter: '?', bg: 'rgba(255,255,255,0.07)', name: 'Anonymous', handle: '', mood: '🌙 Reflective', time: '15 min ago', dur: '1:12', audio: 'late-night-thoughts.mp3', likes: 231, replies: 28, waves: [8, 16, 28, 44, 36, 52, 40, 24, 18, 30, 46, 38, 22, 14, 10, 20, 34, 48, 56, 42, 28, 16, 10, 8, 18], anon: true, saved: true },
+  { id: 3, letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', handle: '@jkspeaks', mood: '🔥 Bold', time: '32 min ago', dur: '0:38', audio: 'unfiltered-moment.mp3', likes: 47, replies: 6, waves: [20, 32, 48, 60, 44, 36, 50, 42, 28, 22, 34, 52, 46, 30, 18, 14, 24, 40, 54, 48, 32, 20, 12, 10, 16], anon: false, saved: false },
+  { id: 4, letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', handle: '@sofiatalk', mood: '🌱 Calm', time: '1 hr ago', dur: '1:05', audio: 'city-at-rest.mp3', likes: 168, replies: 19, waves: [6, 12, 22, 38, 50, 42, 30, 20, 14, 26, 40, 54, 46, 28, 16, 10, 18, 32, 48, 56, 44, 30, 18, 12, 8], anon: false, saved: false },
 ];
 
 const THREAD_REPLIES = [
-  { letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', mood: '🔥 Bold', time: '5 min ago', dur: '0:28', waves: [8, 14, 22, 36, 44, 34, 22, 14, 20, 34, 44, 36, 22, 14, 8, 12, 24, 38, 46, 38, 24, 14, 8], reactions: ['🙌 24', '💙 18', '🫶 9'] },
-  { letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', mood: '🌱 Calm', time: '8 min ago', dur: '0:42', waves: [12, 20, 32, 46, 54, 40, 28, 18, 14, 22, 36, 50, 42, 28, 16, 10, 20, 34, 50, 44, 30, 18, 10], reactions: ['💜 31', '✨ 14'] },
-  { letter: 'R', bg: 'linear-gradient(135deg,#F5D5A0,#C9853A)', name: 'Rafael A.', mood: '⭐ Hopeful', time: '12 min ago', dur: '0:55', waves: [10, 18, 28, 42, 54, 46, 30, 20, 16, 28, 44, 52, 38, 24, 14, 10, 18, 32, 46, 54, 40, 26, 14], reactions: ['❤ 22', '🔥 11'] },
+  { letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', mood: '🔥 Bold', time: '5 min ago', dur: '0:28', audio: 'honest-doubt.mp3', waves: [8, 14, 22, 36, 44, 34, 22, 14, 20, 34, 44, 36, 22, 14, 8, 12, 24, 38, 46, 38, 24, 14, 8], reactions: ['🙌 24', '💙 18', '🫶 9'] },
+  { letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', mood: '🌱 Calm', time: '8 min ago', dur: '0:42', audio: 'quiet-joy.mp3', waves: [12, 20, 32, 46, 54, 40, 28, 18, 14, 22, 36, 50, 42, 28, 16, 10, 20, 34, 50, 44, 30, 18, 10], reactions: ['💜 31', '✨ 14'] },
+  { letter: 'R', bg: 'linear-gradient(135deg,#F5D5A0,#C9853A)', name: 'Rafael A.', mood: '⭐ Hopeful', time: '12 min ago', dur: '0:55', audio: 'vulnerable-truth.mp3', waves: [10, 18, 28, 42, 54, 46, 30, 20, 16, 28, 44, 52, 38, 24, 14, 10, 18, 32, 46, 54, 40, 26, 14], reactions: ['❤ 22', '🔥 11'] },
 ];
 
 let currentScreen = 'feed';
@@ -988,6 +989,9 @@ let recordInterval = null;
 let recordSeconds = 0;
 let activePlayId = null;
 let playIntervals = {};
+let feedAudio = null;
+let threadAudio = null;
+let threadActiveIdx = -1;
 
 function openApp(screen) {
   document.getElementById('appOverlay').classList.add('active');
@@ -996,6 +1000,17 @@ function openApp(screen) {
   updateAppTime();
 }
 function closeApp() {
+  if (feedAudio) { feedAudio.pause(); feedAudio.currentTime = 0; feedAudio = null; }
+  if (threadAudio) { threadAudio.pause(); threadAudio.currentTime = 0; threadAudio = null; }
+  if (activePlayId) stopPlay(activePlayId);
+  if (threadActiveIdx >= 0) {
+    const r = THREAD_REPLIES[threadActiveIdx];
+    const btn = document.getElementById('tr-play-' + threadActiveIdx);
+    const durEl = document.getElementById('tr-dur-' + threadActiveIdx);
+    if (btn) btn.textContent = '▶';
+    if (durEl && r) durEl.textContent = r.dur;
+    threadActiveIdx = -1;
+  }
   document.getElementById('appOverlay').classList.remove('active');
   document.body.style.overflow = '';
 }
@@ -1146,39 +1161,83 @@ function togglePlay(id, e) {
   }
 }
 
+function formatFeedTime(sec) {
+  if (!isFinite(sec) || sec < 0) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
 function startPlay(id) {
+  const post = FEED_DATA.find(p => p.id === id);
+  if (!post || !post.audio) return;
+
+  if (feedAudio) {
+    feedAudio.pause();
+    feedAudio.currentTime = 0;
+    feedAudio = null;
+  }
+  if (threadAudio) {
+    threadAudio.pause();
+    threadAudio.currentTime = 0;
+    threadAudio = null;
+    const prevBtn = document.getElementById('tr-play-' + threadActiveIdx);
+    const prevDur = document.getElementById('tr-dur-' + threadActiveIdx);
+    if (prevBtn && THREAD_REPLIES[threadActiveIdx]) prevBtn.textContent = '▶';
+    if (prevDur && THREAD_REPLIES[threadActiveIdx]) prevDur.textContent = THREAD_REPLIES[threadActiveIdx].dur;
+    threadActiveIdx = -1;
+  }
+  if (activePlayId && activePlayId !== id) stopPlay(activePlayId);
+
   activePlayId = id;
   const playBtn = document.getElementById(`play-${id}`);
   const fill = document.getElementById(`fill-${id}`);
   const prog = document.getElementById(`prog-${id}`);
   const waveContainer = document.getElementById(`wave-${id}`);
+  const durEl = document.querySelector(`#wave-${id}`)?.closest('.voice-card')?.querySelector('.vc-duration');
   const ring = waveContainer?.parentElement?.querySelector('.vc-avatar-ring');
 
   if (playBtn) playBtn.textContent = '⏸';
   if (ring) ring.classList.add('playing');
 
-  let pct = 0;
   const bars = waveContainer ? Array.from(waveContainer.querySelectorAll('.vc-wave-bar')) : [];
+  feedAudio = new Audio(new URL(FEED_AUDIO_BASE + post.audio, window.location.href).href);
 
-  playIntervals[id] = setInterval(() => {
-    pct += 0.5;
+  function updateUI() {
+    if (!feedAudio) return;
+    const cur = feedAudio.currentTime;
+    const tot = feedAudio.duration;
+    const pct = isFinite(tot) && tot > 0 ? (cur / tot) * 100 : 0;
     if (fill) fill.style.width = pct + '%';
     if (prog) prog.style.width = pct + '%';
-    // Animate wave bars
+    if (durEl) {
+      durEl.textContent = isFinite(tot) && tot > 0 ? formatFeedTime(cur) + ' / ' + formatFeedTime(tot) : formatFeedTime(cur);
+    }
     const playedIdx = Math.floor((pct / 100) * bars.length);
     bars.forEach((b, i) => {
       b.classList.remove('played', 'active');
       if (i < playedIdx - 1) b.classList.add('played');
       else if (i === playedIdx) b.classList.add('active');
     });
-    if (pct >= 100) stopPlay(id);
-  }, 80);
+  }
+
+  feedAudio.addEventListener('timeupdate', updateUI);
+  feedAudio.addEventListener('loadedmetadata', updateUI);
+  feedAudio.addEventListener('ended', () => stopPlay(id));
+  feedAudio.addEventListener('error', () => stopPlay(id));
+  feedAudio.play().catch(() => stopPlay(id));
+  updateUI();
 }
 
 function stopPlay(id) {
   if (playIntervals[id]) clearInterval(playIntervals[id]);
   delete playIntervals[id];
-  activePlayId = null;
+  if (activePlayId === id && feedAudio) {
+    feedAudio.pause();
+    feedAudio.currentTime = 0;
+    feedAudio = null;
+  }
+  if (activePlayId === id) activePlayId = null;
   const playBtn = document.getElementById(`play-${id}`);
   if (playBtn) playBtn.textContent = '▶';
   const waveContainer = document.getElementById(`wave-${id}`);
@@ -1191,6 +1250,9 @@ function stopPlay(id) {
   const prog = document.getElementById(`prog-${id}`);
   if (fill) fill.style.width = '0%';
   if (prog) prog.style.width = '0%';
+  const post = FEED_DATA.find(p => p.id === id);
+  const durEl = document.querySelector(`#wave-${id}`)?.closest('.voice-card')?.querySelector('.vc-duration');
+  if (durEl && post) durEl.textContent = post.dur;
 }
 
 let threadPostId = 1;
@@ -1228,8 +1290,8 @@ function buildThread() {
         </div>
         <div class="vc-waveform" style="height:32px;" id="tr-wave-${i}"></div>
         <div class="vc-controls" style="margin:8px 0 6px;">
-          <button class="vc-play-btn" style="width:28px;height:28px;font-size:0.6rem;">▶</button>
-          <span class="vc-duration">${r.dur}</span>
+          <button class="vc-play-btn" id="tr-play-${i}" style="width:28px;height:28px;font-size:0.6rem;" onclick="toggleThreadPlay(${i}, event)">▶</button>
+          <span class="vc-duration" id="tr-dur-${i}">${r.dur}</span>
         </div>
         <div class="thread-reactions">
           ${r.reactions.map(rx => `<button class="reaction-btn">${rx}</button>`).join('')}
@@ -1243,6 +1305,59 @@ function buildThread() {
     });
     repliesEl.appendChild(replyWrap);
   });
+}
+
+function toggleThreadPlay(idx, e) {
+  if (e) e.stopPropagation();
+  const r = THREAD_REPLIES[idx];
+  if (!r || !r.audio) return;
+  if (threadActiveIdx === idx && threadAudio) {
+    threadAudio.pause();
+    threadAudio.currentTime = 0;
+    threadAudio = null;
+    threadActiveIdx = -1;
+    const btn = document.getElementById(`tr-play-${idx}`);
+    const durEl = document.getElementById(`tr-dur-${idx}`);
+    if (btn) btn.textContent = '▶';
+    if (durEl) durEl.textContent = r.dur;
+    return;
+  }
+  if (threadAudio) {
+    threadAudio.pause();
+    threadAudio.currentTime = 0;
+    const prevBtn = document.getElementById(`tr-play-${threadActiveIdx}`);
+    const prevDur = document.getElementById(`tr-dur-${threadActiveIdx}`);
+    if (prevBtn) prevBtn.textContent = '▶';
+    if (prevDur && THREAD_REPLIES[threadActiveIdx]) prevDur.textContent = THREAD_REPLIES[threadActiveIdx].dur;
+  }
+  if (feedAudio) {
+    feedAudio.pause();
+    feedAudio.currentTime = 0;
+    feedAudio = null;
+    if (activePlayId) stopPlay(activePlayId);
+  }
+  threadActiveIdx = idx;
+  threadAudio = new Audio(new URL(FEED_AUDIO_BASE + r.audio, window.location.href).href);
+  const btn = document.getElementById(`tr-play-${idx}`);
+  const durEl = document.getElementById(`tr-dur-${idx}`);
+  if (btn) btn.textContent = '⏸';
+  function upd() {
+    if (!threadAudio) return;
+    const cur = threadAudio.currentTime;
+    const tot = threadAudio.duration;
+    if (durEl) durEl.textContent = isFinite(tot) && tot > 0 ? formatFeedTime(cur) + ' / ' + formatFeedTime(tot) : formatFeedTime(cur);
+  }
+  threadAudio.addEventListener('timeupdate', upd);
+  threadAudio.addEventListener('loadedmetadata', upd);
+  threadAudio.addEventListener('ended', () => {
+    threadAudio = null;
+    threadActiveIdx = -1;
+    if (btn) btn.textContent = '▶';
+    if (durEl) durEl.textContent = r.dur;
+  });
+  threadAudio.addEventListener('error', () => { threadAudio = null; threadActiveIdx = -1; if (btn) btn.textContent = '▶'; if (durEl) durEl.textContent = r.dur; });
+  threadAudio.play().catch(() => { threadAudio = null; threadActiveIdx = -1; if (btn) btn.textContent = '▶'; if (durEl) durEl.textContent = r.dur; });
+  upd();
 }
 
 /* Profile */
@@ -1841,3 +1956,6 @@ if (!window._wmEscapeBound) {
     hero.style.setProperty('--my', '50');
   });
 })();
+
+
+
