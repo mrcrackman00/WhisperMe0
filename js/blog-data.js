@@ -35,14 +35,16 @@ window.BLOG_POSTS = [
     publishedDate: '2025-12-15',
     icon: '🔒',
     gradient: 'linear-gradient(135deg,#1C1A18,#3a1a2a)',
-    body: `<p>For years, social media has been built on a simple premise: you are your identity. Your name, your face, your connections — these define who you are online. But that model is cracking.</p>
+    body: `<p>For years, social media has been built on a simple premise: you are your identity. Your name, your face, your connections — these define who you are online. Every post is tied to your profile. Every like is public. Every comment can be traced back to you. But that model is cracking under its own weight.</p>
       <h2>The pressure to perform</h2>
-      <p>Public shaming, cancel culture, and the pressure to perform have made many people afraid to speak honestly. They fear judgment from employers, strangers, and even friends. The result? Sanitized feeds, performative posts, and a growing sense that something essential has been lost.</p>
+      <p>Public shaming, cancel culture, and the pressure to perform have made many people afraid to speak honestly. They fear judgment from employers, strangers, and even friends. The result? Sanitized feeds, performative posts, and a growing sense that something essential has been lost. We've optimized for engagement at the cost of authenticity.</p>
       <blockquote>When identity is optional, people can explore ideas, share vulnerable moments, and connect without the weight of their reputation.</blockquote>
-      <p>Anonymous and pseudonymous communication offers a different path. Communities form around shared interests rather than social graphs. The conversation shifts from "who said it" to "what was said."</p>
+      <p>Anonymous and pseudonymous communication offers a different path. Communities form around shared interests rather than social graphs. The conversation shifts from "who said it" to "what was said." Ideas stand on their own. Voices matter more than profiles.</p>
       <hr>
+      <h2>Why now</h2>
+      <p>Gen Z grew up with screens but also with burnout from performative culture. Remote work normalized voice-first tools. Privacy regulations are forcing platforms to rethink data. The timing has never been better for a shift toward optional identity.</p>
       <h2>Building for the future</h2>
-      <p>At WhisperMe, we're building for this future — one where voice carries emotion without carrying your LinkedIn profile. Because sometimes, the most authentic thing you can do is speak without a name.</p>`
+      <p>At WhisperMe, we're building for this future — one where voice carries emotion without carrying your LinkedIn profile. Because sometimes, the most authentic thing you can do is speak without a name. We're not asking people to hide. We're giving them the choice to show up as themselves, or as an idea, or as both.</p>`
   },
   {
     slug: 'voice-vs-text-audio-frontier',
@@ -55,14 +57,16 @@ window.BLOG_POSTS = [
     publishedDate: '2025-12-08',
     icon: '🎙️',
     gradient: 'linear-gradient(135deg,#1a2a3a,#2a1a4a)',
-    body: `<p>Text has dominated the internet for decades. Emails, tweets, posts, DMs — we've trained ourselves to compress emotion into characters. But something is lost in translation.</p>
+    body: `<p>Text has dominated the internet for decades. Emails, tweets, posts, DMs — we've trained ourselves to compress emotion into characters. We've learned to read between the lines, to decode tone from punctuation, to guess intent from context. But something is always lost in translation.</p>
       <h2>Why voice matters</h2>
-      <p>Voice carries tone, pause, emphasis, and warmth. A simple "I'm fine" can mean entirely different things depending on how it's said. In text, we compensate with emojis, punctuation, and caps — but it's never quite the same.</p>
+      <p>Voice carries tone, pause, emphasis, and warmth. A simple "I'm fine" can mean entirely different things depending on how it's said. In text, we compensate with emojis, punctuation, and caps — but it's never quite the same. You can't hear the hesitation. You can't feel the smile. You can't sense when someone is holding back.</p>
       <blockquote>The future of connection isn't more characters — it's more humanity.</blockquote>
-      <p>Voice-first social isn't new — podcasting and Clubhouse proved the appetite. What's changed is the technology. Better compression, lower latency, and mobile-first design have made real-time voice as easy as texting.</p>
+      <p>Voice-first social isn't new — podcasting and Clubhouse proved the appetite. What's changed is the technology. Better compression, lower latency, and mobile-first design have made real-time voice as easy as texting. The infrastructure is ready. The behavior is shifting.</p>
       <hr>
+      <h2>The case for voice-first</h2>
+      <p>Voice reduces friction. No typing, no editing, no second-guessing every word. It's faster for long-form expression. It's more inclusive for those who struggle with text. And when combined with optional identity, it creates a space where people speak more freely than they ever could in a feed.</p>
       <h2>What comes next</h2>
-      <p>The next generation of social apps will default to speaking, with text as a fallback, not the other way around. We're building WhisperMe to be part of that shift.</p>`
+      <p>The next generation of social apps will default to speaking, with text as a fallback, not the other way around. We're building WhisperMe to be part of that shift. Not replacing text — augmenting it. Giving people another way to connect when words on a screen aren't enough.</p>`
   },
   {
     slug: 'building-whisperme-90-days',
@@ -75,15 +79,16 @@ window.BLOG_POSTS = [
     publishedDate: '2025-11-28',
     icon: '🚀',
     gradient: 'linear-gradient(135deg,#1a3a2a,#2a4a1a)',
-    body: `<p>Day one felt like jumping off a cliff. Two founders, a figma file, and a lot of conviction. Ninety days later, we have a working beta, real users, and a list of lessons that would fill another post.</p>
+    body: `<p>Day one felt like jumping off a cliff. Two founders, a Figma file, and a lot of conviction. No code, no users, no proof that anyone would care. Ninety days later, we have a working beta, real users, and a list of lessons that would fill another post. Here are the three that changed everything.</p>
       <h2>Lesson one: voice is harder than text</h2>
-      <p>Every platform optimizes for text — keyboards, autocorrect, copy-paste. Voice requires new UI patterns, new performance budgets, and new user expectations. We spent weeks on things that would be trivial in a text app.</p>
+      <p>Every platform optimizes for text — keyboards, autocorrect, copy-paste. Voice requires new UI patterns, new performance budgets, and new user expectations. We spent weeks on things that would be trivial in a text app: latency, echo cancellation, background noise, network drops. Users notice 100ms of delay. They notice when their voice sounds robotic. We learned to obsess over details that text apps never had to consider.</p>
       <h2>Lesson two: privacy sells</h2>
-      <p>When we added anonymous voice rooms, engagement didn't just increase — it transformed. People who never spoke in identity-based rooms opened up.</p>
+      <p>When we added anonymous voice rooms, engagement didn't just increase — it transformed. People who never spoke in identity-based rooms opened up. The same users who lurked in other apps were leading conversations here. We hadn't expected it to matter that much. We were wrong.</p>
       <blockquote>The product validated itself the moment we made identity optional.</blockquote>
+      <p>Privacy wasn't a feature. It was the foundation. Once we understood that, everything else fell into place.</p>
       <hr>
       <h2>Lesson three: community takes time</h2>
-      <p>We launched too early, learned from feedback, and iterated. The best features came from users who believed in the vision before we did. Here's to the next 90 days.</p>`
+      <p>We launched too early. We learned from feedback. We iterated. The best features came from users who believed in the vision before we did. The first 100 users taught us more than any roadmap. Here's to the next 90 days — and to everyone who showed up when we had nothing but a promise.</p>`
   },
   {
     slug: 'whisperme-private-beta',
@@ -96,15 +101,16 @@ window.BLOG_POSTS = [
     publishedDate: '2025-11-15',
     icon: '✨',
     gradient: 'linear-gradient(135deg,#2a1a1a,#4a2a1a)',
-    body: `<p>Our private beta is live, and we're excited to share what's in it and what's on the roadmap.</p>
+    body: `<p>Our private beta is live, and we're excited to share what's in it and what's on the roadmap. If you're reading this, you're either in the beta or thinking about joining. Here's what you can expect.</p>
       <h2>Anonymous Voice Rooms</h2>
-      <p>Join a room, pick a voice, and speak. No profile, no history, no judgment. Conversations reset when you leave. This is the core of WhisperMe: ephemeral, authentic, human.</p>
+      <p>Join a room, pick a voice, and speak. No profile, no history, no judgment. Conversations reset when you leave. This is the core of WhisperMe: ephemeral, authentic, human. You show up as a voice. You leave as a memory. Nothing is stored, nothing is searchable, nothing follows you.</p>
       <h2>Whisper Threads</h2>
-      <p>Voice messages that feel like a private conversation. Send a whisper to a thread; others can listen and reply in kind. Think of it as a voice-first Reddit or Discord, but lighter.</p>
+      <p>Voice messages that feel like a private conversation. Send a whisper to a thread; others can listen and reply in kind. Think of it as a voice-first Reddit or Discord, but lighter. Topics, not identities. Ideas, not clout. Threads that disappear when the conversation is done.</p>
       <blockquote>If you're in the beta, your feedback is shaping the product. Thank you.</blockquote>
+      <p>Every bug report, every feature request, every "this would be better if" — we're listening. The product you're using today is different because of the people who showed up early.</p>
       <hr>
       <h2>What's next</h2>
-      <p>We're working on mood-based discovery, better moderation tools, and integrations that keep your identity separate from your expression.</p>`
+      <p>We're working on mood-based discovery, better moderation tools, and integrations that keep your identity separate from your expression. We're also exploring ways to make rooms more discoverable without sacrificing privacy. The roadmap is fluid. The principles aren't. Voice first. Identity optional. Always.</p>`
   },
   {
     slug: 'toxicity-problem-social-reset',

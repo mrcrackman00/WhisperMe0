@@ -65,6 +65,16 @@ async function sendVerificationEmail(to, verificationLink) {
   `);
 }
 
+const PASSWORD_RESET_HTML = (resetLink) => `
+  <h1>Reset your password</h1>
+  <p>Click the link below to set a new password:</p>
+  <p><a href="${resetLink}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
+  <p>Or copy this link: ${resetLink}</p>
+  <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+  <p><small>If this landed in spam, mark as "Not spam" so future emails reach your inbox.</small></p>
+  <p>— The WhisperMe team</p>
+`;
+
 /**
  * Send password reset email via Resend (bypasses Supabase SMTP).
  * Uses RESEND_API_KEY and FROM_EMAIL from env.
@@ -88,15 +98,7 @@ async function sendPasswordResetEmail(to, resetLink) {
     if (templateId) {
       payload.template = { id: templateId, variables: { RESET_LINK: resetLink } };
     } else {
-      payload.html = `
-        <h1>Reset your password</h1>
-        <p>Click the link below to set a new password:</p>
-        <p><a href="${resetLink}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
-        <p>Or copy this link: ${resetLink}</p>
-        <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
-        <p><small>If this landed in spam, mark as "Not spam" so future emails reach your inbox.</small></p>
-        <p>— The WhisperMe team</p>
-      `;
+      payload.html = PASSWORD_RESET_HTML(resetLink);
     }
     const { data, error } = await resend.emails.send(payload);
     if (error) {
@@ -110,9 +112,25 @@ async function sendPasswordResetEmail(to, resetLink) {
   }
 }
 
+/**
+ * Send password reset email via Resend or Gmail (whichever is configured).
+ * Used when Supabase's built-in email fails (e.g. "Error sending recovery email").
+ */
+async function sendPasswordResetEmailAny(to, resetLink) {
+  if (process.env.RESEND_API_KEY) {
+    const r = await sendPasswordResetEmail(to, resetLink);
+    if (r.ok) return r;
+  }
+  if (transporter) {
+    return sendMail(to, 'Reset your WhisperMe password', PASSWORD_RESET_HTML(resetLink));
+  }
+  return { ok: false, error: 'Email not configured. Set RESEND_API_KEY or GMAIL_USER+GMAIL_APP_PASSWORD.' };
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendWaitlistConfirmation,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendPasswordResetEmailAny,
 };

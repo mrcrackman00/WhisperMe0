@@ -59,6 +59,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (reqPath === '/') reqPath = '/index.html';
+  if (reqPath === '/blog-article' || reqPath === '/blog') reqPath = reqPath === '/blog-article' ? '/blog-article.html' : '/blog.html';
 
   const filePath = path.resolve(path.join(base, reqPath));
 

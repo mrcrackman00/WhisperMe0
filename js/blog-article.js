@@ -3,17 +3,19 @@
  * author bio, share buttons, SEO
  */
 (function() {
-  var params = new URLSearchParams(window.location.search);
-  var slug = params.get('slug');
-
-  if (!slug || !window.BLOG_POSTS) {
-    window.location.href = 'blog.html';
+  var slug = (new URLSearchParams(window.location.search)).get('slug') 
+    || (window.location.hash ? window.location.hash.slice(1) : null);
+  if (!slug || slug === 'null' || slug === 'undefined' || slug.length < 2) {
+    window.location.replace('blog.html');
     return;
   }
-
+  if (!window.BLOG_POSTS || !Array.isArray(window.BLOG_POSTS)) {
+    window.location.replace('blog.html');
+    return;
+  }
   var post = window.BLOG_POSTS.find(function(p) { return p.slug === slug; });
   if (!post) {
-    window.location.href = 'blog.html';
+    window.location.replace('blog.html');
     return;
   }
 
@@ -21,6 +23,20 @@
 
   document.title = post.title + ' — WhisperMe Blog';
   document.getElementById('articleCat').textContent = post.category;
+
+  var schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt || post.title,
+    author: { '@type': 'Person', name: post.author },
+    publisher: { '@type': 'Organization', name: 'WhisperMe' }
+  };
+  if (post.publishedDate) schema.datePublished = post.publishedDate + 'T12:00:00Z';
+  var script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.textContent = JSON.stringify(schema);
+  document.head.appendChild(script);
   document.getElementById('articleTitle').textContent = post.title;
   document.getElementById('articleAuthor').textContent = post.author;
   document.getElementById('articleReadTime').textContent = post.readTime;
@@ -73,10 +89,10 @@
   var grid = document.getElementById('relatedGrid');
   related.forEach(function(r) {
     var a = document.createElement('a');
-    a.href = '/blog-article?slug=' + encodeURIComponent(r.slug);
+    a.href = 'blog-article.html?slug=' + encodeURIComponent(r.slug);
     a.className = 'sp-post blog-related-card reveal';
     a.setAttribute('tabindex', '0');
-    a.innerHTML = '<div class="sp-post-img-placeholder" style="background:' + (r.gradient || 'linear-gradient(135deg,#1C1A18,#3a1a2a)') + '">' + (r.icon || '📄') + '</div>' +
+    a.innerHTML = '<div class="sp-post-img-wrap"><div class="sp-post-img-placeholder sp-post-icon" style="background:' + (r.gradient || 'linear-gradient(135deg,#1C1A18,#3a1a2a)') + '">' + (r.icon || '📄') + '</div></div>' +
       '<div class="sp-post-body">' +
       '<div class="sp-post-cat">' + r.category + '</div>' +
       '<h3 class="sp-post-title">' + r.title + '</h3>' +

@@ -4,10 +4,10 @@
  * These endpoints help the backend know the current user and track events.
  */
 const express = require('express');
-const { supabaseUrl: configSupabaseUrl, supabaseAnon } = require('../config/supabase');
+const { supabaseAnon, supabaseAdmin } = require('../config/supabase');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const { trackEvent, EVENTS } = require('../utils/analytics');
-const { sendWelcomeEmail } = require('../services/emailService');
+const { sendWelcomeEmail, sendPasswordResetEmailAny } = require('../services/emailService');
 const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimiters');
 
 const router = express.Router();
@@ -85,7 +85,7 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
       return sendJson(503, { error: 'Auth not configured.' });
     }
 
-    const { data, error } = await supabaseAnon.auth.resetPasswordForEmail(email, {
+    let { data, error } = await supabaseAnon.auth.resetPasswordForEmail(email, {
       redirectTo: finalRedirect,
       captchaToken: req.body?.captchaToken || undefined,
     });
@@ -95,7 +95,40 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
       if (msg.includes('user not found') || msg.includes('email not found') || msg.includes('user with this email not found')) {
         return sendJson(200, { success: true, ok: true });
       }
-      // Supabase sometimes returns HTML (e.g. 502) — never forward HTML to client
+      // Supabase's built-in email often fails ("Error sending recovery email") when SMTP isn't configured.
+      // Fallback: generate link via admin API and send via our own email (Resend/Gmail).
+      const isEmailDeliveryError = msg.includes('error sending') || msg.includes('recovery email') || msg.includes('sending recovery') || msg.includes('failed to send');
+      if (isEmailDeliveryError) {
+        try {
+          const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+            type: 'recovery',
+            email,
+            options: { redirectTo: finalRedirect },
+          });
+          if (linkErr) {
+            if (linkErr.message?.toLowerCase().includes('user not found')) {
+              return sendJson(200, { success: true, ok: true });
+            }
+            console.error('[forgot-password] generateLink error:', linkErr.message);
+            return sendJson(400, { error: 'Failed to generate reset link.' });
+          }
+          const actionLink = linkData?.properties?.action_link || linkData?.action_link;
+          if (!actionLink) {
+            console.error('[forgot-password] generateLink missing action_link:', Object.keys(linkData || {}));
+            return sendJson(500, { error: 'Failed to generate reset link.' });
+          }
+          const sendResult = await sendPasswordResetEmailAny(email, actionLink);
+          if (sendResult.ok) {
+            return sendJson(200, { success: true, ok: true });
+          }
+          console.error('[forgot-password] Custom email failed:', sendResult.error);
+          return sendJson(500, { error: 'Could not send reset email. Please try again later or contact support.' });
+        } catch (fallbackErr) {
+          console.error('[forgot-password] Fallback error:', fallbackErr.message);
+          return sendJson(500, { error: 'Something went wrong. Please try again.' });
+        }
+      }
+      // Other Supabase errors (e.g. invalid redirect)
       const safeMsg = msg.includes('<') || msg.includes('html') || msg.length > 200
         ? 'Failed to send reset link.'
         : (error.message || 'Failed to send reset link.');
