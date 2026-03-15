@@ -36,8 +36,21 @@ const forgotPasswordLimiter = rateLimit({
   message: { error: 'Too many reset requests. Try again in 15 minutes.' },
 });
 
+/**
+ * Rate limiter for resend verification email
+ * Limits: 3 requests per 15 minutes per IP
+ */
+const resendVerificationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Check spam folder or try again in 15 minutes.' },
+});
+
 module.exports = {
   authLimiter,
   waitlistLimiter,
   forgotPasswordLimiter,
+  resendVerificationLimiter,
 };

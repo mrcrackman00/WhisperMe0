@@ -57,40 +57,46 @@ async function sendWaitlistConfirmation(to, name) {
   `);
 }
 
-/** Send verification email via Resend (bypasses Supabase SMTP). */
+const VERIFICATION_HTML = (verificationLink) => `
+  <h1>Verify your WhisperMe email</h1>
+  <p>Click the link below to activate your account:</p>
+  <p><a href="${verificationLink}" style="background:#7C5CBF;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;display:inline-block;">Verify Email</a></p>
+  <p>Or copy this link: ${verificationLink}</p>
+  <p>This link expires in 24 hours. If you didn't sign up, ignore this email.</p>
+  <p><small>If this landed in spam, mark as "Not spam" so future emails reach your inbox.</small></p>
+  <p>— The WhisperMe team</p>
+`;
+
+/** Send verification email via Resend, with Gmail fallback if Resend fails. */
 async function sendVerificationEmailViaResend(to, verificationLink) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.FROM_EMAIL || 'WhisperMe <onboarding@resend.dev>';
-  if (!apiKey) {
-    console.warn('RESEND_API_KEY not set; cannot send verification email');
-    return { ok: false, error: 'Email not configured' };
-  }
-  try {
-    const { Resend } = require('resend');
-    const resend = new Resend(apiKey);
-    const html = `
-      <h1>Verify your WhisperMe email</h1>
-      <p>Click the link below to activate your account:</p>
-      <p><a href="${verificationLink}" style="background:#7C5CBF;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;display:inline-block;">Verify Email</a></p>
-      <p>Or copy this link: ${verificationLink}</p>
-      <p>This link expires in 24 hours. If you didn't sign up, ignore this email.</p>
-      <p>— The WhisperMe team</p>
-    `;
-    const { data, error } = await resend.emails.send({
-      from,
-      to,
-      subject: 'Verify your WhisperMe email',
-      html,
-    });
-    if (error) {
-      console.error('Resend verification error:', error);
-      return { ok: false, error: error.message };
+  const html = VERIFICATION_HTML(verificationLink);
+
+  if (apiKey) {
+    try {
+      const { Resend } = require('resend');
+      const resend = new Resend(apiKey);
+      const { data, error } = await resend.emails.send({
+        from,
+        to,
+        subject: 'Verify your WhisperMe email',
+        html,
+      });
+      if (!error) return { ok: true, id: data?.id };
+      console.warn('[verification] Resend failed:', error.message);
+    } catch (err) {
+      console.warn('[verification] Resend error:', err.message);
     }
-    return { ok: true, id: data?.id };
-  } catch (err) {
-    console.error('Verification email error:', err.message);
-    return { ok: false, error: err.message };
+  } else {
+    console.warn('[verification] RESEND_API_KEY not set');
   }
+
+  if (transporter) {
+    return sendMail(to, 'Verify your WhisperMe email', html);
+  }
+  console.warn('[verification] No email configured; set RESEND_API_KEY or GMAIL_USER+GMAIL_APP_PASSWORD');
+  return { ok: false, error: 'Email not configured' };
 }
 
 async function sendVerificationEmail(to, verificationLink) {

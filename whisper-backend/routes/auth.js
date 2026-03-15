@@ -8,7 +8,7 @@ const { supabaseAnon, supabaseAdmin } = require('../config/supabase');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const { trackEvent, EVENTS } = require('../utils/analytics');
 const { sendWelcomeEmail, sendPasswordResetEmailAny, sendVerificationEmailViaResend } = require('../services/emailService');
-const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimiters');
+const { authLimiter, forgotPasswordLimiter, resendVerificationLimiter } = require('../middleware/rateLimiters');
 
 const router = express.Router();
 
@@ -106,7 +106,7 @@ router.post('/signup', authLimiter, async (req, res) => {
     const redirectTo = (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim();
     try {
       const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
-        type: 'magiclink',
+        type: 'signup',
         email,
         options: { redirectTo: redirectTo ? redirectTo.replace(/\/$/, '') + '/' : undefined },
       });
@@ -128,6 +128,43 @@ router.post('/signup', authLimiter, async (req, res) => {
   } catch (err) {
     console.error('[signup] Unexpected error:', err.message, err.stack);
     return sendJson(500, { error: 'Something went wrong. Please try again.' });
+  }
+});
+
+/**
+ * POST /api/auth/resend-verification — resend verification email for unconfirmed signup.
+ * Body: { email }
+ * Always returns success (for security, don't reveal if user exists).
+ */
+router.post('/resend-verification', resendVerificationLimiter, async (req, res) => {
+  const sendJson = (status, body) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(status).json(body);
+  };
+  try {
+    const email = (req.body?.email || '').trim().toLowerCase();
+    const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRe.test(email)) {
+      return sendJson(400, { error: 'Please enter a valid email address.' });
+    }
+    if (!supabaseAdmin) {
+      return sendJson(503, { error: 'Service temporarily unavailable.' });
+    }
+    const redirectTo = (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim();
+    const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'signup',
+      email,
+      options: { redirectTo: redirectTo ? redirectTo.replace(/\/$/, '') + '/' : undefined },
+    });
+    const link = linkData?.properties?.action_link || linkData?.action_link;
+    if (linkErr || !link) {
+      return sendJson(200, { ok: true, message: 'If that email is unverified, we sent a new verification link. Check your inbox and spam folder.' });
+    }
+    const sent = await sendVerificationEmailViaResend(email, link);
+    return sendJson(200, { ok: true, message: sent.ok ? 'Verification email sent. Check inbox and spam folder.' : 'If that email is unverified, we tried to send a link. Check spam folder.' });
+  } catch (err) {
+    console.error('[resend-verification] Error:', err.message);
+    return sendJson(200, { ok: true, message: 'If that email is unverified, check your spam folder or try again later.' });
   }
 });
 

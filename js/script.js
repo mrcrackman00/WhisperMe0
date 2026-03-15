@@ -1794,9 +1794,11 @@ function h11HandleSignup(e) {
   var emailEl = fromH11 ? document.getElementById('h11EmailInput') : (document.getElementById('join-beta')?.querySelector('#emailInput') || document.getElementById('emailInput'));
   var btn = fromH11 ? document.querySelector('.h11-submit-btn') : (document.getElementById('join-beta')?.querySelector('.form-submit') || document.querySelector('.form-submit'));
   var aPasswordEl = fromH11 ? document.getElementById('h11_a_password') : document.querySelector('#join-beta [name="a_password"]') || document.querySelector('[name="a_password"]');
+  var moodEl = fromH11 ? document.querySelector('#h11FormCard .h11-mood-chip.selected') : document.querySelector('#join-beta .form-mood-chip.selected');
   var aPassword = aPasswordEl ? aPasswordEl.value : '';
   var name = nameEl ? nameEl.value.trim() : '';
   var email = emailEl ? emailEl.value.trim() : '';
+  var mood = moodEl ? moodEl.textContent.trim() : '';
   
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !EMAIL_RE.test(email)) {
@@ -1807,16 +1809,25 @@ function h11HandleSignup(e) {
 
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
-  async function doWaitlist(retry) {
+  async function doWaitlist(retriesLeft) {
     try {
       var res = await apiFetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, name: name, a_password: aPassword }),
+        body: JSON.stringify({ email: email, name: name, mood: mood || undefined, a_password: aPassword }),
       });
       if (!res.ok) {
         var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
         if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
+        // Network error (status 0) — auto-retry instead of showing "Failed to fetch"
+        var isNetworkError = res.status === 0 || (msg && /failed to fetch|network|connection/i.test(msg));
+        if (isNetworkError && retriesLeft > 0) {
+          showToast('⚠️ Connection slow. Retrying in 5 sec…');
+          if (btn) { btn.innerHTML = 'Retrying…'; }
+          setTimeout(function() { doWaitlist(retriesLeft - 1); }, 5000);
+          return;
+        }
+        if (isNetworkError) msg = 'Connection failed. Try WiFi or tap again—server may be waking up.';
         showToast('❌ ' + msg);
         if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
         return;
@@ -1826,20 +1837,20 @@ function h11HandleSignup(e) {
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';
     } catch (err) {
-      if (retry) {
-        showToast('⚠️ Server waking up… Retrying in 5 sec…');
+      if (retriesLeft > 0) {
+        showToast('⚠️ Retrying in 5 sec…');
         if (btn) { btn.innerHTML = 'Retrying…'; }
-        setTimeout(function() { doWaitlist(false); }, 5000);
+        setTimeout(function() { doWaitlist(retriesLeft - 1); }, 5000);
       } else {
         var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
           ? 'Connection error. Is the backend running?'
-          : 'Server may be sleeping. Tap again—second try usually works.';
-        showToast('⚠️ ' + msg);
+          : 'Connection failed. Try WiFi or tap again.';
+        showToast('❌ ' + msg);
         if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
       }
     }
   }
-  doWaitlist(true);
+  doWaitlist(2);
 }
 
 function heroSignup() {

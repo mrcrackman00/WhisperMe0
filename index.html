@@ -3885,10 +3885,13 @@
     overlay.innerHTML = '<div style="background:linear-gradient(145deg,#1C1A18,#2A2624);border:1px solid rgba(245,239,228,0.1);border-radius:20px;padding:48px 40px;max-width:440px;width:90%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.5);animation:regPopIn 0.4s cubic-bezier(0.34,1.56,0.64,1);">'
       + '<div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#7C5CBF,#4A6F8C);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;animation:regPulse2 2s ease infinite;">✉️</div>'
       + '<h2 style="font-family:inherit;font-size:1.6rem;font-weight:700;color:#F5EFE4;margin:0 0 8px;letter-spacing:-0.02em;">Verify Your Email</h2>'
-      + '<p style="font-family:inherit;font-size:1rem;color:rgba(245,239,228,0.7);margin:0 0 6px;line-height:1.5;">Please check your inbox to activate your account.</p>'
-      + (sub ? '<p style="font-family:inherit;font-size:0.85rem;color:rgba(245,239,228,0.5);margin:0 0 28px;">' + sub + '</p>' : '<div style="height:28px;"></div>')
-      + '<p style="font-family:inherit;font-size:0.9rem;color:rgba(245,239,228,0.6);margin:0 0 24px;line-height:1.5;">Click the link in the email to complete registration.<br>Your voice matters.</p>'
-      + '<button onclick="closeRegSuccessOverlay();" style="background:linear-gradient(135deg,#7C5CBF,#4A6F8C);border:none;color:white;padding:14px 40px;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.2s,opacity 0.2s;" onmouseover="this.style.transform=\'scale(1.04)\'" onmouseout="this.style.transform=\'scale(1)\'">Got it ✨</button>'
+      + '<p style="font-family:inherit;font-size:1rem;color:rgba(245,239,228,0.7);margin:0 0 6px;line-height:1.5;">Please check your inbox (and spam folder) to activate your account.</p>'
+      + (sub ? '<p style="font-family:inherit;font-size:0.85rem;color:rgba(245,239,228,0.5);margin:0 0 16px;">' + sub + '</p>' : '<div style="height:16px;"></div>')
+      + '<p style="font-family:inherit;font-size:0.9rem;color:rgba(245,239,228,0.6);margin:0 0 20px;line-height:1.5;">Click the link in the email to complete registration.</p>'
+      + '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">'
+      + '<button onclick="closeRegSuccessOverlay();" style="background:linear-gradient(135deg,#7C5CBF,#4A6F8C);border:none;color:white;padding:14px 32px;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;">Got it ✨</button>'
+      + (email ? '<button id="resendVerifyBtn" data-email="' + escapeHTML(email) + '" style="background:transparent;border:1px solid rgba(245,239,228,0.3);color:rgba(245,239,228,0.9);padding:14px 24px;border-radius:12px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:inherit;">Resend email</button>' : '')
+      + '</div>'
       + '</div>';
 
     document.body.style.overflow = 'hidden';
@@ -3901,6 +3904,26 @@
 
     document.body.appendChild(overlay);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeRegSuccessOverlay(); });
+    var resendBtn = overlay.querySelector('#resendVerifyBtn');
+    if (resendBtn && email) {
+      resendBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        resendVerificationEmail(email);
+      });
+    }
+  };
+
+  window.resendVerificationEmail = async function(email) {
+    var btn = document.getElementById('resendVerifyBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+    try {
+      var res = await (typeof window.apiFetch === 'function' ? window.apiFetch('/api/auth/resend-verification', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) }) : { ok: false });
+      var msg = (res.data && res.data.message) || 'Check your inbox and spam folder.';
+      if (typeof showToast === 'function') showToast('✉️ ' + msg);
+    } catch (e) {
+      if (typeof showToast === 'function') showToast('❌ Could not resend. Try again later.');
+    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Resend email'; }
   };
 
   window.handleAuthSignup = async function() {
