@@ -7,7 +7,7 @@ const express = require('express');
 const { supabaseAnon, supabaseAdmin } = require('../config/supabase');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const { trackEvent, EVENTS } = require('../utils/analytics');
-const { sendWelcomeEmail, sendPasswordResetEmailAny } = require('../services/emailService');
+const { sendWelcomeEmail, sendPasswordResetEmailAny, sendVerificationEmailViaResend } = require('../services/emailService');
 const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimiters');
 
 const router = express.Router();
@@ -101,6 +101,28 @@ router.post('/signup', authLimiter, async (req, res) => {
     const token = data?.session?.access_token;
     if (token) {
       return sendJson(200, { session: data.session, user: data.user, access_token: token });
+    }
+    // User created but needs email confirmation — send verification via Resend (bypasses Supabase SMTP)
+    const redirectTo = (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim();
+    try {
+      const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'magiclink',
+        email,
+        options: { redirectTo: redirectTo ? redirectTo.replace(/\/$/, '') + '/' : undefined },
+      });
+      const link = linkData?.properties?.action_link || linkData?.action_link;
+      if (!linkErr && link) {
+        const sent = await sendVerificationEmailViaResend(email, link);
+        if (sent.ok) {
+          console.log('[signup] Verification email sent via Resend to', email);
+        } else {
+          console.warn('[signup] Resend verification failed:', sent.error);
+        }
+      } else if (linkErr) {
+        console.warn('[signup] generateLink error:', linkErr.message);
+      }
+    } catch (e) {
+      console.warn('[signup] Verification email fallback error:', e.message);
     }
     return sendJson(200, { ok: true, message: 'Please check your email to verify your account.', user: data?.user });
   } catch (err) {
