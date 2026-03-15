@@ -1762,13 +1762,15 @@ function handleAmSignup() {
     var data = res.data || {};
     var token = data.access_token || (data.session && data.session.access_token);
     if (token) {
+      // Update UI immediately — don't wait for Supabase client or setSession
+      closeAuthModal();
+      if (typeof updateNavUser === 'function') updateNavUser(email, displayName || name);
+      if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
+      // Run session sync and on-signup in background (non-blocking)
       window._getSupabaseClient().then(function(sb) {
         if (sb && data.session) sb.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token || '' }).catch(function() {});
         apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {});
-        closeAuthModal();
-        updateNavUser(email, displayName || name);
-        if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
-      });
+      }).catch(function() {});
     } else {
       if (typeof showVerificationPending === 'function') {
         showVerificationPending(email);

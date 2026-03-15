@@ -3,6 +3,18 @@
    Layered mesh, orbs, particles, depth
    ═══════════════════════════════════════════ */
 
+/* Pause all animations when section off-screen — reduces scroll lag */
+.vu-section.vu-paused .vu-mesh,
+.vu-section.vu-paused .vu-wave-pattern,
+.vu-section.vu-paused .vu-orb,
+.vu-section.vu-paused .vu-center-glow,
+.vu-section.vu-paused .vu-particle,
+.vu-section.vu-paused .vu-node,
+.vu-section.vu-paused .vu-connections line,
+.vu-section.vu-paused .vu-node-wave span {
+  animation-play-state: paused !important;
+}
+
 .vu-section {
   padding: 140px 5% 160px;
   background: 
@@ -71,11 +83,11 @@
   to { background-position: 160px 160px; }
 }
 
-/* 4 glowing orbs — pink palette, reduced blur for performance */
+/* 4 glowing orbs — pink palette, reduced blur for scroll performance */
 .vu-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
+  filter: blur(40px);
   transform: translate(-50%, -50%);
   animation: vuOrbFloat 36s ease-in-out infinite;
 }
@@ -130,7 +142,7 @@
     rgba(212, 96, 122, 0.02) 55%,
     transparent 70%
   );
-  filter: blur(45px);
+  filter: blur(35px);
   animation: vuCenterGlow 28s ease-in-out infinite;
 }
 

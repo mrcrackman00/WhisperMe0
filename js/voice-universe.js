@@ -270,4 +270,16 @@
       drawConnections();
     }, 150);
   });
+
+  // Pause animations when section mostly off-screen — reduces scroll lag
+  var vuSection = document.getElementById('voice-universe');
+  if (vuSection && 'IntersectionObserver' in window) {
+    var vuObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        var pause = !e.isIntersecting || e.intersectionRatio < 0.25;
+        vuSection.classList.toggle('vu-paused', pause);
+      });
+    }, { rootMargin: '80px', threshold: [0, 0.1, 0.25, 0.5, 1] });
+    vuObs.observe(vuSection);
+  }
 })();

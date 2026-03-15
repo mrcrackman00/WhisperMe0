@@ -60,7 +60,6 @@
               var email = session.user && session.user.email;
               var name = session.user && session.user.user_metadata && session.user.user_metadata.display_name;
               if (typeof updateNavUser === 'function') updateNavUser(email, name);
-              if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, true);
               if (window.location.hash.includes('access_token')) {
                 history.replaceState(null, document.title, window.location.pathname + window.location.search);
               }

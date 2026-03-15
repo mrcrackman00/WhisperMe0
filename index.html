@@ -3827,16 +3827,18 @@
     if (el) { el.remove(); document.body.style.overflow = ''; }
   };
   window.showRegistrationSuccess = function(email, isLogin) {
+    // Only show on first signup — never on login/sign-in
+    if (isLogin) return;
+    var key = 'whisperme_welcome_' + (email || '').replace(/[^a-zA-Z0-9@._-]/g, '_');
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+    } catch (e) {}
     // Close auth modal if open
     if (typeof closeAuthModal === 'function') closeAuthModal();
-
-    // Remove existing popup if any
     closeRegSuccessOverlay();
-
-    var title = isLogin ? 'Welcome Back!' : 'You\'re Registered!';
-    var msg = isLogin
-      ? 'You have successfully signed in to WhisperMe.'
-      : 'You have been registered for WhisperMe.';
+    var title = 'You\'re Registered!';
+    var msg = 'You have been registered for WhisperMe.';
     var sub = email ? ('Signed in as <strong>' + escapeHTML(email) + '</strong>') : '';
 
     var overlay = document.createElement('div');
