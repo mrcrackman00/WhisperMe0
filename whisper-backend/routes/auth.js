@@ -86,7 +86,9 @@ router.post('/signup', authLimiter, async (req, res) => {
       },
     });
 
-    if (error) {
+    const isEmailSendError = (error && (error.message || '').toLowerCase().includes('error sending') && (error.message || '').toLowerCase().includes('confirmation'));
+
+    if (error && !isEmailSendError) {
       const msg = (error.message || '').toLowerCase();
       let userMsg = error.message || 'Sign up failed.';
       if (msg.includes('rate') || msg.includes('limit') || msg.includes('429')) {
@@ -98,11 +100,15 @@ router.post('/signup', authLimiter, async (req, res) => {
       return sendJson(400, { error: userMsg });
     }
 
+    if (isEmailSendError) {
+      console.warn('[signup] Supabase email failed, sending via our Gmail/Resend fallback');
+    }
+
     const token = data?.session?.access_token;
     if (token) {
       return sendJson(200, { session: data.session, user: data.user, access_token: token });
     }
-    // User created but needs email confirmation — send verification via Resend (bypasses Supabase SMTP)
+    // User created but needs email confirmation — send via our Gmail/Resend (Supabase SMTP often fails)
     const redirectTo = (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim();
     try {
       const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
@@ -114,15 +120,15 @@ router.post('/signup', authLimiter, async (req, res) => {
       if (!linkErr && link) {
         const sent = await sendVerificationEmailViaResend(email, link);
         if (sent.ok) {
-          console.log('[signup] Verification email sent via Resend to', email);
+          console.log('[signup] Verification email sent to', email);
         } else {
-          console.warn('[signup] Resend verification failed:', sent.error);
+          console.warn('[signup] Verification email failed:', sent.error);
         }
       } else if (linkErr) {
         console.warn('[signup] generateLink error:', linkErr.message);
       }
     } catch (e) {
-      console.warn('[signup] Verification email fallback error:', e.message);
+      console.warn('[signup] Verification email error:', e.message);
     }
     return sendJson(200, { ok: true, message: 'Please check your email to verify your account.', user: data?.user });
   } catch (err) {
