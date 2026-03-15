@@ -537,7 +537,6 @@ function onDOMReady() {
     if (document.getElementById('page-app-preview') && apvFeed && !apvFeed.dataset.built) {
       buildApvFeed();
     }
-    if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
   } catch (e) {
     console.error('[WM] DOM ready init error:', e);
   }
@@ -893,7 +892,6 @@ function showPage(name) {
   const nav = document.getElementById('nav');
   if (name === 'home') {
     nav.classList.remove('scrolled');
-    if (typeof loadHCaptchaScript === 'function') loadHCaptchaScript();
   } else {
     nav.classList.add('scrolled');
   }
@@ -1037,7 +1035,6 @@ function switchScreen(name) {
   if (name === 'thread') buildThread();
   if (name === 'profile') buildProfile();
   if (name === 'notif') buildNotifWaves();
-  if (name === 'auth') loadHCaptchaScript();
 }
 
 function updateAppTime() {
@@ -1472,7 +1469,6 @@ function switchAuthTab(tab) {
   document.getElementById('signinTab').classList.toggle('active', tab === 'signin');
   document.getElementById('authFormSignup').style.display = tab === 'signup' ? 'flex' : 'none';
   document.getElementById('authFormSignin').style.display = tab === 'signin' ? 'flex' : 'none';
-  if (tab === 'signup') loadHCaptchaScript();
 }
 function selectMood(el) {
   document.querySelectorAll('.auth-mood-chip').forEach(c => c.classList.remove('selected'));
@@ -1618,7 +1614,6 @@ function openAuthModal(tab) {
   if (overlay) overlay.classList.add('active');
   switchAmTab(tab || 'signin');
   if (!window.matchMedia('(max-width: 440px)').matches) document.body.style.overflow = 'hidden';
-  if (tab === 'signup') loadHCaptchaScript();
 }
 function closeAuthModal() {
   var el = document.getElementById('authModalOverlay');
@@ -1627,15 +1622,6 @@ function closeAuthModal() {
 }
 function handleAuthOverlayClick(e) {
   if (e.target === document.getElementById('authModalOverlay')) closeAuthModal();
-}
-function loadHCaptchaScript(cb) {
-  if (document.querySelector('script[src*="hcaptcha"]')) { if (cb) cb(); return; }
-  var s = document.createElement('script');
-  s.src = 'https://js.hcaptcha.com/1/api.js';
-  s.async = true;
-  s.defer = true;
-  s.onload = function() { if (cb) cb(); };
-  document.body.appendChild(s);
 }
 function switchAmTab(tab) {
   const map = { signin: 'Signin', signup: 'Signup', early: 'Early' };
@@ -1665,7 +1651,6 @@ function showSignupStep(step) {
     s2.style.display = '';
     if (d1) d1.classList.remove('active');
     if (d2) d2.classList.add('active');
-    loadHCaptchaScript();
   }
 }
 function amSignupNextStep() {
@@ -1763,17 +1748,13 @@ function handleAmSignup() {
   if (!email || !password) { showToast('⚠️ Email and password required.'); return; }
   if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters.'); return; }
 
-  var captchaToken = document.querySelector('#amPanelSignup [name="h-captcha-response"]')?.value || '';
-  if (!captchaToken) { showToast('⚠️ Please complete the verification check above.'); return; }
-
   var submitBtn = document.querySelector('#amPanelSignup .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Creating…'; }
 
-  var payload = { email: email, password: password, captchaToken: captchaToken, display_name: displayName, full_name: name, mood: mood };
+  var payload = { email: email, password: password, display_name: displayName, full_name: name, mood: mood };
   apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(function(res) {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
     if (!res.ok) {
-      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
       var msg = (res.data && res.data.error) || 'Sign up failed.';
       showToast('❌ ' + msg);
       return;
@@ -1781,7 +1762,6 @@ function handleAmSignup() {
     var data = res.data || {};
     var token = data.access_token || (data.session && data.session.access_token);
     if (token) {
-      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
       window._getSupabaseClient().then(function(sb) {
         if (sb && data.session) sb.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token || '' }).catch(function() {});
         apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {});
@@ -1790,7 +1770,6 @@ function handleAmSignup() {
         if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
       });
     } else {
-      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
       if (typeof showVerificationPending === 'function') {
         showVerificationPending(email);
       } else {
@@ -1800,10 +1779,8 @@ function handleAmSignup() {
     }
   }).catch(function(err) {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
-    if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
     var msg = (err && err.message) || 'Sign up failed. Please try again.';
     if (msg.toLowerCase().includes('429') || msg.toLowerCase().includes('rate')) msg = 'Too many attempts. Please wait a few minutes.';
-    if (msg.toLowerCase().includes('already-seen') || msg.toLowerCase().includes('captcha')) msg = 'Verification expired. Please complete the check again and try once more.';
     showToast('❌ ' + msg);
   });
 }
@@ -1826,14 +1803,6 @@ function h11HandleSignup(e) {
     return;
   }
 
-  if (fromH11) {
-    var captchaToken = document.querySelector('#h11FormCard [name="h-captcha-response"]')?.value || '';
-    if (!captchaToken) {
-      showToast('⚠️ Please complete the verification check above.');
-      return;
-    }
-  }
-  
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
   
   async function doWaitlist(retry) {

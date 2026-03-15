@@ -6,7 +6,7 @@
 <script>
 (function(){var t='ontouchstart'in window||navigator.maxTouchPoints>0;var n=window.matchMedia&&matchMedia('(max-width:768px)').matches;if(t||n)document.documentElement.classList.add('mobile-perf');})();
 </script>
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://js.hcaptcha.com; frame-src 'self' https://newassets.hcaptcha.com https://hcaptcha.com https://accounts.google.com; connect-src 'self' http://localhost:3000 https://*.supabase.co https://gkeemcezdbfplwhocwzx.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://hcaptcha.com https://api.hcaptcha.com https://accounts.google.com https://www.googleapis.com; media-src 'self' blob:;">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; frame-src 'self' https://accounts.google.com; connect-src 'self' http://localhost:3000 https://*.supabase.co https://gkeemcezdbfplwhocwzx.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.google.com https://www.googleapis.com; media-src 'self' blob:;">
 <title>WhisperMe — Say What You Can't Say</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cabinet+Grotesk:wght@300;400;500;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -1338,7 +1338,6 @@
             <button onclick="h11SelectMood(this)" class="h11-mood-chip">🌙 Reflective</button>
           </div>
         </div>
-        <div class="h-captcha h11-captcha" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6"></div>
         <button class="h11-submit-btn" onclick="h11HandleSignup(event)">
           <span>Request Early Access</span>
           <span class="h11-submit-btn-arrow">🎙️</span>
@@ -3249,7 +3248,6 @@
             </div>
           </div>
 
-          <div class="h-captcha" id="amSignupStep2Captcha" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6" data-size="normal" aria-label="Security check"></div>
           <button class="am-submit" onclick="handleAmSignup()">
             <span>Create Account</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="am-submit-icon"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -3285,7 +3283,6 @@
           <input type="email" id="forgotPasswordEmail" class="am-input" placeholder="you@example.com" autocomplete="email" />
         </div>
       </div>
-      <div id="forgotPasswordCaptchaContainer"></div>
       <button type="button" class="am-submit" id="forgotPasswordBtn" onclick="handleForgotPasswordSubmit()" style="margin-top:20px;">
         <span>Send Reset Link</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="am-submit-icon"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -3371,7 +3368,6 @@
             <button class="auth-mood-chip" onclick="selectMood(this)">🔥 Bold</button>
             <button class="auth-mood-chip" onclick="selectMood(this)">🌙 Reflective</button>
           </div>
-          <div class="h-captcha" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6"></div>
           <button class="auth-submit-btn" id="authSignupBtn" onclick="handleAuthSignup()">Create My Account →</button>
           <div class="auth-social-divider">
             <div class="auth-divline"></div>
@@ -3701,7 +3697,6 @@
     var overlay = document.getElementById('forgotPasswordOverlay');
     var emailInput = document.getElementById('forgotPasswordEmail');
     var errEl = document.getElementById('forgotPasswordError');
-    var captchaContainer = document.getElementById('forgotPasswordCaptchaContainer');
     if (overlay) overlay.classList.add('active');
     document.body.classList.add('auth-modal-open');
     document.body.style.overflow = 'hidden';
@@ -3710,17 +3705,6 @@
       var signinEmail = document.getElementById('amSigninEmail') || document.getElementById('authSigninEmail');
       emailInput.value = signinEmail ? signinEmail.value : '';
       emailInput.focus();
-    }
-    if (captchaContainer) {
-      captchaContainer.innerHTML = '<div class="h-captcha" id="forgotPasswordCaptchaEl" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6"></div>';
-      if (typeof loadHCaptchaScript === 'function') {
-        loadHCaptchaScript(function() {
-          var el = document.getElementById('forgotPasswordCaptchaEl');
-          if (el && typeof hcaptcha !== 'undefined' && !el.getAttribute('data-rendered')) {
-            try { hcaptcha.render(el, { sitekey: '44981526-a43a-4a34-8816-97e4cdbc63a6' }); el.setAttribute('data-rendered', '1'); } catch (e) { console.warn('hCaptcha render:', e); }
-          }
-        });
-      }
     }
   };
   window.closeForgotPasswordModal = function() {
@@ -3740,11 +3724,6 @@
       if (emailInput) emailInput.focus();
       return;
     }
-    var captchaToken = document.querySelector('#forgotPasswordOverlay [name="h-captcha-response"]')?.value || '';
-    if (!captchaToken) {
-      if (errEl) { errEl.textContent = 'Please complete the verification check.'; errEl.style.display = 'block'; }
-      return;
-    }
     if (errEl) errEl.style.display = 'none';
     if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Sending…'; }
     var origin = window.location.origin;
@@ -3758,7 +3737,7 @@
           ? await window.apiFetch('/api/auth/forgot-password', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email, redirectTo: redirectTo, captchaToken: captchaToken }),
+              body: JSON.stringify({ email: email, redirectTo: redirectTo }),
               signal: ctrl.signal,
             })
           : { ok: false, data: {} };
@@ -3938,8 +3917,6 @@
     var password = document.getElementById('authSignupPassword') && document.getElementById('authSignupPassword').value;
     if (!email || !password) { showAuthError('Email and password required.', false); return; }
     if (password.length < 6) { showAuthError('Password must be at least 6 characters.', false); return; }
-    var captchaToken = document.querySelector('#authFormSignup [name="h-captcha-response"]')?.value || '';
-    if (!captchaToken) { showAuthError('Please complete the verification check above.', false); return; }
     var name = (document.getElementById('authSignupName') && document.getElementById('authSignupName').value.trim()) || '';
     var displayName = (document.getElementById('authSignupDisplayName') && document.getElementById('authSignupDisplayName').value.trim()) || name;
     var moodEl = document.querySelector('.auth-mood-chip.selected');
@@ -3947,17 +3924,15 @@
     var btn = document.getElementById('authSignupBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
     try {
-      var res = await (typeof window.apiFetch === 'function' ? window.apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, password: password, captchaToken: captchaToken, display_name: displayName, full_name: name, mood: mood }) }) : Promise.resolve({ ok: false, data: { error: 'API not configured' } }));
+      var res = await (typeof window.apiFetch === 'function' ? window.apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, password: password, display_name: displayName, full_name: name, mood: mood }) }) : Promise.resolve({ ok: false, data: { error: 'API not configured' } }));
       var data = res.data || {};
       var error = res.ok ? null : { message: (data.error || 'Sign up failed.') };
     } catch (e) { var error = { message: e && e.message || 'Sign up failed.' }; var data = {}; var res = { ok: false }; }
     if (res && !res.ok) {
-      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
       showAuthError((data && data.error) || error.message || 'Sign up failed.', false);
       if (btn) { btn.disabled = false; btn.textContent = 'Create My Account →'; }
       return;
     }
-    if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
     var token = data.access_token || (data.session && data.session.access_token);
     if (token) {
       window._getSupabaseClient().then(function(sb) {

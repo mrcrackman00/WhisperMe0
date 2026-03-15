@@ -29,10 +29,10 @@
 
 | Form | Protection |
 |------|-------------|
-| **Sign Up** | hCaptcha + honeypot (a_password) |
-| **Forgot Password** | hCaptcha |
+| **Sign Up** | Honeypot (a_password) |
+| **Forgot Password** | — |
 | **Waitlist (Join Beta)** | Honeypot (a_password) |
-| **Waitlist (h11 Get Early Access)** | hCaptcha + Honeypot (h11_a_password) |
+| **Waitlist (h11 Get Early Access)** | Honeypot (h11_a_password) |
 
 ### Frontend
 
@@ -46,7 +46,7 @@
 
 ## ⚠️ Recommendations
 
-1. **hCaptcha on h11 form** — ✅ Added. Get Early Access now has hCaptcha + honeypot.
+1. **Bot protection** — Honeypot fields on signup and waitlist forms.
 2. **ADMIN_EMAILS** — Set in Render env for admin routes.
 3. **Supabase RLS** — Ensure Row Level Security on all tables.
 4. **Cloudflare** — Add for DDoS/WAF if traffic grows.
