@@ -1769,47 +1769,42 @@ function handleAmSignup() {
   var submitBtn = document.querySelector('#amPanelSignup .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Creating…'; }
 
-  window._getSupabaseClient().then(function(sb) {
-    if (!sb) { showToast('⚠️ Auth not configured.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; } return; }
-    sb.auth.signUp({ 
-      email: email, 
-      password: password, 
-      options: { 
-        data: { full_name: name, display_name: displayName, mood: mood },
-        emailRedirectTo: window.location.origin,
-        captchaToken: captchaToken
-      } 
-    }).then(function(result) {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
-      if (result.error) {
-        var msg = result.error.message || 'Sign up failed.';
-        if (msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('limit')) msg = 'Too many attempts. Please wait a few minutes and try again.';
-        showToast('❌ ' + msg); return;
-      }
-      // Supabase may return no session if email confirmation is required
-      var token = result.data.session && result.data.session.access_token;
-      if (token) { 
-        apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {}); 
+  var payload = { email: email, password: password, captchaToken: captchaToken, display_name: displayName, full_name: name, mood: mood };
+  apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(function(res) {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
+    if (!res.ok) {
+      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
+      var msg = (res.data && res.data.error) || 'Sign up failed.';
+      showToast('❌ ' + msg);
+      return;
+    }
+    var data = res.data || {};
+    var token = data.access_token || (data.session && data.session.access_token);
+    if (token) {
+      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
+      window._getSupabaseClient().then(function(sb) {
+        if (sb && data.session) sb.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token || '' }).catch(function() {});
+        apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {});
         closeAuthModal();
         updateNavUser(email, displayName || name);
         if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
+      });
+    } else {
+      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
+      if (typeof showVerificationPending === 'function') {
+        showVerificationPending(email);
       } else {
-        if (typeof showVerificationPending === 'function') {
-          showVerificationPending(email);
-        } else {
-          showToast('✉️ Please check your email inbox to verify your account!');
-          closeAuthModal();
-        }
+        showToast('✉️ Please check your email inbox to verify your account!');
+        closeAuthModal();
       }
-    }).catch(function(err) {
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
-      var msg = (err && err.message) || 'Sign up failed. Please try again.';
-      if (msg.toLowerCase().includes('429') || msg.toLowerCase().includes('rate')) msg = 'Too many attempts. Please wait a few minutes.';
-      showToast('❌ ' + msg);
-    });
-  }).catch(function() {
-    showToast('⚠️ Cannot connect to auth service.');
+    }
+  }).catch(function(err) {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
+    if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
+    var msg = (err && err.message) || 'Sign up failed. Please try again.';
+    if (msg.toLowerCase().includes('429') || msg.toLowerCase().includes('rate')) msg = 'Too many attempts. Please wait a few minutes.';
+    if (msg.toLowerCase().includes('already-seen') || msg.toLowerCase().includes('captcha')) msg = 'Verification expired. Please complete the check again and try once more.';
+    showToast('❌ ' + msg);
   });
 }
 /* ── JOIN BETA / EARLY ACCESS SUBMISSION ── */

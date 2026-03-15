@@ -1338,7 +1338,7 @@
             <button onclick="h11SelectMood(this)" class="h11-mood-chip">🌙 Reflective</button>
           </div>
         </div>
-        <div class="h-captcha h11-captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a"></div>
+        <div class="h-captcha h11-captcha" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6"></div>
         <button class="h11-submit-btn" onclick="h11HandleSignup(event)">
           <span>Request Early Access</span>
           <span class="h11-submit-btn-arrow">🎙️</span>
@@ -3249,7 +3249,7 @@
             </div>
           </div>
 
-          <div class="h-captcha" id="amSignupStep2Captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a" data-size="normal" aria-label="Security check"></div>
+          <div class="h-captcha" id="amSignupStep2Captcha" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6" data-size="normal" aria-label="Security check"></div>
           <button class="am-submit" onclick="handleAmSignup()">
             <span>Create Account</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="am-submit-icon"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -3371,7 +3371,7 @@
             <button class="auth-mood-chip" onclick="selectMood(this)">🔥 Bold</button>
             <button class="auth-mood-chip" onclick="selectMood(this)">🌙 Reflective</button>
           </div>
-          <div class="h-captcha" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a"></div>
+          <div class="h-captcha" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6"></div>
           <button class="auth-submit-btn" id="authSignupBtn" onclick="handleAuthSignup()">Create My Account →</button>
           <div class="auth-social-divider">
             <div class="auth-divline"></div>
@@ -3712,12 +3712,12 @@
       emailInput.focus();
     }
     if (captchaContainer) {
-      captchaContainer.innerHTML = '<div class="h-captcha" id="forgotPasswordCaptchaEl" data-sitekey="86365536-db66-431c-bdaa-e14a1ae8e08a"></div>';
+      captchaContainer.innerHTML = '<div class="h-captcha" id="forgotPasswordCaptchaEl" data-sitekey="44981526-a43a-4a34-8816-97e4cdbc63a6"></div>';
       if (typeof loadHCaptchaScript === 'function') {
         loadHCaptchaScript(function() {
           var el = document.getElementById('forgotPasswordCaptchaEl');
           if (el && typeof hcaptcha !== 'undefined' && !el.getAttribute('data-rendered')) {
-            try { hcaptcha.render(el, { sitekey: '86365536-db66-431c-bdaa-e14a1ae8e08a' }); el.setAttribute('data-rendered', '1'); } catch (e) { console.warn('hCaptcha render:', e); }
+            try { hcaptcha.render(el, { sitekey: '44981526-a43a-4a34-8816-97e4cdbc63a6' }); el.setAttribute('data-rendered', '1'); } catch (e) { console.warn('hCaptcha render:', e); }
           }
         });
       }
@@ -3940,35 +3940,29 @@
     if (password.length < 6) { showAuthError('Password must be at least 6 characters.', false); return; }
     var captchaToken = document.querySelector('#authFormSignup [name="h-captcha-response"]')?.value || '';
     if (!captchaToken) { showAuthError('Please complete the verification check above.', false); return; }
-    var sb = await window._getSupabaseClient();
-    if (!sb) { showAuthError('Auth not configured. Is the backend running?', false); return; }
     var name = (document.getElementById('authSignupName') && document.getElementById('authSignupName').value.trim()) || '';
     var displayName = (document.getElementById('authSignupDisplayName') && document.getElementById('authSignupDisplayName').value.trim()) || name;
     var moodEl = document.querySelector('.auth-mood-chip.selected');
     var mood = moodEl ? moodEl.textContent.trim() : '';
     var btn = document.getElementById('authSignupBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
-    var { data, error } = await sb.auth.signUp({ 
-      email: email, 
-      password: password, 
-      options: { 
-        data: { full_name: name, display_name: displayName, mood: mood },
-        emailRedirectTo: window.location.origin,
-        captchaToken: captchaToken
-      } 
-    });
-    if (btn) { btn.disabled = false; btn.textContent = 'Create My Account →'; }
-    if (error) { 
-      var msg = error.message || 'Sign up failed.';
-      if (msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('limit') || msg.includes('429')) {
-        msg = 'Too many attempts. Please try again later.';
-      }
-      showAuthError(msg, false); 
-      return; 
+    try {
+      var res = await (typeof window.apiFetch === 'function' ? window.apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, password: password, captchaToken: captchaToken, display_name: displayName, full_name: name, mood: mood }) }) : Promise.resolve({ ok: false, data: { error: 'API not configured' } }));
+      var data = res.data || {};
+      var error = res.ok ? null : { message: (data.error || 'Sign up failed.') };
+    } catch (e) { var error = { message: e && e.message || 'Sign up failed.' }; var data = {}; var res = { ok: false }; }
+    if (res && !res.ok) {
+      if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
+      showAuthError((data && data.error) || error.message || 'Sign up failed.', false);
+      if (btn) { btn.disabled = false; btn.textContent = 'Create My Account →'; }
+      return;
     }
-    
-    var token = data.session && data.session.access_token;
+    if (typeof hcaptcha !== 'undefined') try { hcaptcha.reset(); } catch (e) {}
+    var token = data.access_token || (data.session && data.session.access_token);
     if (token) {
+      window._getSupabaseClient().then(function(sb) {
+        if (sb && data.session) sb.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token || '' }).catch(function(){});
+      });
       if (typeof window.apiFetch === 'function') {
         window.apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {});
       }
@@ -3982,6 +3976,7 @@
         if (typeof closeAuthModal === 'function') closeAuthModal();
       }
     }
+    if (btn) { btn.disabled = false; btn.textContent = 'Create My Account →'; }
   };
   window.handleAuthSignin = async function() {
     showAuthError('', true);

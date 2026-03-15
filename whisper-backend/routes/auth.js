@@ -12,6 +12,42 @@ const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimite
 
 const router = express.Router();
 
+const HCAPTCHA_SECRET = (process.env.HCAPTCHA_SECRET || '').trim();
+
+/** Verify hCaptcha token with siteverify API */
+async function verifyHcaptchaToken(responseToken, remoteip) {
+  if (!HCAPTCHA_SECRET) {
+    console.error('[signup] HCAPTCHA_SECRET not configured');
+    return { success: false, error: 'Captcha not configured' };
+  }
+  try {
+    const body = new URLSearchParams({
+      secret: HCAPTCHA_SECRET,
+      response: responseToken,
+      ...(remoteip && { remoteip }),
+    });
+    const res = await fetch('https://api.hcaptcha.com/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('[signup] siteverify HTTP error:', res.status, data);
+      return { success: false, error: 'Verification failed' };
+    }
+    const success = !!data.success;
+    const errorCodes = data['error-codes'] || [];
+    if (!success && errorCodes.length) {
+      console.warn('[signup] siteverify failed:', errorCodes);
+    }
+    return { success, errorCodes };
+  } catch (err) {
+    console.error('[signup] siteverify request error:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 /** GET /api/auth/me — return current user if valid JWT (for session check). */
 router.get('/me', authMiddleware, (req, res) => {
   const u = req.user;
@@ -42,6 +78,89 @@ router.post('/on-signup', authMiddleware, authLimiter, async (req, res) => {
     await sendWelcomeEmail(req.user.email, displayName || 'there');
   }
   res.json({ ok: true });
+});
+
+/**
+ * POST /api/auth/signup — server-side hCaptcha verification + Supabase signUp.
+ * Body: { email, password, captchaToken, display_name?, full_name?, mood? }
+ * Returns: { session?, user?, error? } — JSON only, never crashes.
+ */
+router.post('/signup', authLimiter, async (req, res) => {
+  const sendJson = (status, body) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(status).json(body);
+  };
+  try {
+    const email = (req.body?.email || '').trim().toLowerCase();
+    const password = req.body?.password;
+    const captchaToken = (req.body?.captchaToken || '').trim();
+    const displayName = (req.body?.display_name || '').trim();
+    const fullName = (req.body?.full_name || '').trim();
+    const mood = (req.body?.mood || '').trim();
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRe.test(email)) {
+      return sendJson(400, { error: 'Please enter a valid email address.' });
+    }
+    if (!password || typeof password !== 'string') {
+      return sendJson(400, { error: 'Password is required.' });
+    }
+    if (password.length < 6) {
+      return sendJson(400, { error: 'Password must be at least 6 characters.' });
+    }
+    if (!captchaToken) {
+      return sendJson(400, { error: 'Please complete the verification check above.' });
+    }
+
+    const verifyResult = await verifyHcaptchaToken(captchaToken, req.ip);
+    if (!verifyResult.success) {
+      const errCodes = verifyResult.errorCodes || [];
+      const isAlreadySeen = errCodes.some((c) => String(c).toLowerCase().includes('already-seen') || String(c).toLowerCase().includes('already_seen'));
+      const msg = isAlreadySeen
+        ? 'Verification expired. Please complete the check again and try once more.'
+        : 'Verification failed. Please complete the check again.';
+      console.warn('[signup] Captcha invalid:', errCodes);
+      return sendJson(400, { error: msg });
+    }
+
+    if (!supabaseAnon) {
+      console.error('[signup] Supabase anon client not configured');
+      return sendJson(503, { error: 'Auth not configured.' });
+    }
+
+    const { data, error } = await supabaseAnon.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName, display_name: displayName || fullName, mood },
+        emailRedirectTo: (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim() || undefined,
+        captchaToken,
+      },
+    });
+
+    if (error) {
+      const msg = (error.message || '').toLowerCase();
+      let userMsg = error.message || 'Sign up failed.';
+      if (msg.includes('rate') || msg.includes('limit') || msg.includes('429')) {
+        userMsg = 'Too many attempts. Please try again later.';
+      } else if (msg.includes('already-seen') || msg.includes('captcha')) {
+        userMsg = 'Verification expired. Please complete the check again and try once more.';
+      } else if (msg.includes('already registered') || msg.includes('user already')) {
+        userMsg = 'An account with this email already exists. Try signing in.';
+      }
+      console.error('[signup] Supabase signUp error:', error.code, error.message);
+      return sendJson(400, { error: userMsg });
+    }
+
+    const token = data?.session?.access_token;
+    if (token) {
+      return sendJson(200, { session: data.session, user: data.user, access_token: token });
+    }
+    return sendJson(200, { ok: true, message: 'Please check your email to verify your account.', user: data?.user });
+  } catch (err) {
+    console.error('[signup] Unexpected error:', err.message, err.stack);
+    return sendJson(500, { error: 'Something went wrong. Please try again.' });
+  }
 });
 
 /**
