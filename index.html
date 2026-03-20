@@ -3661,22 +3661,35 @@
     if (typeof window._getSupabaseClient !== 'function') return;
     window._getSupabaseClient().then(function(sb) {
       if (!sb) return;
+      function applySessionUI(session, isAuthReturn) {
+        if (!session || !session.access_token) return;
+        var userEmail = (session.user && session.user.email) || '';
+        var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
+        if (typeof updateNavUser === 'function') updateNavUser(userEmail, userName);
+        if (isAuthReturn && typeof showRegistrationSuccess === 'function') showRegistrationSuccess(userEmail, false);
+        if (isAuthReturn && typeof window.apiFetch === 'function') {
+          window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
+        }
+        if (isAuthReturn) {
+          window.history.replaceState('', document.title, window.location.pathname);
+        }
+      }
       return sb.auth.getSession().then(function(_ref) {
         var session = _ref.data && _ref.data.session;
         var hash = window.location.hash || '';
-        var isOAuthCallback = hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1;
+        var search = window.location.search || '';
+        var isAuthReturn = hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1 || search.indexOf('code=') !== -1;
         if (session && session.access_token) {
-          var userEmail = (session.user && session.user.email) || '';
-          var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
-          if (typeof updateNavUser === 'function') updateNavUser(userEmail, userName);
-          if (isOAuthCallback && typeof showRegistrationSuccess === 'function') showRegistrationSuccess(userEmail, false);
-          if (isOAuthCallback && typeof window.apiFetch === 'function') {
-            window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
-          }
+          applySessionUI(session, isAuthReturn);
+          return;
         }
-        if (isOAuthCallback) {
-          window.history.replaceState('', document.title, window.location.pathname + window.location.search);
-        }
+        if (!isAuthReturn) return;
+        return new Promise(function(r) { setTimeout(r, 250); }).then(function() {
+          return sb.auth.getSession().then(function(_ref2) {
+            var s2 = _ref2.data && _ref2.data.session;
+            if (s2 && s2.access_token) applySessionUI(s2, true);
+          });
+        });
       });
     }).catch(function(err) {
       if (typeof window._wmLog === 'function') window._wmLog('initAuth error', err && err.message);
@@ -4063,26 +4076,33 @@
   window.addEventListener('load', function() {
     window._getSupabaseClient().then(function(sb) {
       if (!sb) return;
+      function applyLoadSession(session, isAuthReturn) {
+        if (!session || !session.access_token) return;
+        var userEmail = (session.user && session.user.email) || '';
+        var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
+        updateNavUser(userEmail, userName);
+        if (isAuthReturn) {
+          showRegistrationSuccess(userEmail, false);
+          if (typeof window.apiFetch === 'function') window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
+          window.history.replaceState('', document.title, window.location.pathname);
+        }
+      }
       return sb.auth.getSession().then(function(_ref) {
         var session = _ref.data && _ref.data.session;
         var hash = window.location.hash || '';
-        var isOAuthCallback = hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1;
-
+        var search = window.location.search || '';
+        var isAuthReturn = hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1 || search.indexOf('code=') !== -1;
         if (session && session.access_token) {
-          var userEmail = (session.user && session.user.email) || '';
-          var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
-          updateNavUser(userEmail, userName);
-
-          // Only show success popup and track login for fresh OAuth returns
-          if (isOAuthCallback) {
-            showRegistrationSuccess(userEmail, false);
-            if (typeof window.apiFetch === 'function') window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
-          }
+          applyLoadSession(session, isAuthReturn);
+          return;
         }
-
-        if (isOAuthCallback) {
-          window.history.replaceState('', document.title, window.location.pathname + window.location.search);
-        }
+        if (!isAuthReturn) return;
+        return new Promise(function(r) { setTimeout(r, 250); }).then(function() {
+          return sb.auth.getSession().then(function(_ref2) {
+            var s2 = _ref2.data && _ref2.data.session;
+            if (s2 && s2.access_token) applyLoadSession(s2, true);
+          });
+        });
       });
     }).catch(function() {});
   });

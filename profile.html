@@ -478,8 +478,16 @@ async function init() {
   sb = await window._getSupabaseClient();
   if (!sb) { redirectToLogin('Cannot connect to backend.'); return; }
 
-  const { data } = await sb.auth.getSession();
-  const session = data && data.session;
+  let { data } = await sb.auth.getSession();
+  let session = data && data.session;
+  const h = window.location.hash || '';
+  const q = window.location.search || '';
+  if (!session && (h.indexOf('access_token') !== -1 || q.indexOf('code=') !== -1)) {
+    await new Promise(function(r) { setTimeout(r, 300); });
+    const again = await sb.auth.getSession();
+    session = again.data && again.data.session;
+    if (session) window.history.replaceState('', document.title, window.location.pathname);
+  }
   if (!session) { redirectToLogin(); return; }
 
   currentUser = session.user;

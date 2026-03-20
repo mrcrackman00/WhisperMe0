@@ -47,7 +47,33 @@
       }
       if (!c.supabaseUrl || !c.supabaseAnonKey) return null;
 
-      supabase = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey);
+      supabase = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey, {
+        auth: {
+          detectSessionInUrl: true,
+          persistSession: true,
+          autoRefreshToken: true
+        }
+      });
+
+      // Email confirm / magic link: Supabase may redirect with ?code= (PKCE) instead of #access_token
+      try {
+        var search = window.location.search || '';
+        var hash = window.location.hash || '';
+        var codeMatch = search.match(/[?&]code=([^&]+)/);
+        if (codeMatch && codeMatch[1] && typeof supabase.auth.exchangeCodeForSession === 'function') {
+          var authCode = decodeURIComponent(codeMatch[1].replace(/\+/g, ' '));
+          var ex = await supabase.auth.exchangeCodeForSession(authCode);
+          if (ex && ex.error && console && console.warn) console.warn('[WM] exchangeCodeForSession:', ex.error.message);
+        }
+        // Give SDK a tick to parse hash fragments after client creation
+        if (hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1) {
+          await supabase.auth.getSession();
+          await new Promise(function(r) { setTimeout(r, 50); });
+          await supabase.auth.getSession();
+        }
+      } catch (urlAuthErr) {
+        if (console && console.warn) console.warn('[WM] URL auth handling:', urlAuthErr && urlAuthErr.message);
+      }
 
       try {
         supabase.auth.onAuthStateChange(function(event, session) {
@@ -60,8 +86,10 @@
               var email = session.user && session.user.email;
               var name = session.user && session.user.user_metadata && session.user.user_metadata.display_name;
               if (typeof updateNavUser === 'function') updateNavUser(email, name);
-              if (window.location.hash.includes('access_token')) {
-                history.replaceState(null, document.title, window.location.pathname + window.location.search);
+              var h = window.location.hash || '';
+              var s = window.location.search || '';
+              if (h.indexOf('access_token') !== -1 || s.indexOf('code=') !== -1) {
+                history.replaceState(null, document.title, window.location.pathname);
               }
             }
           } catch (authErr) {
