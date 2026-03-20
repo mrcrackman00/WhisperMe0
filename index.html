@@ -3653,8 +3653,25 @@
     return (typeof window.getApiBase === 'function') ? window.getApiBase() : ((window.API_BASE_URL && String(window.API_BASE_URL).trim()) || 'https://whisperme0-production.up.railway.app').replace(/\/$/, '');
   }
 
+  /** Supabase puts #error=...&error_code=otp_expired in URL when confirm link is old */
+  window.handleSupabaseAuthUrlErrors = function() {
+    if (window.__wmAuthUrlErrorDone) return;
+    var h = (window.location.hash || '').replace(/^#/, '');
+    if (!h || h.indexOf('error=') === -1) return;
+    window.__wmAuthUrlErrorDone = true;
+    var params = new URLSearchParams(h);
+    var errCode = (params.get('error_code') || '').toLowerCase();
+    var desc = (params.get('error_description') || '').replace(/\+/g, ' ');
+    window.history.replaceState('', document.title, window.location.pathname);
+    var msg = 'Email link invalid or expired. Use Sign In → Forgot password, or sign up again for a new email.';
+    if (errCode === 'otp_expired') msg = 'This confirm link expired (links expire in ~1 hour). Sign up again or tap Resend in the verify screen for a fresh link.';
+    if (desc && desc.indexOf('expired') !== -1 && errCode !== 'otp_expired') msg = 'Link expired. Request a new verification email.';
+    if (typeof showToast === 'function') showToast('⚠️ ' + msg);
+  };
+
   // Initialize on load to catch returning email confirmations + OAuth callback
   function initAuth() {
+    window.handleSupabaseAuthUrlErrors();
     try {
       if (typeof window._wmLog === 'function') window._wmLog('initAuth', 'start');
     } catch (_) {}
@@ -3666,12 +3683,17 @@
         var userEmail = (session.user && session.user.email) || '';
         var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
         if (typeof updateNavUser === 'function') updateNavUser(userEmail, userName);
-        if (isAuthReturn && typeof showRegistrationSuccess === 'function') showRegistrationSuccess(userEmail, false);
         if (isAuthReturn && typeof window.apiFetch === 'function') {
           window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
         }
         if (isAuthReturn) {
           window.history.replaceState('', document.title, window.location.pathname);
+          if (!window.__wmProfileRedirectScheduled) {
+            window.__wmProfileRedirectScheduled = true;
+            if (typeof showToast === 'function') showToast('✅ Verified! Opening your profile…');
+            setTimeout(function() { window.location.href = 'profile.html'; }, 650);
+          }
+          return;
         }
       }
       return sb.auth.getSession().then(function(_ref) {
@@ -4074,6 +4096,7 @@
 
   /** On load: restore session from storage (runs on every page load/navigation). */
   window.addEventListener('load', function() {
+    if (typeof window.handleSupabaseAuthUrlErrors === 'function') window.handleSupabaseAuthUrlErrors();
     window._getSupabaseClient().then(function(sb) {
       if (!sb) return;
       function applyLoadSession(session, isAuthReturn) {
@@ -4082,9 +4105,14 @@
         var userName = (session.user && session.user.user_metadata && (session.user.user_metadata.display_name || session.user.user_metadata.full_name)) || '';
         updateNavUser(userEmail, userName);
         if (isAuthReturn) {
-          showRegistrationSuccess(userEmail, false);
           if (typeof window.apiFetch === 'function') window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token } }).catch(function() {});
           window.history.replaceState('', document.title, window.location.pathname);
+          if (!window.__wmProfileRedirectScheduled) {
+            window.__wmProfileRedirectScheduled = true;
+            if (typeof showToast === 'function') showToast('✅ Verified! Opening your profile…');
+            setTimeout(function() { window.location.href = 'profile.html'; }, 650);
+          }
+          return;
         }
       }
       return sb.auth.getSession().then(function(_ref) {

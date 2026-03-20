@@ -59,6 +59,9 @@
       try {
         var search = window.location.search || '';
         var hash = window.location.hash || '';
+        if (hash.indexOf('error=') !== -1 && typeof window.handleSupabaseAuthUrlErrors === 'function') {
+          window.handleSupabaseAuthUrlErrors();
+        }
         var codeMatch = search.match(/[?&]code=([^&]+)/);
         if (codeMatch && codeMatch[1] && typeof supabase.auth.exchangeCodeForSession === 'function') {
           var authCode = decodeURIComponent(codeMatch[1].replace(/\+/g, ' '));
