@@ -1,64 +1,19 @@
-/* ═══════════════════════════════════════════
-   SITE HEADER — Beta banner + floating nav pill
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SITE HEADER â€” Beta banner + floating nav pill
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-.site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px 0;
-  pointer-events: none;
-}
-
-.site-header > * {
-  pointer-events: auto;
-}
-
-/* Thin line above nav — matches marketing reference (no clash with center links) */
-.site-beta-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 0;
-  padding: 0 12px;
-  font-family: 'Cabinet Grotesk', sans-serif;
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(44, 40, 36, 0.52);
-  text-align: center;
-}
-
-.site-beta-banner .nav-status-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: min(440px, calc(100vw - 100px));
-}
-
-.site-header.scrolled {
-  gap: 8px;
-  padding-top: 6px;
-}
-
-/* ═══════════════════════════════════════════
-   NAVBAR — Premium Floating Pill
-   ═══════════════════════════════════════════ */
+/* Thin line above nav â€” matches marketing reference (no clash with center links) */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   NAVBAR â€” Premium Floating Pill
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 nav {
-  position: relative;
-  left: auto;
-  top: auto;
-  transform: none;
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
   width: min(1180px, calc(100% - 28px));
-  z-index: 1;
+  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -89,7 +44,7 @@ nav.scrolled {
     0 14px 40px rgba(28, 26, 24, 0.11);
 }
 
-/* ── Brand ── */
+/* â”€â”€ Brand â”€â”€ */
 .nav-brand {
   display: flex;
   align-items: center;
@@ -138,17 +93,7 @@ nav.scrolled {
   color: var(--rose);
 }
 
-.nav-status-dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.25);
-  animation: navDotPulse 2.2s ease-in-out infinite;
-}
-
-/* ── Center nav ── */
+/* â”€â”€ Center nav â”€â”€ */
 .nav-center {
   position: absolute;
   left: 50%;
@@ -200,7 +145,7 @@ nav.scrolled {
     inset 0 0 0 1px rgba(28, 26, 24, 0.05);
 }
 
-/* ── Right actions ── */
+/* â”€â”€ Right actions â”€â”€ */
 .nav-actions {
   display: flex;
   align-items: center;
@@ -258,7 +203,7 @@ nav.scrolled {
   50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.14); }
 }
 
-/* ── Mobile hamburger ── */
+/* â”€â”€ Mobile hamburger â”€â”€ */
 .nav-mobile-toggle {
   display: none;
   width: 36px;
@@ -289,7 +234,7 @@ nav.scrolled {
   transition: transform 0.28s ease, opacity 0.2s ease;
 }
 
-/* ── Mobile overlay ── */
+/* â”€â”€ Mobile overlay â”€â”€ */
 .mobile-nav-overlay {
   position: fixed;
   inset: 0;
@@ -338,7 +283,7 @@ nav.scrolled {
 .mobile-nav-overlay.open .mobile-nav-panel {
   transform: translateX(0);
   pointer-events: auto;
-  z-index: 1;
+  z-index: 200;
 }
 .mobile-nav-panel a,
 .mobile-nav-panel button {
@@ -447,7 +392,7 @@ nav.scrolled {
   transform: translateY(-1px);
 }
 
-/* ── Legacy button classes (used by other page sections) ── */
+/* â”€â”€ Legacy button classes (used by other page sections) â”€â”€ */
 .btn-ghost {
   color: var(--ink);
   background: transparent;
@@ -491,32 +436,12 @@ nav.scrolled {
   box-shadow: 0 8px 24px rgba(212, 96, 122, 0.3);
 }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (min-width: 961px) {
   .nav-mobile-toggle { display: none !important; }
 }
 
-@media (max-width: 960px) {
-  .site-header {
-    padding: 8px 8px 0;
-    gap: 8px;
-  }
-
-  .site-beta-banner {
-    font-size: 0.65rem;
-    letter-spacing: 0.03em;
-  }
-
-  .site-beta-banner .nav-status-text {
-    max-width: calc(100vw - 48px);
-  }
-
-  nav {
-    width: calc(100% - 16px);
-    padding: 7px 7px 7px 14px;
-  }
-
-  .nav-center { display: none; }
+ param($m) "@media (max-width: 960px) {" + $m.Groups[1].Value + "  nav.scrolled {`r`n    top: 6px;`r`n  }`r`n`r`n  .nav-center { display: none; }" 
   .nav-signin { display: none; }
   .nav-mobile-toggle { display: inline-flex !important; }
 
