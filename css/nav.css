@@ -1,11 +1,6 @@
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SITE HEADER â€” Beta banner + floating nav pill
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-
-/* Thin line above nav â€” matches marketing reference (no clash with center links) */
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   NAVBAR â€” Premium Floating Pill
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/*
+   NAVBAR - Premium floating pill
+   ================================ */
 
 nav {
   position: fixed;
@@ -44,7 +39,7 @@ nav.scrolled {
     0 14px 40px rgba(28, 26, 24, 0.11);
 }
 
-/* â”€â”€ Brand â”€â”€ */
+/* ── Brand ── */
 .nav-brand {
   display: flex;
   align-items: center;
@@ -93,7 +88,7 @@ nav.scrolled {
   color: var(--rose);
 }
 
-/* â”€â”€ Center nav â”€â”€ */
+/* ── Center nav (desktop) ── */
 .nav-center {
   position: absolute;
   left: 50%;
@@ -145,7 +140,7 @@ nav.scrolled {
     inset 0 0 0 1px rgba(28, 26, 24, 0.05);
 }
 
-/* â”€â”€ Right actions â”€â”€ */
+/* ── Right actions ── */
 .nav-actions {
   display: flex;
   align-items: center;
@@ -203,7 +198,7 @@ nav.scrolled {
   50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.14); }
 }
 
-/* â”€â”€ Mobile hamburger â”€â”€ */
+/* ── Mobile hamburger ── */
 .nav-mobile-toggle {
   display: none;
   width: 36px;
@@ -234,7 +229,7 @@ nav.scrolled {
   transition: transform 0.28s ease, opacity 0.2s ease;
 }
 
-/* â”€â”€ Mobile overlay â”€â”€ */
+/* ── Mobile overlay ── */
 .mobile-nav-overlay {
   position: fixed;
   inset: 0;
@@ -392,7 +387,7 @@ nav.scrolled {
   transform: translateY(-1px);
 }
 
-/* â”€â”€ Legacy button classes (used by other page sections) â”€â”€ */
+/* ── Legacy button classes (used by other page sections) ── */
 .btn-ghost {
   color: var(--ink);
   background: transparent;
@@ -436,17 +431,59 @@ nav.scrolled {
   box-shadow: 0 8px 24px rgba(212, 96, 122, 0.3);
 }
 
-/* â”€â”€ Responsive â”€â”€ */
+/* ── Responsive ── */
 @media (min-width: 961px) {
-  .nav-mobile-toggle { display: none !important; }
+  .nav-mobile-toggle {
+    display: none !important;
+  }
 }
 
- param($m) "@media (max-width: 960px) {" + $m.Groups[1].Value + "  nav.scrolled {`r`n    top: 6px;`r`n  }`r`n`r`n  .nav-center { display: none; }" 
-  .nav-signin { display: none; }
-  .nav-mobile-toggle { display: inline-flex !important; }
+/* Mobile / tablet: hide desktop link strip + Sign In — only logo, Sign Up, menu */
+@media (max-width: 960px) {
+  nav {
+    top: 10px;
+    width: calc(100% - 16px);
+    padding: 7px 7px 7px 14px;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+  }
 
-  .nav-wordmark { font-size: 1rem; }
-  .nav-logo-mark { width: 30px; height: 30px; border-radius: 8px; }
+  nav.scrolled {
+    top: 6px;
+  }
+
+  .nav-center {
+    display: none !important;
+  }
+
+  .nav-signin {
+    display: none !important;
+  }
+
+  .nav-mobile-toggle {
+    display: inline-flex !important;
+  }
+
+  .nav-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .nav-actions {
+    flex-shrink: 0;
+    gap: 8px;
+  }
+
+  .nav-wordmark {
+    font-size: 1rem;
+  }
+
+  .nav-logo-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
 
   .nav-signup {
     padding: 7px 14px;
@@ -460,6 +497,12 @@ nav.scrolled {
     padding: 6px 6px 6px 12px;
   }
 
-  .nav-signup { padding: 6px 12px; font-size: 0.74rem; }
-  .nav-wordmark { font-size: 0.92rem; }
+  .nav-signup {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+
+  .nav-wordmark {
+    font-size: 0.92rem;
+  }
 }
