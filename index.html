@@ -29,19 +29,19 @@
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- NAV -->
-<nav id="nav">
+<!-- Fixed header: beta line above nav (reference layout — no overlap with menu) -->
+<header class="site-header" id="siteHeader" aria-label="Site header">
+  <p class="site-beta-banner" role="status" aria-label="Product status">
+    <span class="nav-status-dot" aria-hidden="true"></span>
+    <span class="nav-status-text">Private beta for voice-first communities</span>
+  </p>
+  <nav id="nav">
   <a href="#" class="nav-brand" onclick="showPage('home');return false;">
     <div class="nav-logo-mark">
       <img src="assets/logo-mark.svg" alt="WhisperMe" width="34" height="34">
     </div>
     <span class="nav-wordmark">Whisper<em>Me</em></span>
   </a>
-
-  <div class="nav-status" aria-label="Product status">
-    <span class="nav-status-dot" aria-hidden="true"></span>
-    <span class="nav-status-text">Private beta for voice-first communities</span>
-  </div>
 
   <div class="nav-center">
     <ul class="nav-links">
@@ -65,7 +65,8 @@
       <span></span><span></span>
     </button>
   </div>
-</nav>
+  </nav>
+</header>
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="handleMobileNavOverlay(event)">
@@ -119,7 +120,7 @@
     <div class="hero-left">
       <a href="#" class="hero-badge" onclick="openAuthModal('early');return false;">
         <span class="hero-badge-dot"></span>
-        Limited Early Access - Join Now
+        Limited Early Access — Join Now
       </a>
 
       <div class="hero-kicker">Voice-native social, rebuilt for signal over noise</div>

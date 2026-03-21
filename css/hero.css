@@ -9,7 +9,8 @@
 #hero-v11 {
   position: relative;
   min-height: 100vh;
-  padding: 120px 5% 60px;
+  /* Extra top padding: fixed header = beta line + nav pill */
+  padding: 142px 5% 60px;
   overflow: hidden;
   /* Animated mesh base — Stripe-style */
   background:
@@ -1176,7 +1177,7 @@
 }
 
 @media (max-width: 860px) {
-  #hero-v11 { padding: 110px 5% 80px; }
+  #hero-v11 { padding: 128px 5% 80px; }
 
   .hero-split {
     grid-template-columns: 1fr;
@@ -1218,7 +1219,7 @@
 }
 
 @media (max-width: 560px) {
-  #hero-v11 { padding: 100px 16px 48px; }
+  #hero-v11 { padding: 118px 16px 48px; }
 
   .hero-headline { font-size: clamp(2rem, 9vw, 2.8rem); }
   .hero-kicker { font-size: 0.62rem; letter-spacing: 0.12em; }

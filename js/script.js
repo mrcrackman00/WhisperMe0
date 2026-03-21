@@ -604,6 +604,7 @@ if (cursor && ring && enableCustomCursor) {
 
 /* ── NAV + SCROLL SMOOTHNESS ── */
 const nav = document.getElementById('nav');
+const siteHeader = document.getElementById('siteHeader');
 let navTicking = false;
 let scrollEndTimer = null;
 window.addEventListener('scroll', function() {
@@ -612,7 +613,9 @@ window.addEventListener('scroll', function() {
     navTicking = true;
     requestAnimationFrame(function() {
       try {
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 30);
+        const scrolled = window.scrollY > 30;
+        if (nav) nav.classList.toggle('scrolled', scrolled);
+        if (siteHeader) siteHeader.classList.toggle('scrolled', scrolled);
       } finally {
         navTicking = false;
       }
@@ -890,10 +893,13 @@ function showPage(name) {
   });
   // Update nav scroll style immediately
   const nav = document.getElementById('nav');
+  const siteHeader = document.getElementById('siteHeader');
   if (name === 'home') {
     nav.classList.remove('scrolled');
+    if (siteHeader) siteHeader.classList.remove('scrolled');
   } else {
     nav.classList.add('scrolled');
+    if (siteHeader) siteHeader.classList.add('scrolled');
   }
   // Rebuild app preview cards if needed
   if (name === 'app-preview') {
