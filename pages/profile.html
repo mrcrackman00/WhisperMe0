@@ -215,7 +215,7 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 
 <!-- ══ NAVBAR ══ -->
 <nav class="p-nav">
-  <a class="p-nav-brand" href="index.html">
+  <a class="p-nav-brand" href="../index.html">
     <div class="p-nav-logo">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="9" stroke="#D4607A" stroke-width="1.5"/>
@@ -228,9 +228,9 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 
   <div class="p-nav-center">
     <ul class="p-nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="index.html#explore">Explore</a></li>
-      <li><a href="index.html#features">Features</a></li>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../index.html#explore">Explore</a></li>
+      <li><a href="../index.html#features">Features</a></li>
       <li><a href="profile.html" class="active">Profile</a></li>
     </ul>
   </div>
@@ -460,15 +460,15 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 <div class="p-toast" id="pToastEl"></div>
 
 <!-- Supabase -->
-<script src="./js/config.js"></script>
+<script src="../js/config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="./js/supabase.js"></script>
+<script src="../js/supabase.js"></script>
 <script>
 let sb = null;
 let currentUser = null;
 let anonMode = false;
 
-const PROFILE_AUDIO_BASE = 'audio/';
+const PROFILE_AUDIO_BASE = '../audio/';
 const DEMO_POSTS = [
   { id:1, bg:'linear-gradient(135deg,#F2C4CE,#D4607A)', letter:'', name:'', mood:'💙 Open', time:'2 min ago', dur:'0:47', audio:'quiet-joy.mp3', likes:84, replies:12, waves:[12,20,34,52,44,28,38,50,42,30,18,24,40,56,48,32,20,14,22,36] },
   { id:2, bg:'linear-gradient(135deg,#D4C5E2,#7C5CBF)', letter:'', name:'', mood:'🌙 Reflective', time:'1 hr ago', dur:'1:12', audio:'late-night-thoughts.mp3', likes:231, replies:28, waves:[8,16,28,44,36,52,40,24,18,30,46,38,22,14,10,20,34,48,56,42] },
@@ -500,7 +500,7 @@ async function init() {
 
 function redirectToLogin(msg) {
   if (msg) alert(msg);
-  window.location.href = 'index.html';
+  window.location.href = '../index.html';
 }
 
 function loadUserData(user) {
@@ -740,9 +740,9 @@ function shareProfile() {
 
 // Logout
 async function handleLogout() {
-  if (!sb) { window.location.href = 'index.html'; return; }
+  if (!sb) { window.location.href = '../index.html'; return; }
   await sb.auth.signOut();
-  window.location.href = 'index.html';
+  window.location.href = '../index.html';
 }
 
 // Toast

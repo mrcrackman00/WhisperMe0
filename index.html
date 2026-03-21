@@ -38,6 +38,11 @@
     <span class="nav-wordmark">Whisper<em>Me</em></span>
   </a>
 
+  <div class="nav-status" aria-label="Product status">
+    <span class="nav-status-dot"></span>
+    Private beta for voice-first communities
+  </div>
+
   <div class="nav-center">
     <ul class="nav-links">
       <li><a href="#" class="nav-link" data-page="features" onclick="showPage('features');return false;">Features</a></li>
@@ -52,7 +57,7 @@
   <div class="nav-actions">
     <a href="#" class="nav-signin" id="navSignin" onclick="openAuthModal('signin');return false;">Sign In</a>
     <a href="#" class="nav-signup" id="navSignup" onclick="openAuthModal('signup');return false;">Sign Up</a>
-    <a href="profile.html" class="nav-user" id="navUser" style="display:none;text-decoration:none;" title="View Profile">
+    <a href="pages/profile.html" class="nav-user" id="navUser" style="display:none;text-decoration:none;" title="View Profile">
       <span class="nav-user-avatar" id="navUserAvatar"></span>
       <span class="nav-user-name" id="navUserName"></span>
     </a>
@@ -3023,17 +3028,17 @@
     </div>
     <div class="footer-col">
       <h4>Company</h4>
-      <a href="about.html">About Us</a>
-      <a href="blog.html">Blog</a>
-      <a href="careers.html">Careers</a>
-      <a href="press.html">Press &amp; Media</a>
+      <a href="pages/about.html">About Us</a>
+      <a href="pages/blog.html">Blog</a>
+      <a href="pages/careers.html">Careers</a>
+      <a href="pages/press.html">Press &amp; Media</a>
     </div>
     <div class="footer-col">
       <h4>Legal</h4>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Service</a>
-      <a href="cookies.html">Cookie Policy</a>
-      <a href="accessibility.html">Accessibility</a>
+      <a href="pages/privacy.html">Privacy Policy</a>
+      <a href="pages/terms.html">Terms of Service</a>
+      <a href="pages/cookies.html">Cookie Policy</a>
+      <a href="pages/accessibility.html">Accessibility</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -3691,7 +3696,7 @@
           if (!window.__wmProfileRedirectScheduled) {
             window.__wmProfileRedirectScheduled = true;
             if (typeof showToast === 'function') showToast('✅ Verified! Opening your profile…');
-            setTimeout(function() { window.location.href = 'profile.html'; }, 650);
+            setTimeout(function() { window.location.href = 'pages/profile.html'; }, 650);
           }
           return;
         }
@@ -4110,7 +4115,7 @@
           if (!window.__wmProfileRedirectScheduled) {
             window.__wmProfileRedirectScheduled = true;
             if (typeof showToast === 'function') showToast('✅ Verified! Opening your profile…');
-            setTimeout(function() { window.location.href = 'profile.html'; }, 650);
+            setTimeout(function() { window.location.href = 'pages/profile.html'; }, 650);
           }
           return;
         }

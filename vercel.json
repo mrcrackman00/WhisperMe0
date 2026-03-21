@@ -1,8 +1,8 @@
 {
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/blog", "destination": "/blog.html" },
-    { "source": "/blog-article", "destination": "/blog-article.html" },
-    { "source": "/((?!api|js|css|screenshots|email-templates|whisper-backend)(?!.*\\.).*)", "destination": "/index.html" }
+    { "source": "/blog", "destination": "/pages/blog.html" },
+    { "source": "/blog-article", "destination": "/pages/blog-article.html" },
+    { "source": "/((?!api|js|css|pages|screenshots|email-templates|whisper-backend)(?!.*\\.).*)", "destination": "/index.html" }
   ]
 }

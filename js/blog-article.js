@@ -6,16 +6,16 @@
   var slug = (new URLSearchParams(window.location.search)).get('slug') 
     || (window.location.hash ? window.location.hash.slice(1) : null);
   if (!slug || slug === 'null' || slug === 'undefined' || slug.length < 2) {
-    window.location.replace('blog.html');
+    window.location.replace('/pages/blog.html');
     return;
   }
   if (!window.BLOG_POSTS || !Array.isArray(window.BLOG_POSTS)) {
-    window.location.replace('blog.html');
+    window.location.replace('/pages/blog.html');
     return;
   }
   var post = window.BLOG_POSTS.find(function(p) { return p.slug === slug; });
   if (!post) {
-    window.location.replace('blog.html');
+    window.location.replace('/pages/blog.html');
     return;
   }
 
@@ -89,7 +89,7 @@
   var grid = document.getElementById('relatedGrid');
   related.forEach(function(r) {
     var a = document.createElement('a');
-    a.href = 'blog-article.html?slug=' + encodeURIComponent(r.slug);
+    a.href = '/pages/blog-article.html?slug=' + encodeURIComponent(r.slug);
     a.className = 'sp-post blog-related-card reveal';
     a.setAttribute('tabindex', '0');
     a.innerHTML = '<div class="sp-post-img-wrap"><div class="sp-post-img-placeholder sp-post-icon" style="background:' + (r.gradient || 'linear-gradient(135deg,#1C1A18,#3a1a2a)') + '">' + (r.icon || '📄') + '</div></div>' +
