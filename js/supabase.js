@@ -4,10 +4,7 @@
  * IMPORTANT: Uses project API URL (https://PROJECT_ID.supabase.co), never dashboard URL.
  */
 (function() {
-  var FALLBACK_CONFIG = {
-    supabaseUrl: 'https://gkeemcezdbfplwhocwzx.supabase.co',
-    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZWVtY2V6ZGJmcGx3aG9jd3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDk3NjYsImV4cCI6MjA4ODgyNTc2Nn0.vCdI5ZEPvTP98VOM_-s1WY_qLmTnVD8BQvHrpQPuCvw'
-  };
+  /** No real keys in git — loaded from backend GET /api/public-config (see docs/PUBLIC-REPO-SECRETS.md) */
 
   function isValidSupabaseUrl(url) {
     if (!url || typeof url !== 'string') return false;
@@ -20,7 +17,7 @@
   function getValidConfig(c) {
     var url = (c && c.supabaseUrl && String(c.supabaseUrl).trim()) || '';
     var key = (c && c.supabaseAnonKey && String(c.supabaseAnonKey).trim()) || '';
-    if (!isValidSupabaseUrl(url) || !key) return FALLBACK_CONFIG;
+    if (!isValidSupabaseUrl(url) || !key) return null;
     return { supabaseUrl: url.replace(/\/$/, ''), supabaseAnonKey: key };
   }
 
@@ -37,15 +34,13 @@
         return null;
       }
 
-      var c = FALLBACK_CONFIG;
+      var raw = {};
       try {
         var result = await (window.apiFetch ? window.apiFetch('/api/public-config') : Promise.resolve({ ok: false, data: null }));
-        if (result && result.ok && result.data) c = getValidConfig(result.data);
-        else c = FALLBACK_CONFIG;
-      } catch (e) {
-        c = FALLBACK_CONFIG;
-      }
-      if (!c.supabaseUrl || !c.supabaseAnonKey) return null;
+        if (result && result.ok && result.data) raw = result.data;
+      } catch (e) {}
+      var c = getValidConfig(raw);
+      if (!c) return null;
 
       supabase = window.supabase.createClient(c.supabaseUrl, c.supabaseAnonKey, {
         auth: {

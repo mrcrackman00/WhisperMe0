@@ -36,7 +36,7 @@ const securityHeaders = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data:",
-    "connect-src 'self' http://localhost:3000 https://*.supabase.co https://gkeemcezdbfplwhocwzx.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.google.com https://www.googleapis.com",
+    "connect-src 'self' http://localhost:3000 https://*.supabase.co https://*.onrender.com https://*.railway.app https://*.vercel.app https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.google.com https://www.googleapis.com",
     "frame-src 'self' https://accounts.google.com",
     "frame-ancestors 'none'",
   ].join('; '),

@@ -17,4 +17,8 @@ Email: Resend
 Security: Cloudflare Turnstile
 
 ## Status
-Currently in private development.
+In active development.
+
+## Public repository & secrets
+
+Secrets (Supabase **service role**, email API keys, etc.) **never** belong in git — use `.env` locally and your host’s env vars (e.g. Railway). See **[docs/PUBLIC-REPO-SECRETS.md](docs/PUBLIC-REPO-SECRETS.md)**. The frontend loads the public Supabase anon key at runtime from your backend’s `/api/public-config`, not from hardcoded values in this repo.
