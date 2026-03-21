@@ -237,6 +237,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  max-width: 580px;
 }
 
 /* Badge */
@@ -273,15 +274,36 @@
   flex-shrink: 0;
 }
 
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: rgba(28, 26, 24, 0.56);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 720;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  animation: heroFadeUp 0.6s 0.04s ease both;
+}
+
+.hero-kicker::before {
+  content: '';
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(212, 96, 122, 0.75), rgba(212, 96, 122, 0));
+}
+
 /* Headline */
 .hero-headline {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2.6rem, 5.2vw, 4.6rem);
+  font-size: clamp(3rem, 5.8vw, 5.35rem);
   font-weight: 900;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  line-height: 0.96;
+  letter-spacing: -0.045em;
   color: var(--charcoal);
-  margin-bottom: 24px;
+  margin-bottom: 26px;
   animation: heroFadeUp 0.6s 0.07s ease both;
 }
 
@@ -297,11 +319,11 @@
 /* Body copy */
 .hero-sub {
   font-family: 'Cabinet Grotesk', sans-serif;
-  font-size: clamp(0.95rem, 1.25vw, 1.1rem);
-  line-height: 1.68;
-  color: rgba(44, 40, 36, 0.58);
-  max-width: 472px;
-  margin-bottom: 6px;
+  font-size: clamp(1rem, 1.32vw, 1.15rem);
+  line-height: 1.7;
+  color: rgba(30, 26, 22, 0.72);
+  max-width: 540px;
+  margin-bottom: 10px;
   animation: heroFadeUp 0.6s 0.12s ease both;
 }
 
@@ -309,11 +331,11 @@
 
 .hero-sub-secondary {
   font-family: 'Cabinet Grotesk', sans-serif;
-  font-size: 0.86rem;
-  line-height: 1.62;
-  color: rgba(44, 40, 36, 0.38);
-  max-width: 430px;
-  margin-bottom: 30px;
+  font-size: 0.9rem;
+  line-height: 1.68;
+  color: rgba(44, 40, 36, 0.46);
+  max-width: 520px;
+  margin-bottom: 28px;
   animation: heroFadeUp 0.6s 0.15s ease both;
 }
 
@@ -321,8 +343,8 @@
 .hero-cta-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 26px;
+  gap: 12px;
+  margin-bottom: 22px;
   flex-wrap: wrap;
   animation: heroFadeUp 0.6s 0.19s ease both;
 }
@@ -331,16 +353,16 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 13px 26px;
-  border-radius: 12px;
-  background: var(--charcoal);
+  padding: 14px 28px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #141210 0%, #2A2320 100%);
   color: rgba(250, 247, 242, 0.95);
   font-family: 'Cabinet Grotesk', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 750;
+  font-size: 0.92rem;
+  font-weight: 780;
   text-decoration: none;
   border: none;
-  box-shadow: 0 2px 6px rgba(28, 26, 24, 0.1), 0 8px 22px rgba(28, 26, 24, 0.07);
+  box-shadow: 0 2px 6px rgba(28, 26, 24, 0.12), 0 14px 30px rgba(28, 26, 24, 0.12);
   transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
 }
 
@@ -357,21 +379,80 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  padding: 13px 22px;
-  border-radius: 12px;
-  background: transparent;
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.52);
   color: var(--charcoal);
   font-family: 'Cabinet Grotesk', sans-serif;
   font-size: 0.9rem;
   font-weight: 650;
-  border: 1.5px solid rgba(28, 26, 24, 0.11);
+  border: 1.5px solid rgba(28, 26, 24, 0.09);
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .hero-cta-secondary:hover {
-  background: rgba(28, 26, 24, 0.03);
-  border-color: rgba(28, 26, 24, 0.18);
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(28, 26, 24, 0.14);
+  transform: translateY(-1px);
+}
+
+.hero-data-rail {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+  animation: heroFadeUp 0.6s 0.21s ease both;
+}
+
+.hero-data-card {
+  position: relative;
+  min-height: 112px;
+  padding: 18px 18px 16px;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.46) 100%);
+  border: 1px solid rgba(28, 26, 24, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 16px 30px rgba(28, 26, 24, 0.05);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+.hero-data-card::before {
+  content: '';
+  position: absolute;
+  inset: auto -10% 0 auto;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 96, 122, 0.12) 0%, rgba(212, 96, 122, 0) 68%);
+  pointer-events: none;
+}
+
+.hero-data-label {
+  display: block;
+  margin-bottom: 12px;
+  color: rgba(44, 40, 36, 0.48);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 720;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero-data-card strong {
+  position: relative;
+  display: block;
+  color: rgba(28, 26, 24, 0.9);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.94rem;
+  line-height: 1.45;
+  font-weight: 680;
 }
 
 /* Tags */
@@ -379,7 +460,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   animation: heroFadeUp 0.6s 0.23s ease both;
 }
 
@@ -482,6 +563,137 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  isolation: isolate;
+}
+
+.hero-platform-shell {
+  position: absolute;
+  inset: 48px 34px 42px;
+  z-index: 1;
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.18) 100%),
+    linear-gradient(180deg, rgba(251, 246, 241, 0.64) 0%, rgba(245, 238, 231, 0.28) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 28px 70px rgba(28, 26, 24, 0.08);
+  overflow: hidden;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.hero-platform-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(212, 96, 122, 0.16), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(96, 165, 250, 0.12), transparent 32%);
+  pointer-events: none;
+}
+
+.hero-platform-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(28, 26, 24, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 26, 24, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.32;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 85%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 85%);
+}
+
+.hero-platform-badge {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(18, 18, 18, 0.85);
+  color: rgba(250, 247, 242, 0.9);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 720;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(17, 15, 12, 0.18);
+}
+
+.hero-signal-panel {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(28, 26, 24, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 18px 30px rgba(28, 26, 24, 0.05);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.hero-signal-panel-top {
+  top: 22px;
+  right: 22px;
+  max-width: 240px;
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+}
+
+.hero-signal-label {
+  display: block;
+  margin-bottom: 10px;
+  color: rgba(44, 40, 36, 0.5);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 720;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero-signal-panel-top strong {
+  color: rgba(28, 26, 24, 0.9);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.hero-signal-panel-bottom {
+  left: 22px;
+  right: 22px;
+  bottom: 22px;
+  padding: 14px;
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.hero-signal-stat {
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(28, 26, 24, 0.06);
+}
+
+.hero-signal-stat span {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(44, 40, 36, 0.46);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-signal-stat strong {
+  color: rgba(28, 26, 24, 0.92);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 /* ── Mic Orb ── */
@@ -953,6 +1165,9 @@
 @media (max-width: 1080px) {
   .hero-split { gap: 40px; }
   .hero-right { height: 540px; }
+  .hero-data-rail { grid-template-columns: 1fr; }
+  .hero-platform-shell { inset: 48px 24px 34px; }
+  .hero-signal-panel-bottom { grid-template-columns: 1fr; }
   .hero-vcard { width: 210px; padding: 12px 13px; }
   .hero-vcard-2 { width: 204px; }
   .hero-vcard-3 { width: 208px; }
@@ -980,7 +1195,10 @@
     margin-right: auto;
   }
 
+  .hero-kicker::before { display: none; }
+  .hero-kicker { justify-content: center; }
   .hero-cta-row { justify-content: center; }
+  .hero-data-rail { max-width: 620px; margin-left: auto; margin-right: auto; }
   .hero-tags { justify-content: center; }
   .hero-proof-row { justify-content: center; }
   .hero-signin-link { width: 100%; text-align: center; }
@@ -1003,8 +1221,24 @@
   #hero-v11 { padding: 100px 16px 48px; }
 
   .hero-headline { font-size: clamp(2rem, 9vw, 2.8rem); }
+  .hero-kicker { font-size: 0.62rem; letter-spacing: 0.12em; }
+  .hero-data-card {
+    min-height: auto;
+    padding: 16px 16px 14px;
+    border-radius: 18px;
+  }
+  .hero-data-card strong { font-size: 0.88rem; }
 
   .hero-right { height: 400px; }
+  .hero-platform-shell {
+    inset: 34px 10px 24px;
+    border-radius: 24px;
+  }
+  .hero-platform-badge,
+  .hero-signal-panel-top,
+  .hero-signal-panel-bottom {
+    display: none;
+  }
 
   .hero-vcard {
     width: 160px;

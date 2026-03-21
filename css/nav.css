@@ -89,12 +89,49 @@ nav.scrolled {
   color: var(--rose);
 }
 
+/* ── Status line: below the pill so it never overlaps centered nav links ── */
+.nav-status {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 40px));
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(44, 40, 36, 0.48);
+  pointer-events: none;
+  z-index: 199;
+}
+
+.nav-status-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.nav-status-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.25);
+  animation: navDotPulse 2.2s ease-in-out infinite;
+}
+
 /* ── Center nav ── */
 .nav-center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   pointer-events: auto;
+  z-index: 201;
 }
 
 .nav-links {
@@ -445,6 +482,13 @@ nav.scrolled {
 
   nav.scrolled {
     top: 6px;
+  }
+
+  /* Tagline sits under the pill; keep it narrow so it doesn’t cover logo / CTAs */
+  .nav-status {
+    max-width: calc(100vw - 200px);
+    font-size: 0.65rem;
+    top: calc(100% + 8px);
   }
 
   .nav-center { display: none; }
