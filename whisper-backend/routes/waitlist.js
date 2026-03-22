@@ -48,8 +48,14 @@ router.post('/', waitlistLimiter, [
       return sendJson(201, { success: true, message: "You're on the list! We'll notify you when WhisperMe launches." });
     }
 
+    // Emergency: set WAITLIST_SKIP_RECAPTCHA=1 on Railway if reCAPTCHA blocks real users (spam risk — remove when fixed).
+    const skipRecaptcha = process.env.WAITLIST_SKIP_RECAPTCHA === '1';
+
     const clientIp = req.ip || (req.headers['x-forwarded-for'] || '').toString().split(',')[0].trim() || '';
-    const captcha = await verifyRecaptchaV3(req.body.recaptchaToken, clientIp);
+    let captcha = { ok: true, skipped: true };
+    if (!skipRecaptcha) {
+      captcha = await verifyRecaptchaV3(req.body.recaptchaToken, clientIp);
+    }
     if (!captcha.skipped && !captcha.ok) {
       console.warn('[waitlist] recaptcha failed:', captcha.error, captcha.score != null ? 'score=' + captcha.score : '', captcha.codes ? 'codes=' + JSON.stringify(captcha.codes) : '');
       if (captcha.error === 'missing_token') {

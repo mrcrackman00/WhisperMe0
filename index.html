@@ -4573,7 +4573,7 @@
         if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Updating…'; }
         var sb = await window._getSupabaseClient();
         if (!sb) {
-          if (errEl) { errEl.textContent = 'Auth not configured.'; errEl.style.display = 'block'; }
+          if (errEl) { errEl.textContent = 'Could not load session. Refresh the page or check your connection.'; errEl.style.display = 'block'; }
           if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Update Password'; }
           return;
         }
@@ -4758,7 +4758,7 @@
         var password = document.getElementById('authSigninPassword') && document.getElementById('authSigninPassword').value;
         if (!email || !password) { showAuthError('Email and password required.', true); return; }
         var sb = await window._getSupabaseClient();
-        if (!sb) { showAuthError('Auth not configured. Is the backend running?', true); return; }
+        if (!sb) { showAuthError('Could not load sign-in. Check your connection and try again.', true); return; }
         var btn = document.getElementById('authSigninBtn');
         if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
         var { data, error } = await sb.auth.signInWithPassword({ email: email, password: password });
@@ -4776,7 +4776,12 @@
       window.handleAuthGoogle = async function () {
         try {
           var sb = await window._getSupabaseClient();
-          if (!sb) { if (typeof showToast === 'function') showToast('⚠️ Auth not configured.'); return; }
+          if (!sb) {
+            if (typeof showToast === 'function') {
+              showToast('⚠️ Could not load sign-in (network). Check connection and tap Continue with Google again.');
+            }
+            return;
+          }
           var redirectTo = window.location.origin + (window.location.pathname || '/');
           var result = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo } });
           if (result.error) { if (typeof showToast === 'function') showToast('❌ ' + (result.error.message || 'Google sign-in failed.')); return; }
@@ -4790,7 +4795,12 @@
       window.handleAuthApple = async function () {
         try {
           var sb = await window._getSupabaseClient();
-          if (!sb) { if (typeof showToast === 'function') showToast('⚠️ Auth not configured.'); return; }
+          if (!sb) {
+            if (typeof showToast === 'function') {
+              showToast('⚠️ Could not load sign-in (network). Check connection and try again.');
+            }
+            return;
+          }
           var redirectTo = window.location.origin + (window.location.pathname || '/');
           var result = await sb.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: redirectTo } });
           if (result.error) { if (typeof showToast === 'function') showToast('❌ ' + (result.error.message || 'Apple sign-in failed.')); return; }

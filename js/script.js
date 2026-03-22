@@ -2096,7 +2096,7 @@ function handleAmSignin() {
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Signing in…'; }
 
   window._getSupabaseClient().then(function (sb) {
-    if (!sb) { showToast('⚠️ Auth not configured.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; } return; }
+    if (!sb) { showToast('⚠️ Could not load sign-in. Check connection and try again.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; } return; }
     sb.auth.signInWithPassword({ email: email, password: password }).then(function (result) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       if (result.error) { showToast('❌ ' + (result.error.message || 'Sign in failed.')); return; }
@@ -2275,9 +2275,7 @@ function h11HandleSignup(e) {
     try {
       var recaptchaToken = await wmGetWaitlistRecaptchaToken();
       if (!recaptchaToken || String(recaptchaToken).length < 20) {
-        showToast('⚠️ Security check didn\'t load. Turn off ad blockers for this site or try Chrome, then refresh.');
-        if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
-        return;
+        recaptchaToken = '';
       }
       var res = await apiFetch('/api/waitlist', {
         method: 'POST',
@@ -2295,6 +2293,9 @@ function h11HandleSignup(e) {
         var code = res.data && res.data.code;
         if (code === 'RECAPTCHA_MISSING' || code === 'RECAPTCHA_LOW_SCORE') {
           msg = (res.data && res.data.error) || msg;
+          if (code === 'RECAPTCHA_MISSING') {
+            msg += ' Or try another browser / disable ad blockers for this site.';
+          }
         }
         if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
         // Network error (status 0) — auto-retry instead of showing "Failed to fetch"

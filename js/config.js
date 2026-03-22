@@ -55,18 +55,57 @@
 
   window.apiFetch = async function(path, options) {
     var pathNorm = path.startsWith('/') ? path : '/' + path;
+    var fetchOpts = Object.assign({ credentials: 'omit', mode: 'cors' }, options || {});
 
     async function doFetch(base) {
       var url = String(base || '').replace(/\/$/, '') + pathNorm;
       if (window._wmLog) window._wmLog('API request', path);
-      var res = await fetch(url, options || {});
+      var res = await fetch(url, fetchOpts);
       var data = await res.json().catch(function() { return {}; });
       if (window._wmLog) window._wmLog('API response', path + ' ' + res.status);
       return { ok: res.ok, status: res.status, data: data };
     }
 
+    /** Mobile / flaky networks often drop the first cross-origin request to Railway; 502/503 during cold start. */
+    function isTransientFailure(result, err) {
+      if (err) return true;
+      if (!result || !result.ok) {
+        var s = result && result.status;
+        if (s >= 502 && s <= 504) return true;
+      }
+      return false;
+    }
+
+    async function fetchWithRetries(baseGetter) {
+      var useRetries = !isLocal || !isLocalDevBase(baseGetter());
+      var maxAttempts = useRetries ? 3 : 1;
+      var delays = [0, 650, 1600];
+      var lastResult = null;
+      var lastErr = null;
+      for (var i = 0; i < maxAttempts; i++) {
+        if (i > 0) {
+          await new Promise(function(r) { setTimeout(r, delays[i] || 2000); });
+        }
+        try {
+          lastResult = await doFetch(baseGetter());
+          lastErr = null;
+          if (lastResult.ok || !isTransientFailure(lastResult, null)) {
+            return lastResult;
+          }
+        } catch (e) {
+          lastErr = e;
+          lastResult = null;
+          if (!isTransientFailure(null, e) || i === maxAttempts - 1) {
+            break;
+          }
+        }
+      }
+      if (lastResult) return lastResult;
+      throw lastErr || new Error('Network error');
+    }
+
     try {
-      return await doFetch(window.getApiBase());
+      return await fetchWithRetries(function() { return window.getApiBase(); });
     } catch (err) {
       /* Opening index.html from localhost without whisper-backend: connection refused */
       if (isLocalDevBase(window.getApiBase())) {
