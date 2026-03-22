@@ -51,7 +51,7 @@ router.post('/', waitlistLimiter, [
     const clientIp = req.ip || (req.headers['x-forwarded-for'] || '').toString().split(',')[0].trim() || '';
     const captcha = await verifyRecaptchaV3(req.body.recaptchaToken, clientIp);
     if (!captcha.skipped && !captcha.ok) {
-      console.warn('[waitlist] recaptcha failed:', captcha.error, captcha.score != null ? 'score=' + captcha.score : '');
+      console.warn('[waitlist] recaptcha failed:', captcha.error, captcha.score != null ? 'score=' + captcha.score : '', captcha.codes ? 'codes=' + JSON.stringify(captcha.codes) : '');
       return sendJson(400, { error: 'Security check failed. Please refresh and try again.' });
     }
 
