@@ -703,8 +703,8 @@ function buildHiwVisuals() {
 }
 // Hook into showPage
 const _origShowPage = showPage;
-function showPage(name) {
-  _origShowPage(name);
+function showPage(name, opts) {
+  _origShowPage(name, opts);
   if (name === 'how-it-works') setTimeout(buildHiwVisuals, 120);
 }
 
@@ -1171,6 +1171,58 @@ function h11SelectMood(el) {
 /* ── PAGE SWITCHING ── */
 const PAGES = ['home', 'features', 'how-it-works', 'stories', 'app-preview', 'join-beta', 'community', 'about', 'blog', 'careers', 'press', 'privacy-policy', 'terms-of-service', 'cookie-policy', 'accessibility'];
 
+/** Browser URL ↔ SPA section (whisperme.co/features, /app, …) */
+function wmPathForPage(name) {
+  var m = {
+    home: '/',
+    features: '/features',
+    'how-it-works': '/how-it-works',
+    stories: '/stories',
+    'app-preview': '/app',
+    'join-beta': '/join-beta',
+    community: '/community'
+  };
+  return Object.prototype.hasOwnProperty.call(m, name) ? m[name] : null;
+}
+function wmPageFromPath(pathname) {
+  var p = (pathname || '/').replace(/\/$/, '') || '/';
+  var map = {
+    '/': 'home',
+    '/index.html': 'home',
+    '/features': 'features',
+    '/how-it-works': 'how-it-works',
+    '/stories': 'stories',
+    '/app': 'app-preview',
+    '/app-preview': 'app-preview',
+    '/join-beta': 'join-beta',
+    '/community': 'community'
+  };
+  return map[p] != null ? map[p] : null;
+}
+function wmSyncHistory(name, opts) {
+  if (opts && opts.skipHistory) return;
+  var path = wmPathForPage(name);
+  if (path == null) return;
+  try {
+    var cur = window.location.pathname.replace(/\/$/, '') || '/';
+    var target = path === '/' ? '/' : path;
+    if (cur === target) return;
+    if (target === '/' && cur === '/index.html') return;
+    window.history.pushState({ wmPage: name }, '', path === '/' ? '/' : path);
+  } catch (e) {}
+}
+function wmInitRouteFromUrl() {
+  try {
+    if (window.location.pathname === '/index.html') {
+      window.history.replaceState({}, '', '/');
+    }
+    var n = wmPageFromPath(window.location.pathname);
+    if (n && n !== 'home') {
+      showPage(n, { skipHistory: true });
+    }
+  } catch (e) {}
+}
+
 function openMobileMenu() {
   const overlay = document.getElementById('mobileNavOverlay');
   if (!overlay) return;
@@ -1197,7 +1249,7 @@ function handleMobileNavOverlay(e) {
   if (e.target && e.target.id === 'mobileNavOverlay') closeMobileMenu();
 }
 
-function showPage(name) {
+function showPage(name, opts) {
   if (!PAGES.includes(name)) return;
   PAGES.forEach(p => {
     const el = document.getElementById('page-' + p);
@@ -1245,6 +1297,7 @@ function showPage(name) {
       buildApvRoomWaves();
     }, 100);
   }
+  wmSyncHistory(name, opts);
   closeMobileMenu();
 }
 
@@ -2226,6 +2279,20 @@ function handleAmEarlyAccess() { showPage('join-beta'); }
   heroSignup = safeWrap(heroSignup, 'heroSignup');
   openMobileMenu = safeWrap(openMobileMenu, 'openMobileMenu');
   handleMobileNavOverlay = safeWrap(handleMobileNavOverlay, 'handleMobileNavOverlay');
+})();
+
+/* ── Clean URLs: open /features etc. from address bar + browser back/forward ── */
+(function wmRouteBindings() {
+  function onPopState() {
+    var n = wmPageFromPath(window.location.pathname);
+    if (n && PAGES.includes(n)) showPage(n, { skipHistory: true });
+  }
+  window.addEventListener('popstate', onPopState);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wmInitRouteFromUrl);
+  } else {
+    wmInitRouteFromUrl();
+  }
 })();
 
 /* Also close modals on ESC (guard against duplicate listeners) */

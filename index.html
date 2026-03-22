@@ -37,7 +37,7 @@
 
   <!-- Fixed header: beta line above nav (reference layout — no overlap with menu) -->
   <nav id="nav">
-    <a href="#" class="nav-brand" onclick="showPage('home');return false;">
+    <a href="/" class="nav-brand" onclick="showPage('home');return false;">
       <div class="nav-logo-mark">
         <img src="assets/logo-mark.svg" alt="WhisperMe" width="34" height="34">
       </div>
@@ -46,17 +46,17 @@
 
     <div class="nav-center">
       <ul class="nav-links">
-        <li><a href="#" class="nav-link" data-page="features" onclick="showPage('features');return false;">Features</a>
+        <li><a href="/features" class="nav-link" data-page="features" onclick="showPage('features');return false;">Features</a>
         </li>
-        <li><a href="#" class="nav-link" data-page="how-it-works" onclick="showPage('how-it-works');return false;">How
+        <li><a href="/how-it-works" class="nav-link" data-page="how-it-works" onclick="showPage('how-it-works');return false;">How
             It Works</a></li>
-        <li><a href="#" class="nav-link" data-page="stories" onclick="showPage('stories');return false;">Stories</a>
+        <li><a href="/stories" class="nav-link" data-page="stories" onclick="showPage('stories');return false;">Stories</a>
         </li>
-        <li><a href="#" class="nav-link" data-page="app-preview" onclick="showPage('app-preview');return false;">App</a>
+        <li><a href="/app" class="nav-link" data-page="app-preview" onclick="showPage('app-preview');return false;">App</a>
         </li>
-        <li><a href="#" class="nav-link" data-page="community"
+        <li><a href="/community" class="nav-link" data-page="community"
             onclick="showPage('community');return false;">Community</a></li>
-        <li><a href="#" class="nav-link" data-page="join-beta" onclick="showPage('join-beta');return false;">Join
+        <li><a href="/join-beta" class="nav-link" data-page="join-beta" onclick="showPage('join-beta');return false;">Join
             Beta</a></li>
       </ul>
     </div>
@@ -64,7 +64,7 @@
     <div class="nav-actions">
       <a href="#" class="nav-signin" id="navSignin" onclick="openAuthModal('signin');return false;">Sign In</a>
       <a href="#" class="nav-signup" id="navSignup" onclick="openAuthModal('signup');return false;">Sign Up</a>
-      <a href="pages/profile.html" class="nav-user" id="navUser" style="display:none;text-decoration:none;"
+      <a href="/profile" class="nav-user" id="navUser" style="display:none;text-decoration:none;"
         title="View Profile">
         <span class="nav-user-avatar" id="navUserAvatar"></span>
         <span class="nav-user-name" id="navUserName"></span>
@@ -89,12 +89,12 @@
         </button>
       </div>
       <div class="mobile-nav-links">
-        <a href="#" onclick="showPage('features');return false;">Features</a>
-        <a href="#" onclick="showPage('how-it-works');return false;">How It Works</a>
-        <a href="#" onclick="showPage('stories');return false;">Stories</a>
-        <a href="#" onclick="showPage('app-preview');return false;">App Preview</a>
-        <a href="#" onclick="showPage('community');return false;">Community</a>
-        <a href="#" onclick="showPage('join-beta');return false;">Join Beta</a>
+        <a href="/features" onclick="showPage('features');return false;">Features</a>
+        <a href="/how-it-works" onclick="showPage('how-it-works');return false;">How It Works</a>
+        <a href="/stories" onclick="showPage('stories');return false;">Stories</a>
+        <a href="/app" onclick="showPage('app-preview');return false;">App Preview</a>
+        <a href="/community" onclick="showPage('community');return false;">Community</a>
+        <a href="/join-beta" onclick="showPage('join-beta');return false;">Join Beta</a>
       </div>
       <div class="mobile-nav-foot">
         <a href="#" class="mobile-nav-signin" id="mobileNavSignin" onclick="openAuthModal('signin');return false;">Sign
@@ -3565,17 +3565,17 @@
       </div>
       <div class="footer-col">
         <h4>Company</h4>
-        <a href="pages/about.html">About Us</a>
-        <a href="pages/blog.html">Blog</a>
-        <a href="pages/careers.html">Careers</a>
-        <a href="pages/press.html">Press &amp; Media</a>
+        <a href="/about">About Us</a>
+        <a href="/blog">Blog</a>
+        <a href="/careers">Careers</a>
+        <a href="/press">Press &amp; Media</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="pages/privacy.html">Privacy Policy</a>
-        <a href="pages/terms.html">Terms of Service</a>
-        <a href="pages/cookies.html">Cookie Policy</a>
-        <a href="pages/accessibility.html">Accessibility</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/cookies">Cookie Policy</a>
+        <a href="/accessibility">Accessibility</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -4422,7 +4422,7 @@
               if (!window.__wmProfileRedirectScheduled) {
                 window.__wmProfileRedirectScheduled = true;
                 if (typeof showToast === 'function') showToast('✅ Verified! Opening your profile…');
-                setTimeout(function () { window.location.href = 'pages/profile.html'; }, 650);
+                setTimeout(function () { window.location.href = '/profile'; }, 650);
               }
               return;
             }
@@ -4841,7 +4841,7 @@
               if (!window.__wmProfileRedirectScheduled) {
                 window.__wmProfileRedirectScheduled = true;
                 if (typeof showToast === 'function') showToast('✅ Verified! Opening your profile…');
-                setTimeout(function () { window.location.href = 'pages/profile.html'; }, 650);
+                setTimeout(function () { window.location.href = '/profile'; }, 650);
               }
               return;
             }
