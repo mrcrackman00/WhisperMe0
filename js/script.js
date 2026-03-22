@@ -14,11 +14,11 @@ function apiFetch(path, options) {
   if (typeof fn === 'function' && fn !== apiFetch) return fn(path, options);
   var base = (typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE_URL || 'https://whisperme0-production.up.railway.app')).replace(/\/$/, '');
   var url = base + (path.startsWith('/') ? path : '/' + path);
-  return fetch(url, options || {}).then(function(res) {
-    return res.json().catch(function() { return {}; }).then(function(data) {
+  return fetch(url, options || {}).then(function (res) {
+    return res.json().catch(function () { return {}; }).then(function (data) {
       return { ok: res.ok, status: res.status, data: data };
     });
-  }).catch(function(err) {
+  }).catch(function (err) {
     console.error('API fetch error:', err);
     return { ok: false, status: 0, data: { error: err.message || 'Network error' } };
   });
@@ -275,6 +275,334 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* ── WHY WHISPERME JS ── */
+(function initHeroWhisperFeed() {
+  const stack = document.getElementById('heroWhisperStack');
+  if (!stack) return;
+
+  const stackShell = stack.closest('.hmw-shell');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const whispers = [
+    { name: 'Anonymous', location: 'Private • Global', mood: 'Night', timeAgo: '2m ago', duration: '0:31', caption: 'I overthink everything at night...', likes: 96, replies: 7, listeners: 44, size: 'large', tone: 'violet', bars: [10, 14, 18, 24, 28, 24, 18, 14, 12, 18, 22, 16] },
+    { name: 'Anaya Kapoor', location: 'Bangalore, India', mood: 'Open', timeAgo: '4m ago', duration: '0:28', caption: 'Kabhi kabhi bas baat karni hoti hai...', likes: 118, replies: 12, listeners: 53, size: 'medium', tone: 'cyan', bars: [12, 16, 20, 24, 22, 18, 14, 12, 14, 18, 20, 16] },
+    { name: 'Sofia Ruiz', location: 'Barcelona, Spain', mood: 'Bold', timeAgo: '7m ago', duration: '0:35', caption: 'How I changed my mind about AI...', likes: 96, replies: 7, listeners: 44, size: 'large', tone: 'sky', bars: [11, 14, 17, 23, 27, 23, 17, 14, 12, 16, 21, 15] },
+    { name: 'Mason Lee', location: 'Austin, US', mood: 'Soft', timeAgo: '11m ago', duration: '0:27', caption: 'Some days I sound calm. I am not.', likes: 84, replies: 6, listeners: 31, size: 'small', tone: 'amber', bars: [9, 12, 15, 19, 22, 19, 16, 13, 10, 13, 16, 12] },
+    { name: 'Anonymous', location: 'Private • India', mood: 'Heavy', timeAgo: '13m ago', duration: '0:42', caption: 'I am tired of pretending I have it all together...', likes: 141, replies: 16, listeners: 67, size: 'large', tone: 'pink', bars: [10, 13, 18, 22, 26, 21, 17, 13, 12, 16, 19, 14] },
+    { name: 'Rhea Saini', location: 'Delhi, India', mood: 'Honest', timeAgo: '18m ago', duration: '0:24', caption: 'Aaj bas kisi ne pooch liya hota, tu theek hai?', likes: 102, replies: 9, listeners: 46, size: 'medium', tone: 'violet', bars: [8, 11, 16, 20, 24, 21, 17, 13, 11, 14, 18, 13] },
+    { name: 'Noah Carter', location: 'Seattle, US', mood: 'Reflective', timeAgo: '24m ago', duration: '0:37', caption: 'I miss who I was before I started hiding everything...', likes: 127, replies: 11, listeners: 52, size: 'medium', tone: 'cyan', bars: [11, 14, 18, 21, 25, 20, 17, 13, 12, 15, 18, 14] },
+    { name: 'Lina Park', location: 'Seoul, Global', mood: 'Light', timeAgo: '31m ago', duration: '0:29', caption: 'It feels lighter when a voice says the truth out loud.', likes: 74, replies: 5, listeners: 29, size: 'small', tone: 'sky', bars: [9, 12, 16, 21, 24, 19, 15, 12, 10, 14, 18, 13] },
+    { name: 'Anonymous', location: 'Private • Global', mood: 'Quiet', timeAgo: '46m ago', duration: '0:33', caption: 'I keep saving drafts of things I never send...', likes: 89, replies: 8, listeners: 37, size: 'medium', tone: 'pink', bars: [10, 14, 18, 23, 27, 23, 18, 14, 12, 17, 21, 15] },
+    { name: 'Kabir Mehta', location: 'Mumbai, India', mood: 'Restless', timeAgo: '1h ago', duration: '0:39', caption: 'Raat ko sab thoughts aur zyada loud ho jaate hain...', likes: 134, replies: 13, listeners: 61, size: 'large', tone: 'violet', bars: [11, 15, 19, 24, 28, 24, 19, 15, 13, 17, 22, 16] },
+  ];
+  const palettes = {
+    violet: {
+      accent: 'rgba(230, 223, 255, 0.9)',
+      soft: 'rgba(139, 92, 246, 0.09)',
+      waveStart: 'rgba(167, 190, 255, 0.8)',
+      waveMid: 'rgba(96, 165, 250, 0.84)',
+      waveEnd: 'rgba(94, 234, 212, 0.8)',
+    },
+    cyan: {
+      accent: 'rgba(216, 244, 255, 0.9)',
+      soft: 'rgba(34, 211, 238, 0.08)',
+      waveStart: 'rgba(130, 197, 255, 0.8)',
+      waveMid: 'rgba(82, 216, 255, 0.84)',
+      waveEnd: 'rgba(94, 234, 212, 0.78)',
+    },
+    pink: {
+      accent: 'rgba(255, 226, 236, 0.9)',
+      soft: 'rgba(244, 114, 182, 0.08)',
+      waveStart: 'rgba(251, 146, 196, 0.78)',
+      waveMid: 'rgba(147, 197, 253, 0.82)',
+      waveEnd: 'rgba(110, 231, 183, 0.76)',
+    },
+    amber: {
+      accent: 'rgba(255, 239, 214, 0.9)',
+      soft: 'rgba(245, 158, 11, 0.08)',
+      waveStart: 'rgba(251, 191, 36, 0.78)',
+      waveMid: 'rgba(125, 211, 252, 0.8)',
+      waveEnd: 'rgba(94, 234, 212, 0.76)',
+    },
+    sky: {
+      accent: 'rgba(224, 236, 255, 0.9)',
+      soft: 'rgba(96, 165, 250, 0.08)',
+      waveStart: 'rgba(147, 197, 253, 0.8)',
+      waveMid: 'rgba(110, 168, 255, 0.84)',
+      waveEnd: 'rgba(125, 211, 252, 0.78)',
+    }
+  };
+  const roleAdjust = {
+    active: 0,
+    back1: -1,
+    back2: -3,
+    back3: -5,
+    incoming: 0,
+    exit: -6
+  };
+  let currentIndex = 3;
+  let cardPool = [];
+  let cycleTimer = null;
+  let recycleTimer = null;
+  let resizeTimer = null;
+  let paused = false;
+  let animating = false;
+
+  function whisperAt(index) {
+    const len = whispers.length;
+    return whispers[((index % len) + len) % len];
+  }
+
+  function getSlots() {
+    if (window.matchMedia('(max-width: 560px)').matches) {
+      return {
+        active: { y: 156, scale: 1, rotate: '0deg', opacity: 1, blur: '0px', z: 5 },
+        back1: { y: 108, scale: 0.988, rotate: '-0.65deg', opacity: 0.68, blur: '0.12px', z: 4 },
+        back2: { y: 64, scale: 0.976, rotate: '0.45deg', opacity: 0.4, blur: '0.8px', z: 3 },
+        back3: { y: 22, scale: 0.966, rotate: '-0.32deg', opacity: 0.22, blur: '1.5px', z: 2 },
+        incoming: { y: 246, scale: 0.986, rotate: '0.3deg', opacity: 0, blur: '0px', z: 6 },
+        exit: { y: -42, scale: 0.952, rotate: '-0.4deg', opacity: 0, blur: '1.8px', z: 1 },
+      };
+    }
+
+    return {
+      active: { y: 204, scale: 1, rotate: '0deg', opacity: 1, blur: '0px', z: 5 },
+      back1: { y: 148, scale: 0.988, rotate: '-0.72deg', opacity: 0.68, blur: '0.12px', z: 4 },
+      back2: { y: 96, scale: 0.976, rotate: '0.48deg', opacity: 0.42, blur: '0.75px', z: 3 },
+      back3: { y: 46, scale: 0.966, rotate: '-0.36deg', opacity: 0.22, blur: '1.4px', z: 2 },
+      incoming: { y: 302, scale: 0.986, rotate: '0.35deg', opacity: 0, blur: '0px', z: 6 },
+      exit: { y: -42, scale: 0.952, rotate: '-0.42deg', opacity: 0, blur: '1.8px', z: 1 },
+    };
+  }
+
+  function computeWidth(size, role) {
+    const base = size === 'small' ? 88 : size === 'medium' ? 92 : 95;
+    return Math.max(80, base + (roleAdjust[role] || 0)) + '%';
+  }
+
+  function getInitials(name) {
+    return String(name || 'Whisper')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(function (part) { return part.charAt(0).toUpperCase(); })
+      .join('') || 'WM';
+  }
+
+  function createCard() {
+    const card = document.createElement('article');
+    card.className = 'hmw-card';
+    card.innerHTML = '<div class="hmw-card-head"><div class="hmw-author"><div class="hmw-avatar"></div><div class="hmw-author-meta"><div class="hmw-author-name"></div><div class="hmw-author-sub"></div></div></div><span class="hmw-mood-pill"></span></div><p class="hmw-card-copy"></p><div class="hmw-wave-row"><span class="hmw-play" aria-hidden="true"></span><div class="hmw-wave-track"><div class="hmw-wave"></div></div><span class="hmw-card-time"></span></div><div class="hmw-card-footer"><span class="hmw-stat hmw-stat-heart"><span class="hmw-stat-icon">&#9829;</span><span class="hmw-like-count"></span></span><span class="hmw-stat hmw-stat-replies"><span class="hmw-stat-icon">&#9675;</span><span class="hmw-reply-count"></span></span><span class="hmw-stat hmw-stat-listening"><span class="hmw-live-dot"></span><span class="hmw-listener-count"></span> listening</span></div>';
+    return card;
+  }
+
+  function buildWaveHeights(bars) {
+    const source = Array.isArray(bars) && bars.length ? bars : [10, 12, 14, 18, 20, 18, 14, 12];
+    const targetCount = window.matchMedia('(max-width: 560px)').matches ? 25 : 31;
+    const result = [];
+
+    function normalizeHeight(value) {
+      return Math.max(4, Math.min(18, Math.round(value * 0.7))) + 'px';
+    }
+
+    if (source.length === 1) {
+      for (let i = 0; i < targetCount; i += 1) {
+        result.push(normalizeHeight(source[0]));
+      }
+      return result;
+    }
+
+    for (let i = 0; i < targetCount; i += 1) {
+      const position = (i / (targetCount - 1)) * (source.length - 1);
+      const lowerIndex = Math.floor(position);
+      const upperIndex = Math.min(source.length - 1, lowerIndex + 1);
+      const progress = position - lowerIndex;
+      const blended = source[lowerIndex] + ((source[upperIndex] - source[lowerIndex]) * progress);
+      result.push(normalizeHeight(blended));
+    }
+
+    return result;
+  }
+
+  function populateWave(waveEl, bars) {
+    waveEl.innerHTML = '';
+    const heights = buildWaveHeights(bars);
+    waveEl.style.setProperty('--wave-bars', String(heights.length));
+    heights.forEach(function (height, index) {
+      const bar = document.createElement('span');
+      bar.className = 'hmw-wave-bar';
+      bar.style.setProperty('--wave-height', height);
+      bar.style.setProperty('--wave-delay', (index * 0.08) + 's');
+      waveEl.appendChild(bar);
+    });
+  }
+
+  function updateCard(card, whisper) {
+    const palette = palettes[whisper.tone] || palettes.violet;
+    const avatar = card.querySelector('.hmw-avatar');
+    const name = card.querySelector('.hmw-author-name');
+    const sub = card.querySelector('.hmw-author-sub');
+    const pill = card.querySelector('.hmw-mood-pill');
+    const time = card.querySelector('.hmw-card-time');
+    const copy = card.querySelector('.hmw-card-copy');
+    const wave = card.querySelector('.hmw-wave');
+    const likes = card.querySelector('.hmw-like-count');
+    const replies = card.querySelector('.hmw-reply-count');
+    const listeners = card.querySelector('.hmw-listener-count');
+
+    card.__whisper = whisper;
+    card.dataset.size = whisper.size;
+    avatar.textContent = getInitials(whisper.name);
+    name.textContent = whisper.name;
+    sub.textContent = whisper.location + ' • ' + whisper.timeAgo;
+    pill.textContent = whisper.mood;
+    time.textContent = whisper.duration;
+    copy.textContent = whisper.caption;
+    likes.textContent = whisper.likes;
+    replies.textContent = whisper.replies;
+    listeners.textContent = whisper.listeners;
+    card.style.setProperty('--whisper-accent', palette.accent);
+    card.style.setProperty('--whisper-accent-soft', palette.soft);
+    card.style.setProperty('--whisper-wave-start', palette.waveStart);
+    card.style.setProperty('--whisper-wave-mid', palette.waveMid);
+    card.style.setProperty('--whisper-wave-end', palette.waveEnd);
+    card.style.setProperty('--whisper-avatar-start', palette.waveStart);
+    card.style.setProperty('--whisper-avatar-end', palette.waveMid);
+    populateWave(wave, whisper.bars);
+  }
+
+  function applySlot(card, role, instant) {
+    const slots = getSlots();
+    const slot = slots[role];
+    if (!slot) return;
+
+    if (instant) card.classList.add('no-transition');
+    else card.classList.remove('no-transition');
+
+    card.style.setProperty('--stack-y', slot.y + 'px');
+    card.style.setProperty('--stack-scale', String(slot.scale));
+    card.style.setProperty('--stack-hover-scale', String(role === 'active' ? slot.scale + 0.02 : slot.scale + 0.012));
+    card.style.setProperty('--stack-rotate', slot.rotate);
+    card.style.setProperty('--stack-opacity', String(slot.opacity));
+    card.style.setProperty('--stack-blur', slot.blur);
+    card.style.setProperty('--stack-z', String(slot.z));
+    card.style.setProperty('--card-width', computeWidth(card.dataset.size, role));
+    card.style.setProperty('--float-delay', (role === 'active' ? 0 : role === 'back1' ? 0.6 : role === 'back2' ? 1.1 : 1.6) + 's');
+    card.classList.toggle('is-active', role === 'active');
+    card.classList.toggle('is-muted', role === 'back3' || role === 'exit');
+  }
+
+  function syncCurrentState(instant) {
+    const roles = ['active', 'back1', 'back2', 'back3', 'incoming'];
+    cardPool.forEach(function (card, index) {
+      applySlot(card, roles[index], instant);
+    });
+    if (instant) {
+      cardPool.forEach(function (card) {
+        card.getBoundingClientRect();
+        card.classList.remove('no-transition');
+      });
+    }
+  }
+
+  function clearTimers() {
+    clearTimeout(cycleTimer);
+    clearTimeout(recycleTimer);
+    cycleTimer = null;
+    recycleTimer = null;
+  }
+
+  function scheduleNext(delay) {
+    clearTimeout(cycleTimer);
+    if (prefersReducedMotion.matches || paused || document.hidden) return;
+    cycleTimer = setTimeout(runCycle, delay || 2000);
+  }
+
+  function runCycle() {
+    if (animating || prefersReducedMotion.matches || paused || document.hidden) {
+      scheduleNext(2000);
+      return;
+    }
+
+    animating = true;
+    scheduleNext(2000);
+
+    const active = cardPool[0];
+    const back1 = cardPool[1];
+    const back2 = cardPool[2];
+    const back3 = cardPool[3];
+    const incoming = cardPool[4];
+
+    applySlot(incoming, 'active', false);
+    applySlot(active, 'back1', false);
+    applySlot(back1, 'back2', false);
+    applySlot(back2, 'back3', false);
+    applySlot(back3, 'exit', false);
+
+    currentIndex = (currentIndex + 1) % whispers.length;
+
+    recycleTimer = setTimeout(function () {
+      updateCard(back3, whisperAt(currentIndex + 1));
+      applySlot(back3, 'incoming', true);
+      back3.getBoundingClientRect();
+      back3.classList.remove('no-transition');
+      cardPool = [incoming, active, back1, back2, back3];
+      animating = false;
+    }, 940);
+  }
+
+  function setPaused(nextValue) {
+    paused = nextValue;
+    if (paused) {
+      clearTimeout(cycleTimer);
+      return;
+    }
+    if (!animating) scheduleNext(1600);
+  }
+
+  function handleResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      cardPool.forEach(function (card) {
+        if (card && card.__whisper) updateCard(card, card.__whisper);
+      });
+      syncCurrentState(true);
+    }, 120);
+  }
+
+  cardPool = [createCard(), createCard(), createCard(), createCard(), createCard()];
+
+  updateCard(cardPool[0], whisperAt(currentIndex));
+  updateCard(cardPool[1], whisperAt(currentIndex - 1));
+  updateCard(cardPool[2], whisperAt(currentIndex - 2));
+  updateCard(cardPool[3], whisperAt(currentIndex - 3));
+  updateCard(cardPool[4], whisperAt(currentIndex + 1));
+
+  cardPool.forEach(function (card) {
+    stack.appendChild(card);
+  });
+
+  syncCurrentState(true);
+
+  if (stackShell) {
+    stackShell.addEventListener('pointerenter', function () { setPaused(true); });
+    stackShell.addEventListener('pointerleave', function () { setPaused(false); });
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) setPaused(true);
+    else setPaused(false);
+  });
+
+  if (typeof prefersReducedMotion.addEventListener === 'function') {
+    prefersReducedMotion.addEventListener('change', function () {
+      if (prefersReducedMotion.matches) clearTimers();
+      else if (!animating) scheduleNext(1600);
+    });
+  }
+
+  window.addEventListener('resize', handleResize, { passive: true });
+  if (!prefersReducedMotion.matches) scheduleNext(2000);
+})();
+
 (function initWW() {
   // Build waveform for card 1
   const wvEl = document.getElementById('wwWave1');
@@ -607,11 +935,11 @@ const nav = document.getElementById('nav');
 const siteHeader = document.getElementById('siteHeader');
 let navTicking = false;
 let scrollEndTimer = null;
-window.addEventListener('scroll', function() {
+window.addEventListener('scroll', function () {
   try {
     if (navTicking || !nav) return;
     navTicking = true;
-    requestAnimationFrame(function() {
+    requestAnimationFrame(function () {
       try {
         const scrolled = window.scrollY > 30;
         if (nav) nav.classList.toggle('scrolled', scrolled);
@@ -622,7 +950,7 @@ window.addEventListener('scroll', function() {
     });
     document.documentElement.classList.add('scroll-active');
     clearTimeout(scrollEndTimer);
-    scrollEndTimer = setTimeout(function() {
+    scrollEndTimer = setTimeout(function () {
       document.documentElement.classList.remove('scroll-active');
     }, 150);
   } catch (e) {
@@ -715,7 +1043,7 @@ for (let i = 0; i < 3; i++) {
 const heroInput = document.getElementById('heroEmailInput');
 if (heroInput && !heroInput.dataset.wmBound) {
   heroInput.dataset.wmBound = '1';
-  heroInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') heroSignup(); });
+  heroInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') heroSignup(); });
 }
 
 // ── HERO RIGHT: auto-rotating modes (Record → Thread → Explore → Live)
@@ -966,8 +1294,8 @@ if (!window._wmSignupBound) {
   window._wmSignupBound = true;
   var emailInp = document.getElementById('emailInput');
   var h11Inp = document.getElementById('h11EmailInput');
-  if (emailInp) emailInp.addEventListener('keydown', function(e) { if (e.key === 'Enter') h11HandleSignup(e); });
-  if (h11Inp) h11Inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') h11HandleSignup(e); });
+  if (emailInp) emailInp.addEventListener('keydown', function (e) { if (e.key === 'Enter') h11HandleSignup(e); });
+  if (h11Inp) h11Inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') h11HandleSignup(e); });
 }
 
 /* ─────────────────────────────────────────
@@ -1501,7 +1829,7 @@ function buildNfWaveforms() {
   const fvw1 = document.getElementById('fvWave1');
   if (fvw1 && !fvw1.dataset.built) {
     fvw1.dataset.built = 'yes';
-    [4,8,14,20,28,22,16,10,6,12,20,30,24,16,8,5,10,18,26,20,14,8,4,10,18,28,22,14,8,4].forEach((h, i) => {
+    [4, 8, 14, 20, 28, 22, 16, 10, 6, 12, 20, 30, 24, 16, 8, 5, 10, 18, 26, 20, 14, 8, 4, 10, 18, 28, 22, 14, 8, 4].forEach((h, i) => {
       const b = document.createElement('div'); b.className = 'fv-vc-bar';
       b.style.setProperty('--h', h + 'px');
       b.style.setProperty('--dur', (1 + Math.random() * 0.8) + 's');
@@ -1512,9 +1840,9 @@ function buildNfWaveforms() {
   }
   // ── FV Thread card waves ──
   const threadSets = {
-    fvThread1: { hs: [6,10,16,20,16,10,6,8,14,18,12,8], color: 'var(--rose)' },
-    fvThread2: { hs: [4,8,12,16,12,8,4,6,10,14,10,6], color: 'var(--sage)' },
-    fvThread3: { hs: [3,6,10,12,10,6,4,8,12,10,6,4], color: '#8B5CF6' },
+    fvThread1: { hs: [6, 10, 16, 20, 16, 10, 6, 8, 14, 18, 12, 8], color: 'var(--rose)' },
+    fvThread2: { hs: [4, 8, 12, 16, 12, 8, 4, 6, 10, 14, 10, 6], color: 'var(--sage)' },
+    fvThread3: { hs: [3, 6, 10, 12, 10, 6, 4, 8, 12, 10, 6, 4], color: '#8B5CF6' },
   };
   Object.entries(threadSets).forEach(([id, { hs, color }]) => {
     const el = document.getElementById(id);
@@ -1532,9 +1860,9 @@ function buildNfWaveforms() {
   });
   // ── FV Preview card waves ──
   const prevSets = {
-    fvPrev1: { hs: [4,8,14,22,30,24,16,10,6,12,22,32,26,18,10,6,12,20,28,22,14,8,4], color: 'rgba(212,96,122,0.8)' },
-    fvPrev2: { hs: [6,10,18,28,36,28,18,10,6,14,24,34,28,18,8,5,12,22,32,26,16,8,5], color: 'rgba(139,92,246,0.8)' },
-    fvPrev3: { hs: [4,8,12,18,24,18,12,8,4,10,18,26,20,12,6,4,8,16,22,16,10,6,4], color: 'rgba(96,165,250,0.8)' },
+    fvPrev1: { hs: [4, 8, 14, 22, 30, 24, 16, 10, 6, 12, 22, 32, 26, 18, 10, 6, 12, 20, 28, 22, 14, 8, 4], color: 'rgba(212,96,122,0.8)' },
+    fvPrev2: { hs: [6, 10, 18, 28, 36, 28, 18, 10, 6, 14, 24, 34, 28, 18, 8, 5, 12, 22, 32, 26, 16, 8, 5], color: 'rgba(139,92,246,0.8)' },
+    fvPrev3: { hs: [4, 8, 12, 18, 24, 18, 12, 8, 4, 10, 18, 26, 20, 12, 6, 4, 8, 16, 22, 16, 10, 6, 4], color: 'rgba(96,165,250,0.8)' },
   };
   Object.entries(prevSets).forEach(([id, { hs, color }]) => {
     const el = document.getElementById(id);
@@ -1711,21 +2039,21 @@ function handleAmSignin() {
   var submitBtn = document.querySelector('#amPanelSignin .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Signing in…'; }
 
-  window._getSupabaseClient().then(function(sb) {
+  window._getSupabaseClient().then(function (sb) {
     if (!sb) { showToast('⚠️ Auth not configured.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; } return; }
-    sb.auth.signInWithPassword({ email: email, password: password }).then(function(result) {
+    sb.auth.signInWithPassword({ email: email, password: password }).then(function (result) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       if (result.error) { showToast('❌ ' + (result.error.message || 'Sign in failed.')); return; }
       var token = result.data.session && result.data.session.access_token;
-      if (token) { apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function() {}); }
+      if (token) { apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function () { }); }
       closeAuthModal();
       updateNavUser(email, '');
       showToast('👋 Welcome back!');
-    }).catch(function(err) {
+    }).catch(function (err) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       showToast('❌ ' + (err.message || 'Sign in failed. Please try again.'));
     });
-  }).catch(function() {
+  }).catch(function () {
     showToast('⚠️ Cannot connect to auth service.');
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
   });
@@ -1758,7 +2086,7 @@ function handleAmSignup() {
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Creating…'; }
 
   var payload = { email: email, password: password, display_name: displayName, full_name: name, mood: mood };
-  apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(function(res) {
+  apiFetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(function (res) {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
     if (!res.ok) {
       var msg = (res.data && res.data.error) || 'Sign up failed.';
@@ -1773,10 +2101,10 @@ function handleAmSignup() {
       if (typeof updateNavUser === 'function') updateNavUser(email, displayName || name);
       if (typeof showRegistrationSuccess === 'function') showRegistrationSuccess(email, false);
       // Run session sync and on-signup in background (non-blocking)
-      window._getSupabaseClient().then(function(sb) {
-        if (sb && data.session) sb.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token || '' }).catch(function() {});
-        apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function() {});
-      }).catch(function() {});
+      window._getSupabaseClient().then(function (sb) {
+        if (sb && data.session) sb.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token || '' }).catch(function () { });
+        apiFetch('/api/auth/on-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ display_name: displayName }) }).catch(function () { });
+      }).catch(function () { });
     } else {
       if (typeof showVerificationPending === 'function') {
         showVerificationPending(email);
@@ -1785,7 +2113,7 @@ function handleAmSignup() {
         closeAuthModal();
       }
     }
-  }).catch(function(err) {
+  }).catch(function (err) {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
     var msg = (err && err.message) || 'Sign up failed. Please try again.';
     if (msg.toLowerCase().includes('429') || msg.toLowerCase().includes('rate')) msg = 'Too many attempts. Please wait a few minutes.';
@@ -1805,16 +2133,16 @@ function h11HandleSignup(e) {
   var name = nameEl ? nameEl.value.trim() : '';
   var email = emailEl ? emailEl.value.trim() : '';
   var mood = moodEl ? moodEl.textContent.trim() : '';
-  
+
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !EMAIL_RE.test(email)) {
     showToast('⚠️ Please enter a valid email address.');
-    if (emailEl) { emailEl.focus(); emailEl.style.borderColor = '#D4607A'; setTimeout(function(){ emailEl.style.borderColor = ''; }, 1500); }
+    if (emailEl) { emailEl.focus(); emailEl.style.borderColor = '#D4607A'; setTimeout(function () { emailEl.style.borderColor = ''; }, 1500); }
     return;
   }
 
   if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
-  
+
   async function doWaitlist(retriesLeft) {
     try {
       var res = await apiFetch('/api/waitlist', {
@@ -1830,7 +2158,7 @@ function h11HandleSignup(e) {
         if (isNetworkError && retriesLeft > 0) {
           showToast('⚠️ Connection slow. Retrying in 5 sec…');
           if (btn) { btn.innerHTML = 'Retrying…'; }
-          setTimeout(function() { doWaitlist(retriesLeft - 1); }, 5000);
+          setTimeout(function () { doWaitlist(retriesLeft - 1); }, 5000);
           return;
         }
         if (isNetworkError) msg = 'Connection failed. Try WiFi or tap again—server may be waking up.';
@@ -1846,7 +2174,7 @@ function h11HandleSignup(e) {
       if (retriesLeft > 0) {
         showToast('⚠️ Retrying in 5 sec…');
         if (btn) { btn.innerHTML = 'Retrying…'; }
-        setTimeout(function() { doWaitlist(retriesLeft - 1); }, 5000);
+        setTimeout(function () { doWaitlist(retriesLeft - 1); }, 5000);
       } else {
         var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
           ? 'Connection error. Is the backend running?'
@@ -1874,7 +2202,7 @@ function handleAmEarlyAccess() { showPage('join-beta'); }
 (function wrapCriticalFunctions() {
   function safeWrap(fn, name) {
     if (!fn) return fn;
-    return function() {
+    return function () {
       try {
         if (window._wmLog) window._wmLog(name, arguments.length ? Array.prototype.slice.call(arguments) : '');
         return fn.apply(this, arguments);
@@ -1900,8 +2228,8 @@ function handleAmEarlyAccess() { showPage('join-beta'); }
 /* Also close modals on ESC (guard against duplicate listeners) */
 if (!window._wmEscapeBound) {
   window._wmEscapeBound = true;
-  document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
       try {
         if (document.getElementById('regSuccessOverlay')) { if (typeof closeRegSuccessOverlay === 'function') closeRegSuccessOverlay(); return; }
         var fp = document.getElementById('forgotPasswordOverlay');
@@ -1920,7 +2248,7 @@ if (!window._wmEscapeBound) {
 }
 
 /* // HERO PARALLAX: dark ambient depth */
-(function heroAmbientParallax(){
+(function heroAmbientParallax() {
   const hero = document.getElementById('cream-hero');
   const finePointer = window.matchMedia('(pointer: fine)').matches;
   if (!hero || perfLite || !finePointer) return;
@@ -1940,5 +2268,73 @@ if (!window._wmEscapeBound) {
   });
 })();
 
+/* ── HERO 3D PARALLAX — Apple-style depth tracking ── */
+(function hero3dParallax() {
+  const scene = document.getElementById('hero3dScene');
+  const layerBack = document.getElementById('hero3dLayerBack');
+  const layerMid = document.getElementById('hero3dLayerMid');
+  const layerFront = document.getElementById('hero3dLayerFront');
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
 
+  if (!scene || !layerBack || !layerMid || !layerFront) return;
+  if (isMobilePerf || !finePointer) return;
 
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  let rafId = null;
+  let active = false;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function animate() {
+    currentX = lerp(currentX, targetX, 0.06);
+    currentY = lerp(currentY, targetY, 0.06);
+
+    // Back layer — subtle movement (opposite direction for depth)
+    const bx = currentX * -8;
+    const by = currentY * -6;
+    layerBack.style.transform =
+      'translate3d(' + bx.toFixed(2) + 'px, ' + by.toFixed(2) + 'px, 0)';
+
+    // Mid layer — medium movement
+    const mx = currentX * -15;
+    const my = currentY * -12;
+    layerMid.style.transform =
+      'translate3d(' + mx.toFixed(2) + 'px, ' + my.toFixed(2) + 'px, 0)';
+
+    // Front layer — strong movement
+    const fx = currentX * -25;
+    const fy = currentY * -20;
+    layerFront.style.transform =
+      'translate3d(' + fx.toFixed(2) + 'px, ' + fy.toFixed(2) + 'px, 0)';
+
+    if (Math.abs(targetX - currentX) > 0.01 || Math.abs(targetY - currentY) > 0.01) {
+      rafId = requestAnimationFrame(animate);
+    } else {
+      active = false;
+    }
+  }
+
+  function startAnimation() {
+    if (!active) {
+      active = true;
+      rafId = requestAnimationFrame(animate);
+    }
+  }
+
+  const heroSection = document.getElementById('hero-v11');
+  if (!heroSection) return;
+
+  heroSection.addEventListener('pointermove', function (e) {
+    var rect = heroSection.getBoundingClientRect();
+    targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    startAnimation();
+  }, { passive: true });
+
+  heroSection.addEventListener('pointerleave', function () {
+    targetX = 0;
+    targetY = 0;
+    startAnimation();
+  });
+})();
