@@ -671,6 +671,7 @@
   background: radial-gradient(circle, rgba(86, 184, 255, 0.16) 0%, rgba(174, 128, 255, 0.12) 42%, transparent 72%);
   filter: blur(42px);
   opacity: 0.84;
+  animation: hmwGlowDrift 18s ease-in-out infinite alternate;
 }
 
 .hmw-stack {
@@ -716,13 +717,15 @@
   filter: blur(var(--stack-blur));
   z-index: var(--stack-z);
   transition:
-    transform 0.92s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.92s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.92s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
-  animation: hmwFloat 12s ease-in-out infinite;
+    transform 1.28s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1.28s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.5s ease,
+    box-shadow 0.5s ease,
+    background 0.5s ease;
+  animation: hmwFloat 16s ease-in-out infinite;
   animation-delay: var(--float-delay);
+  will-change: transform, opacity, filter;
 }
 
 .hmw-card.no-transition {
@@ -755,6 +758,9 @@
 
 .hmw-card.is-active {
   border-color: rgba(195, 195, 220, 0.11);
+  background:
+    linear-gradient(180deg, rgba(14, 14, 19, 0.92), rgba(19, 23, 33, 0.88)),
+    radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.06), transparent 34%);
   box-shadow:
     0 2px 0 rgba(240, 240, 255, 0.14) inset,
     0 0 0 1px rgba(0, 0, 0, 0.52),
@@ -780,8 +786,8 @@
     transform: translate3d(-50%, calc(var(--stack-y) - 3px), 0) scale(var(--stack-hover-scale)) rotate(var(--stack-rotate));
     border-color: rgba(255, 255, 255, 0.12);
     box-shadow:
-      0 24px 58px rgba(6, 10, 18, 0.28),
-      0 14px 34px rgba(82, 182, 255, 0.08),
+      0 18px 48px rgba(6, 10, 18, 0.3),
+      0 12px 28px rgba(82, 182, 255, 0.06),
       inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 }
@@ -791,6 +797,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.95s ease, filter 0.95s ease;
 }
 
 .hmw-author {
@@ -866,6 +873,7 @@
   letter-spacing: 0.02em;
   flex-shrink: 0;
   box-shadow: 0 0 10px rgba(170, 170, 210, 0.08), 0 0 0 1px rgba(200, 200, 230, 0.05) inset;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease, box-shadow 0.4s ease;
 }
 
 .hmw-card-time {
@@ -894,6 +902,12 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.03),
     0 8px 24px rgba(0, 0, 0, 0.22);
+  transition:
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1s ease,
+    border-color 0.45s ease,
+    box-shadow 0.45s ease,
+    background 0.45s ease;
 }
 
 .hmw-wave-track {
@@ -951,6 +965,7 @@
     0 0 18px rgba(195, 195, 225, 0.16);
   position: relative;
   overflow: hidden;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
 }
 
 .hmw-play::after {
@@ -998,9 +1013,10 @@
       rgba(200, 200, 220, 0.92) 100%);
   box-shadow: 0 0 8px rgba(200, 200, 230, 0.1);
   transform-origin: center center;
-  animation: hmwWave 3.4s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+  animation: hmwWave 4.4s cubic-bezier(0.42, 0, 0.2, 1) infinite;
   animation-delay: var(--wave-delay, 0s);
   opacity: 0.86;
+  transition: opacity 0.5s ease, box-shadow 0.5s ease;
 }
 
 .hmw-card.is-active .hmw-wave-bar {
@@ -1024,6 +1040,7 @@
   overflow: hidden;
   max-width: 86%;
   text-align: center;
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease, filter 1s ease;
 }
 
 .hmw-card-footer {
@@ -1035,6 +1052,7 @@
   border-top: 0;
   flex-wrap: nowrap;
   margin-top: auto;
+  transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.05s ease, filter 1.05s ease;
 }
 
 .hmw-stat {
@@ -1084,15 +1102,62 @@
   animation: heroPulse 2.3s ease-in-out infinite;
 }
 
+.hmw-card-head,
+.hmw-card-copy,
+.hmw-wave-row,
+.hmw-card-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.hmw-card.is-active .hmw-card-head,
+.hmw-card.is-active .hmw-card-copy,
+.hmw-card.is-active .hmw-wave-row,
+.hmw-card.is-active .hmw-card-footer {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.hmw-card.is-active .hmw-play {
+  transform: scale(1.02);
+  box-shadow:
+    0 6px 22px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+    0 2px 0 rgba(255, 255, 255, 0.22) inset,
+    0 0 26px rgba(195, 195, 225, 0.18);
+}
+
+.hmw-card.is-active .hmw-mood-pill {
+  transform: translateY(0);
+  box-shadow: 0 0 16px rgba(175, 175, 210, 0.1), 0 0 0 1px rgba(200, 200, 230, 0.06) inset;
+}
+
+.hmw-card.is-muted .hmw-card-head {
+  transform: translateY(-6px);
+  filter: blur(0.4px);
+}
+
+.hmw-card.is-muted .hmw-card-copy {
+  transform: translateY(4px);
+  filter: blur(0.5px);
+}
+
+.hmw-card.is-muted .hmw-wave-row,
+.hmw-card.is-muted .hmw-card-footer {
+  transform: translateY(7px);
+  filter: blur(0.65px);
+}
+
 @keyframes hmwWave {
 
   0%,
   100% {
-    transform: scaleY(0.84);
+    transform: scaleY(0.88);
   }
 
   50% {
-    transform: scaleY(1.08);
+    transform: scaleY(1.04);
   }
 }
 
@@ -1104,7 +1169,25 @@
   }
 
   50% {
-    translate: 0 -4px;
+    translate: 0 -3px;
+  }
+}
+
+@keyframes hmwGlowDrift {
+
+  0% {
+    transform: translate3d(-4px, 0, 0) scale(0.98);
+    opacity: 0.72;
+  }
+
+  50% {
+    transform: translate3d(10px, -8px, 0) scale(1.04);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(18px, 6px, 0) scale(1.02);
+    opacity: 0.76;
   }
 }
 
