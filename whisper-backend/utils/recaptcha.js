@@ -49,8 +49,8 @@ async function verifyRecaptchaV3(token, remoteip) {
   }
 
   const score = typeof data.score === 'number' ? data.score : 0;
-  const minScore = parseFloat(String(process.env.RECAPTCHA_MIN_SCORE || '0.4').trim(), 10);
-  const threshold = Number.isFinite(minScore) ? minScore : 0.4;
+  const minScore = parseFloat(String(process.env.RECAPTCHA_MIN_SCORE || '0.25').trim(), 10);
+  const threshold = Number.isFinite(minScore) ? minScore : 0.25;
 
   if (score < threshold) {
     console.warn('[recaptcha] score below threshold:', { score, threshold });

@@ -2178,28 +2178,39 @@ function handleAmSignup() {
 }
 /* ── reCAPTCHA v3 (waitlist only; site key from Vercel /api/config or window.__RECAPTCHA_SITE_KEY__) ── */
 function wmLoadRecaptchaScript(siteKey) {
-  if (window.__wmRecaptchaScriptPromise) return window.__wmRecaptchaScriptPromise;
-  window.__wmRecaptchaScriptPromise = new Promise(function (resolve, reject) {
-    if (window.grecaptcha && typeof window.grecaptcha.execute === 'function') {
-      resolve();
-      return;
-    }
+  if (window.grecaptcha && typeof window.grecaptcha.execute === 'function') {
+    return Promise.resolve();
+  }
+  if (!document.querySelector('script[src*="google.com/recaptcha/api.js"]')) {
     var s = document.createElement('script');
     s.src = 'https://www.google.com/recaptcha/api.js?render=' + encodeURIComponent(siteKey);
     s.async = true;
-    s.onload = function () { resolve(); };
-    s.onerror = function () { reject(new Error('recaptcha_load')); };
+    s.defer = true;
+    s.setAttribute('data-wm-recaptcha', '1');
     document.head.appendChild(s);
+  }
+  return new Promise(function (resolve, reject) {
+    var deadline = Date.now() + 15000;
+    (function tick() {
+      if (window.grecaptcha && typeof window.grecaptcha.execute === 'function') {
+        resolve();
+        return;
+      }
+      if (Date.now() > deadline) {
+        reject(new Error('recaptcha_timeout'));
+        return;
+      }
+      setTimeout(tick, 40);
+    })();
   });
-  return window.__wmRecaptchaScriptPromise;
 }
 
 async function wmWaitRecaptchaSiteKey(maxWaitMs) {
-  var deadline = Date.now() + (maxWaitMs || 2500);
+  var deadline = Date.now() + (maxWaitMs || 8000);
   var k = (window.RECAPTCHA_SITE_KEY || window.__RECAPTCHA_SITE_KEY__ || '').trim();
   if (k) return k;
   while (Date.now() < deadline) {
-    await new Promise(function (r) { setTimeout(r, 60); });
+    await new Promise(function (r) { setTimeout(r, 80); });
     k = (window.RECAPTCHA_SITE_KEY || window.__RECAPTCHA_SITE_KEY__ || '').trim();
     if (k) return k;
   }
@@ -2207,7 +2218,7 @@ async function wmWaitRecaptchaSiteKey(maxWaitMs) {
 }
 
 async function wmGetWaitlistRecaptchaToken() {
-  var siteKey = await wmWaitRecaptchaSiteKey(2500);
+  var siteKey = await wmWaitRecaptchaSiteKey(8000);
   if (!siteKey) return '';
   try {
     await wmLoadRecaptchaScript(siteKey);
@@ -2215,13 +2226,26 @@ async function wmGetWaitlistRecaptchaToken() {
     if (window._wmLog) window._wmLog('recaptcha script error', e.message || e);
     return '';
   }
-  return new Promise(function (resolve) {
-    window.grecaptcha.ready(function () {
-      window.grecaptcha.execute(siteKey, { action: 'waitlist' })
-        .then(resolve)
-        .catch(function () { resolve(''); });
+  function runExecute() {
+    return new Promise(function (resolve) {
+      if (!window.grecaptcha || typeof window.grecaptcha.ready !== 'function') {
+        resolve('');
+        return;
+      }
+      window.grecaptcha.ready(function () {
+        window.grecaptcha.execute(siteKey, { action: 'waitlist' })
+          .then(resolve)
+          .catch(function () { resolve(''); });
+      });
     });
-  });
+  }
+  var t = await runExecute();
+  if (t && String(t).length > 20) return t;
+  await new Promise(function (r) { setTimeout(r, 400); });
+  t = await runExecute();
+  if (t && String(t).length > 20) return t;
+  await new Promise(function (r) { setTimeout(r, 600); });
+  return runExecute();
 }
 
 /* ── JOIN BETA / EARLY ACCESS SUBMISSION ── */
@@ -2250,6 +2274,11 @@ function h11HandleSignup(e) {
   async function doWaitlist(retriesLeft) {
     try {
       var recaptchaToken = await wmGetWaitlistRecaptchaToken();
+      if (!recaptchaToken || String(recaptchaToken).length < 20) {
+        showToast('⚠️ Security check didn\'t load. Turn off ad blockers for this site or try Chrome, then refresh.');
+        if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
+        return;
+      }
       var res = await apiFetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2258,11 +2287,15 @@ function h11HandleSignup(e) {
           name: name,
           mood: mood || undefined,
           a_password: aPassword,
-          recaptchaToken: recaptchaToken || undefined,
+          recaptchaToken: recaptchaToken,
         }),
       });
       if (!res.ok) {
         var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
+        var code = res.data && res.data.code;
+        if (code === 'RECAPTCHA_MISSING' || code === 'RECAPTCHA_LOW_SCORE') {
+          msg = (res.data && res.data.error) || msg;
+        }
         if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
         // Network error (status 0) — auto-retry instead of showing "Failed to fetch"
         var isNetworkError = res.status === 0 || (msg && /failed to fetch|network|connection/i.test(msg));

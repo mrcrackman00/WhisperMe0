@@ -19,6 +19,17 @@
     }
   };
 
+  // Preload reCAPTCHA v3 as soon as site key is known (so first click isn't racing the script).
+  function wmPreloadRecaptcha(siteKey) {
+    if (!siteKey || document.querySelector('script[data-wm-recaptcha="1"]')) return;
+    var s = document.createElement('script');
+    s.src = 'https://www.google.com/recaptcha/api.js?render=' + encodeURIComponent(siteKey);
+    s.async = true;
+    s.defer = true;
+    s.setAttribute('data-wm-recaptcha', '1');
+    document.head.appendChild(s);
+  }
+
   // Production (Vercel + custom domain): optional API URL from serverless /api/config
   if (!isLocal) {
     fetch('/api/config').then(function(r) { return r.ok ? r.json() : null; }).then(function(d) {
@@ -27,6 +38,7 @@
       }
       if (d && d.RECAPTCHA_SITE_KEY && String(d.RECAPTCHA_SITE_KEY).trim()) {
         window.RECAPTCHA_SITE_KEY = String(d.RECAPTCHA_SITE_KEY).trim();
+        wmPreloadRecaptcha(window.RECAPTCHA_SITE_KEY);
       }
     }).catch(function() {});
   }

@@ -32,7 +32,7 @@ router.post('/', waitlistLimiter, [
   body('name').optional({ checkFalsy: true }).isString().trim().isLength({ max: NAME_MAX }).escape(),
   body('mood').optional({ checkFalsy: true }).isString().trim().isLength({ max: MOOD_MAX }).escape(),
   body('a_password').optional(), // Honeypot field for bot protection
-  body('recaptchaToken').optional().isString().isLength({ max: 4096 }),
+  body('recaptchaToken').optional().isString().isLength({ max: 8192 }),
 ], async (req, res) => {
   const sendJson = (status, body) => {
     res.setHeader('Content-Type', 'application/json');
@@ -52,7 +52,22 @@ router.post('/', waitlistLimiter, [
     const captcha = await verifyRecaptchaV3(req.body.recaptchaToken, clientIp);
     if (!captcha.skipped && !captcha.ok) {
       console.warn('[waitlist] recaptcha failed:', captcha.error, captcha.score != null ? 'score=' + captcha.score : '', captcha.codes ? 'codes=' + JSON.stringify(captcha.codes) : '');
-      return sendJson(400, { error: 'Security check failed. Please refresh and try again.' });
+      if (captcha.error === 'missing_token') {
+        return sendJson(400, {
+          error: 'Security check did not load. Disable ad blockers for this site or try another browser.',
+          code: 'RECAPTCHA_MISSING',
+        });
+      }
+      if (captcha.error === 'score_low') {
+        return sendJson(400, {
+          error: 'Security check was uncertain. Please try again in a few seconds.',
+          code: 'RECAPTCHA_LOW_SCORE',
+        });
+      }
+      return sendJson(400, {
+        error: 'Security check failed. Confirm reCAPTCHA keys in Google Admin match whisperme.co and your Railway secret.',
+        code: 'RECAPTCHA_INVALID',
+      });
     }
 
     const name = (req.body.name || '').trim().slice(0, NAME_MAX) || null;
