@@ -345,6 +345,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   let resizeTimer = null;
   let paused = false;
   let animating = false;
+  const cycleInterval = 2600;
+  const recycleDelay = 1180;
+  const resumeDelay = 1900;
 
   function whisperAt(index) {
     const len = whispers.length;
@@ -513,17 +516,17 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   function scheduleNext(delay) {
     clearTimeout(cycleTimer);
     if (prefersReducedMotion.matches || paused || document.hidden) return;
-    cycleTimer = setTimeout(runCycle, delay || 2000);
+    cycleTimer = setTimeout(runCycle, delay || cycleInterval);
   }
 
   function runCycle() {
     if (animating || prefersReducedMotion.matches || paused || document.hidden) {
-      scheduleNext(2000);
+      scheduleNext(cycleInterval);
       return;
     }
 
     animating = true;
-    scheduleNext(2000);
+    scheduleNext(cycleInterval);
 
     const active = cardPool[0];
     const back1 = cardPool[1];
@@ -546,7 +549,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       back3.classList.remove('no-transition');
       cardPool = [incoming, active, back1, back2, back3];
       animating = false;
-    }, 940);
+    }, recycleDelay);
   }
 
   function setPaused(nextValue) {
@@ -555,7 +558,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       clearTimeout(cycleTimer);
       return;
     }
-    if (!animating) scheduleNext(1600);
+    if (!animating) scheduleNext(resumeDelay);
   }
 
   function handleResize() {
@@ -595,12 +598,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   if (typeof prefersReducedMotion.addEventListener === 'function') {
     prefersReducedMotion.addEventListener('change', function () {
       if (prefersReducedMotion.matches) clearTimers();
-      else if (!animating) scheduleNext(1600);
+      else if (!animating) scheduleNext(resumeDelay);
     });
   }
 
   window.addEventListener('resize', handleResize, { passive: true });
-  if (!prefersReducedMotion.matches) scheduleNext(2000);
+  if (!prefersReducedMotion.matches) scheduleNext(cycleInterval);
 })();
 
 (function initWW() {

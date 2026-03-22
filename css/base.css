@@ -27,6 +27,8 @@ html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+  /* Stops grey flash on tap (iOS/Android) */
+  -webkit-tap-highlight-color: transparent;
 }
 html.mobile-perf {
   scroll-behavior: auto;
@@ -83,6 +85,27 @@ body {
 .mobile-perf .h11-usp-inner,
 .mobile-perf .sp-bubble {
   animation-play-state: paused !important;
+}
+
+/* ── Mobile: no “blank screen then fade-in” (heroFadeUp + scroll-reveal) ── */
+html.mobile-perf .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+html.mobile-perf #hero-v11 .hero-badge,
+html.mobile-perf #hero-v11 .hero-headline,
+html.mobile-perf #hero-v11 .hero-sub,
+html.mobile-perf #hero-v11 .hero-cta-row,
+html.mobile-perf #hero-v11 .hero-proof-row,
+html.mobile-perf #hero-v11 .hero-signin-link,
+html.mobile-perf #hero-v11 .hero-scroll-hint,
+html.mobile-perf #hero-v11 .hero-vcard,
+html.mobile-perf .hero-mobile-whispers,
+html.mobile-perf .hero-mobile-voicenote {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* ── Scrollbar ── */
