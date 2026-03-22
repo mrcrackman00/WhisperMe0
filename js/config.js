@@ -17,8 +17,8 @@
     }
   };
 
-  // On Vercel, optionally override from env (only if non-empty)
-  if (!isLocal && window.location.hostname.includes('vercel.app')) {
+  // Production (Vercel + custom domain): optional API URL from serverless /api/config
+  if (!isLocal) {
     fetch('/api/config').then(function(r) { return r.ok ? r.json() : null; }).then(function(d) {
       if (d && d.API_BASE_URL && String(d.API_BASE_URL).trim()) {
         window.API_BASE_URL = String(d.API_BASE_URL).trim();

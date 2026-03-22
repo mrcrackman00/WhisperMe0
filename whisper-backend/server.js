@@ -22,18 +22,23 @@ const PORT = Number(process.env.PORT) || 3000;
 // ——— Trust proxy (required for rate limit behind Railway/Vercel/nginx) ———
 app.set('trust proxy', 1);
 
-// ——— CORS ———
-const CORS_ORIGINS = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.split(',').map(s => s.trim()).filter(Boolean)
-  : [
-      'https://whisper-me-flame.vercel.app',
-      'http://localhost:5500',
-      'http://127.0.0.1:5500',
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-    ];
+// ——— CORS ——— (FRONTEND_URL adds to this list; both custom domain + Vercel URL stay allowed)
+const CORS_DEFAULT_ORIGINS = [
+  'https://whisper-me-flame.vercel.app',
+  'https://whisperme.co',
+  'https://www.whisperme.co',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+const fromEnv = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+const CORS_ORIGINS = [...new Set([...fromEnv, ...CORS_DEFAULT_ORIGINS])];
 
 // ——— Security: Helmet & Basics ———
 app.disable('x-powered-by');
