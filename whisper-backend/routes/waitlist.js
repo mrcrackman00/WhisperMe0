@@ -7,6 +7,7 @@ const { trackEvent, EVENTS } = require('../utils/analytics');
 const { sendWaitlistConfirmation } = require('../services/emailService');
 const { waitlistLimiter } = require('../middleware/rateLimiters');
 const { body, validationResult } = require('express-validator');
+const { verifyRecaptchaV3 } = require('../utils/recaptcha');
 
 const router = express.Router();
 
@@ -30,7 +31,8 @@ router.post('/', waitlistLimiter, [
   body('email').isEmail().withMessage('Invalid email address').isLength({ max: EMAIL_MAX }).normalizeEmail(),
   body('name').optional({ checkFalsy: true }).isString().trim().isLength({ max: NAME_MAX }).escape(),
   body('mood').optional({ checkFalsy: true }).isString().trim().isLength({ max: MOOD_MAX }).escape(),
-  body('a_password').optional() // Honeypot field for bot protection
+  body('a_password').optional(), // Honeypot field for bot protection
+  body('recaptchaToken').optional().isString().isLength({ max: 4096 }),
 ], async (req, res) => {
   const sendJson = (status, body) => {
     res.setHeader('Content-Type', 'application/json');
@@ -44,6 +46,13 @@ router.post('/', waitlistLimiter, [
 
     if (req.body.a_password) {
       return sendJson(201, { success: true, message: "You're on the list! We'll notify you when WhisperMe launches." });
+    }
+
+    const clientIp = req.ip || (req.headers['x-forwarded-for'] || '').toString().split(',')[0].trim() || '';
+    const captcha = await verifyRecaptchaV3(req.body.recaptchaToken, clientIp);
+    if (!captcha.skipped && !captcha.ok) {
+      console.warn('[waitlist] recaptcha failed:', captcha.error, captcha.score != null ? 'score=' + captcha.score : '');
+      return sendJson(400, { error: 'Security check failed. Please refresh and try again.' });
     }
 
     const name = (req.body.name || '').trim().slice(0, NAME_MAX) || null;

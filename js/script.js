@@ -346,7 +346,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   let paused = false;
   let animating = false;
   const cycleInterval = 2600;
-  const recycleDelay = 1180;
+  /* Must run after stack transition ends (see .hmw-card transition ~0.68s in hero.css) */
+  const recycleDelay = 760;
   const resumeDelay = 1900;
 
   function whisperAt(index) {
@@ -358,21 +359,21 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     if (window.matchMedia('(max-width: 560px)').matches) {
       return {
         active: { y: 156, scale: 1, rotate: '0deg', opacity: 1, blur: '0px', z: 5 },
-        back1: { y: 108, scale: 0.988, rotate: '-0.65deg', opacity: 0.68, blur: '0.12px', z: 4 },
-        back2: { y: 64, scale: 0.976, rotate: '0.45deg', opacity: 0.4, blur: '0.8px', z: 3 },
-        back3: { y: 22, scale: 0.966, rotate: '-0.32deg', opacity: 0.22, blur: '1.5px', z: 2 },
+        back1: { y: 108, scale: 0.988, rotate: '-0.65deg', opacity: 0.68, blur: '0px', z: 4 },
+        back2: { y: 64, scale: 0.976, rotate: '0.45deg', opacity: 0.4, blur: '0px', z: 3 },
+        back3: { y: 22, scale: 0.966, rotate: '-0.32deg', opacity: 0.22, blur: '0px', z: 2 },
         incoming: { y: 246, scale: 0.986, rotate: '0.3deg', opacity: 0, blur: '0px', z: 6 },
-        exit: { y: -42, scale: 0.952, rotate: '-0.4deg', opacity: 0, blur: '1.8px', z: 1 },
+        exit: { y: -42, scale: 0.952, rotate: '-0.4deg', opacity: 0, blur: '0px', z: 1 },
       };
     }
 
     return {
       active: { y: 204, scale: 1, rotate: '0deg', opacity: 1, blur: '0px', z: 5 },
-      back1: { y: 148, scale: 0.988, rotate: '-0.72deg', opacity: 0.68, blur: '0.12px', z: 4 },
-      back2: { y: 96, scale: 0.976, rotate: '0.48deg', opacity: 0.42, blur: '0.75px', z: 3 },
-      back3: { y: 46, scale: 0.966, rotate: '-0.36deg', opacity: 0.22, blur: '1.4px', z: 2 },
+      back1: { y: 148, scale: 0.988, rotate: '-0.72deg', opacity: 0.68, blur: '0px', z: 4 },
+      back2: { y: 96, scale: 0.976, rotate: '0.48deg', opacity: 0.42, blur: '0px', z: 3 },
+      back3: { y: 46, scale: 0.966, rotate: '-0.36deg', opacity: 0.22, blur: '0px', z: 2 },
       incoming: { y: 302, scale: 0.986, rotate: '0.35deg', opacity: 0, blur: '0px', z: 6 },
-      exit: { y: -42, scale: 0.952, rotate: '-0.42deg', opacity: 0, blur: '1.8px', z: 1 },
+      exit: { y: -42, scale: 0.952, rotate: '-0.42deg', opacity: 0, blur: '0px', z: 1 },
     };
   }
 
@@ -488,7 +489,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     card.style.setProperty('--stack-blur', slot.blur);
     card.style.setProperty('--stack-z', String(slot.z));
     card.style.setProperty('--card-width', computeWidth(card.dataset.size, role));
-    card.style.setProperty('--float-delay', (role === 'active' ? 0 : role === 'back1' ? 0.6 : role === 'back2' ? 1.1 : 1.6) + 's');
     card.classList.toggle('is-active', role === 'active');
     card.classList.toggle('is-muted', role === 'back3' || role === 'exit');
   }
@@ -2176,6 +2176,54 @@ function handleAmSignup() {
     showToast('❌ ' + msg);
   });
 }
+/* ── reCAPTCHA v3 (waitlist only; site key from Vercel /api/config or window.__RECAPTCHA_SITE_KEY__) ── */
+function wmLoadRecaptchaScript(siteKey) {
+  if (window.__wmRecaptchaScriptPromise) return window.__wmRecaptchaScriptPromise;
+  window.__wmRecaptchaScriptPromise = new Promise(function (resolve, reject) {
+    if (window.grecaptcha && typeof window.grecaptcha.execute === 'function') {
+      resolve();
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = 'https://www.google.com/recaptcha/api.js?render=' + encodeURIComponent(siteKey);
+    s.async = true;
+    s.onload = function () { resolve(); };
+    s.onerror = function () { reject(new Error('recaptcha_load')); };
+    document.head.appendChild(s);
+  });
+  return window.__wmRecaptchaScriptPromise;
+}
+
+async function wmWaitRecaptchaSiteKey(maxWaitMs) {
+  var deadline = Date.now() + (maxWaitMs || 2500);
+  var k = (window.RECAPTCHA_SITE_KEY || window.__RECAPTCHA_SITE_KEY__ || '').trim();
+  if (k) return k;
+  while (Date.now() < deadline) {
+    await new Promise(function (r) { setTimeout(r, 60); });
+    k = (window.RECAPTCHA_SITE_KEY || window.__RECAPTCHA_SITE_KEY__ || '').trim();
+    if (k) return k;
+  }
+  return '';
+}
+
+async function wmGetWaitlistRecaptchaToken() {
+  var siteKey = await wmWaitRecaptchaSiteKey(2500);
+  if (!siteKey) return '';
+  try {
+    await wmLoadRecaptchaScript(siteKey);
+  } catch (e) {
+    if (window._wmLog) window._wmLog('recaptcha script error', e.message || e);
+    return '';
+  }
+  return new Promise(function (resolve) {
+    window.grecaptcha.ready(function () {
+      window.grecaptcha.execute(siteKey, { action: 'waitlist' })
+        .then(resolve)
+        .catch(function () { resolve(''); });
+    });
+  });
+}
+
 /* ── JOIN BETA / EARLY ACCESS SUBMISSION ── */
 function h11HandleSignup(e) {
   if (e) e.preventDefault();
@@ -2201,10 +2249,17 @@ function h11HandleSignup(e) {
 
   async function doWaitlist(retriesLeft) {
     try {
+      var recaptchaToken = await wmGetWaitlistRecaptchaToken();
       var res = await apiFetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, name: name, mood: mood || undefined, a_password: aPassword }),
+        body: JSON.stringify({
+          email: email,
+          name: name,
+          mood: mood || undefined,
+          a_password: aPassword,
+          recaptchaToken: recaptchaToken || undefined,
+        }),
       });
       if (!res.ok) {
         var msg = (res.data && res.data.error) || 'Something went wrong. Please try again.';
