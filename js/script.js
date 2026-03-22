@@ -2312,6 +2312,11 @@ function h11HandleSignup(e) {
       }
       if (btn) { btn.innerHTML = '✓ You\'re on the list!'; btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)'; }
       showToast('🎉 You\'re on the waitlist! Your voice will be heard.');
+      // #region agent log
+      if (window._wmDebug) {
+        fetch('http://127.0.0.1:7604/ingest/5966a5bf-95ac-4a6c-9caa-e3106c56b52d', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '410aaf' }, body: JSON.stringify({ sessionId: '410aaf', location: 'script.js:doWaitlist', message: 'waitlist_submit_ok', data: { host: typeof location !== 'undefined' ? location.hostname : '', status: res.status }, timestamp: Date.now(), hypothesisId: 'H-flow', runId: 'audit-1' }) }).catch(function () {});
+      }
+      // #endregion
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';
     } catch (err) {

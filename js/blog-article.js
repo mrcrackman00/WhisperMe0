@@ -3,6 +3,20 @@
  * author bio, share buttons, SEO
  */
 (function() {
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+  /** Allow only safe chars inside style="background:…" (static data + injection hardening). */
+  function sanitizeCssSnippet(s) {
+    return String(s || '').replace(/["'<>;{}\\]/g, '');
+  }
+
   var slug = (new URLSearchParams(window.location.search)).get('slug') 
     || (window.location.hash ? window.location.hash.slice(1) : null);
   if (!slug || slug === 'null' || slug === 'undefined' || slug.length < 2) {
@@ -40,6 +54,7 @@
   document.getElementById('articleTitle').textContent = post.title;
   document.getElementById('articleAuthor').textContent = post.author;
   document.getElementById('articleReadTime').textContent = post.readTime;
+  /* post.body is trusted HTML from static blog-data in repo; do not inject remote HTML here unsanitized. */
   document.getElementById('articleBody').innerHTML = post.body;
 
   var pubDate = post.publishedDate || '';
@@ -62,11 +77,11 @@
   var author = window.BLOG_AUTHORS && window.BLOG_AUTHORS[post.authorKey || post.author];
   var bioEl = document.getElementById('authorBio');
   if (author) {
-    bioEl.innerHTML = '<div class="blog-author-avatar">' + (author.avatar || author.name.charAt(0)) + '</div>' +
+    bioEl.innerHTML = '<div class="blog-author-avatar">' + escapeHtml(author.avatar || author.name.charAt(0)) + '</div>' +
       '<div class="blog-author-info">' +
-      '<strong class="blog-author-name">' + author.name + '</strong>' +
-      '<span class="blog-author-role">' + author.role + '</span>' +
-      '<p class="blog-author-desc">' + author.bio + '</p>' +
+      '<strong class="blog-author-name">' + escapeHtml(author.name) + '</strong>' +
+      '<span class="blog-author-role">' + escapeHtml(author.role) + '</span>' +
+      '<p class="blog-author-desc">' + escapeHtml(author.bio) + '</p>' +
       '</div>';
   } else {
     bioEl.innerHTML = '';
@@ -92,12 +107,12 @@
     a.href = '/pages/blog-article.html?slug=' + encodeURIComponent(r.slug);
     a.className = 'sp-post blog-related-card reveal';
     a.setAttribute('tabindex', '0');
-    a.innerHTML = '<div class="sp-post-img-wrap"><div class="sp-post-img-placeholder sp-post-icon" style="background:' + (r.gradient || 'linear-gradient(135deg,#1C1A18,#3a1a2a)') + '">' + (r.icon || '📄') + '</div></div>' +
+    a.innerHTML = '<div class="sp-post-img-wrap"><div class="sp-post-img-placeholder sp-post-icon" style="background:' + sanitizeCssSnippet(r.gradient || 'linear-gradient(135deg,#1C1A18,#3a1a2a)') + '">' + escapeHtml(r.icon || '📄') + '</div></div>' +
       '<div class="sp-post-body">' +
-      '<div class="sp-post-cat">' + r.category + '</div>' +
-      '<h3 class="sp-post-title">' + r.title + '</h3>' +
-      '<p class="sp-post-desc">' + r.excerpt + '</p>' +
-      '<div class="sp-post-meta"><span>' + r.author + '</span><span>·</span><span>' + r.readTime + '</span></div>' +
+      '<div class="sp-post-cat">' + escapeHtml(r.category) + '</div>' +
+      '<h3 class="sp-post-title">' + escapeHtml(r.title) + '</h3>' +
+      '<p class="sp-post-desc">' + escapeHtml(r.excerpt) + '</p>' +
+      '<div class="sp-post-meta"><span>' + escapeHtml(r.author) + '</span><span>·</span><span>' + escapeHtml(r.readTime) + '</span></div>' +
       '</div>';
     a.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
