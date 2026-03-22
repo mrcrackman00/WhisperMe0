@@ -108,6 +108,64 @@ html.mobile-perf .hero-mobile-voicenote {
   transform: none !important;
 }
 
+/*
+  Landing hero: phones struggle with 3D scene + large backdrop-filter + animated blur.
+  Strip the expensive bits on narrow viewports (same targets as html.mobile-perf).
+*/
+/* Match hero.css @media (max-width: 860px) where mobile whispers + 3D still paint */
+@media (max-width: 860px) {
+  #hero-v11 .hero-3d-scene {
+    display: none !important;
+  }
+
+  #hero-v11 .hero-v11-backdrop::after {
+    opacity: 0.02 !important;
+  }
+
+  #hero-v11 .hmw-shell {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  #hero-v11 .hmw-shell::after {
+    animation: none !important;
+    opacity: 0.35 !important;
+    filter: blur(16px) !important;
+  }
+
+  #hero-v11 .hmw-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    will-change: auto !important;
+    filter: none !important;
+  }
+
+  #hero-v11 {
+    contain: layout style;
+  }
+}
+
+html.mobile-perf #hero-v11 .hero-3d-scene {
+  display: none !important;
+}
+
+html.mobile-perf #hero-v11 .hmw-shell,
+html.mobile-perf #hero-v11 .hmw-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.mobile-perf #hero-v11 .hmw-card {
+  animation: none !important;
+  will-change: auto !important;
+  filter: none !important;
+}
+
+html.mobile-perf #hero-v11 .hmw-shell::after {
+  animation: none !important;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {
   width: 4px;

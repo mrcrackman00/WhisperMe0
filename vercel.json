@@ -9,7 +9,18 @@
     { "source": "/pages/terms.html", "destination": "/terms", "permanent": true },
     { "source": "/pages/cookies.html", "destination": "/cookies", "permanent": true },
     { "source": "/pages/accessibility.html", "destination": "/accessibility", "permanent": true },
-    { "source": "/pages/profile.html", "destination": "/profile", "permanent": true }
+    { "source": "/pages/profile.html", "destination": "/profile", "permanent": true },
+    { "source": "/pages/blog-article.html", "destination": "/blog-article", "permanent": true },
+    { "source": "/about.html", "destination": "/about", "permanent": true },
+    { "source": "/blog.html", "destination": "/blog", "permanent": true },
+    { "source": "/blog-article.html", "destination": "/blog-article", "permanent": true },
+    { "source": "/careers.html", "destination": "/careers", "permanent": true },
+    { "source": "/press.html", "destination": "/press", "permanent": true },
+    { "source": "/privacy.html", "destination": "/privacy", "permanent": true },
+    { "source": "/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/cookies.html", "destination": "/cookies", "permanent": true },
+    { "source": "/accessibility.html", "destination": "/accessibility", "permanent": true },
+    { "source": "/profile.html", "destination": "/profile", "permanent": true }
   ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
