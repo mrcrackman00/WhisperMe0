@@ -82,7 +82,7 @@ router.post('/signup', authLimiter, async (req, res) => {
       password,
       options: {
         data: { full_name: fullName, display_name: displayName || fullName, mood },
-        emailRedirectTo: (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim() || undefined,
+        emailRedirectTo: (process.env.FRONTEND_URL || 'https://whisperme.co').split(',')[0]?.trim() || undefined,
       },
     });
 
@@ -109,7 +109,7 @@ router.post('/signup', authLimiter, async (req, res) => {
       return sendJson(200, { session: data.session, user: data.user, access_token: token });
     }
     // User created but needs email confirmation — send via our Gmail/Resend (Supabase SMTP often fails)
-    const redirectTo = (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim();
+    const redirectTo = (process.env.FRONTEND_URL || 'https://whisperme.co').split(',')[0]?.trim();
     try {
       const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
         type: 'signup',
@@ -156,7 +156,7 @@ router.post('/resend-verification', resendVerificationLimiter, async (req, res) 
     if (!supabaseAdmin) {
       return sendJson(503, { error: 'Service temporarily unavailable.' });
     }
-    const redirectTo = (process.env.FRONTEND_URL || 'https://whisper-me-flame.vercel.app').split(',')[0]?.trim();
+    const redirectTo = (process.env.FRONTEND_URL || 'https://whisperme.co').split(',')[0]?.trim();
     const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
       type: 'signup',
       email,
@@ -191,12 +191,12 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
       return sendJson(400, { error: 'Please enter a valid email address.' });
     }
 
-    const frontendUrl = process.env.FRONTEND_URL?.split(',')[0]?.trim() || 'https://whisper-me-flame.vercel.app';
+    const frontendUrl = process.env.FRONTEND_URL?.split(',')[0]?.trim() || 'https://whisperme.co';
     const allowedOrigins = (process.env.FRONTEND_URL || '')
       .split(',')
       .map((s) => s.trim().replace(/\/$/, ''))
       .filter(Boolean);
-    if (!allowedOrigins.length) allowedOrigins.push('https://whisper-me-flame.vercel.app');
+    if (!allowedOrigins.length) allowedOrigins.push('https://whisperme.co');
 
     let rawRedirect = req.body?.redirectTo;
     let redirectTo = (typeof rawRedirect === 'string' ? rawRedirect : frontendUrl)
