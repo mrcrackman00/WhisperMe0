@@ -4386,18 +4386,24 @@
         return (typeof window.getApiBase === 'function') ? window.getApiBase() : ((window.API_BASE_URL && String(window.API_BASE_URL).trim()) || 'https://whisperme0-production.up.railway.app').replace(/\/$/, '');
       }
 
-      /** Supabase puts #error=...&error_code=otp_expired in URL when confirm link is old */
+      /** Supabase puts #error=... or ?error=... (some flows) when confirm/magic link fails */
       window.handleSupabaseAuthUrlErrors = function () {
         if (window.__wmAuthUrlErrorDone) return;
         var h = (window.location.hash || '').replace(/^#/, '');
-        if (!h || h.indexOf('error=') === -1) return;
+        var q = (window.location.search || '').replace(/^\?/, '');
+        var errStr = '';
+        if (h.indexOf('error=') !== -1) errStr = h;
+        else if (q.indexOf('error=') !== -1) errStr = q;
+        if (!errStr) return;
         window.__wmAuthUrlErrorDone = true;
-        var params = new URLSearchParams(h);
+        var params = new URLSearchParams(errStr);
         var errCode = (params.get('error_code') || '').toLowerCase();
         var desc = (params.get('error_description') || '').replace(/\+/g, ' ');
         window.history.replaceState('', document.title, window.location.pathname);
         var msg = 'Email link invalid or expired. Use Sign In → Forgot password, or sign up again for a new email.';
-        if (errCode === 'otp_expired') msg = 'This confirm link expired (links expire in ~1 hour). Sign up again or tap Resend in the verify screen for a fresh link.';
+        if (errCode === 'otp_expired') {
+          msg = 'This link expired or was already used. Fresh emails can fail if Gmail/antivirus opened the link first — tap Resend, then open the link once in incognito (or long-press → Copy link → paste in browser). Links expire ~1 hour from send time.';
+        }
         if (desc && desc.indexOf('expired') !== -1 && errCode !== 'otp_expired') msg = 'Link expired. Request a new verification email.';
         if (typeof showToast === 'function') showToast('⚠️ ' + msg);
       };
