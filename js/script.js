@@ -1184,6 +1184,10 @@ function dismissEarlyAccessPopup(snoozeDays) {
   if (ov) {
     ov.classList.remove('active');
     ov.setAttribute('aria-hidden', 'true');
+    ov.setAttribute('inert', '');
+    try {
+      ov.inert = true;
+    } catch (eInert) { /* old browsers */ }
   }
   document.documentElement.classList.remove('ea-popup-open');
   document.body.classList.remove('ea-popup-open');
@@ -1197,6 +1201,27 @@ function dismissEarlyAccessPopup(snoozeDays) {
   }
 }
 window.dismissEarlyAccessPopup = dismissEarlyAccessPopup;
+
+/** Tap outside the card (backdrop / overlay gutter) closes the early-access popup — works when inline onclick target is wrong. */
+(function initEaPopupOutsideClose() {
+  function bind() {
+    var ov = document.getElementById('eaAccessPopupOverlay');
+    var card = document.getElementById('eaEarlyAccessPopup');
+    if (!ov || !card || ov.dataset.eaOutsideBound === '1') return;
+    ov.dataset.eaOutsideBound = '1';
+    ov.addEventListener(
+      'click',
+      function (e) {
+        if (!ov.classList.contains('active')) return;
+        if (card.contains(e.target)) return;
+        dismissEarlyAccessPopup(5);
+      },
+      false
+    );
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+})();
 
 /* ── PAGE SWITCHING ── */
 const PAGES = ['home', 'features', 'how-it-works', 'stories', 'app-preview', 'join-beta', 'community', 'about', 'blog', 'careers', 'press', 'privacy-policy', 'terms-of-service', 'cookie-policy', 'accessibility'];
@@ -2587,6 +2612,10 @@ if (!window._wmEscapeBound) {
     if (auth && auth.classList.contains('active')) return;
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
+        ov.removeAttribute('inert');
+        try {
+          ov.inert = false;
+        } catch (eInert2) { /* old browsers */ }
         ov.classList.add('active');
         ov.setAttribute('aria-hidden', 'false');
         document.documentElement.classList.add('ea-popup-open');

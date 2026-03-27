@@ -11,7 +11,8 @@
     max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
   box-sizing: border-box;
   opacity: 0;
-  pointer-events: none;
+  /* Closed: never intercept clicks (inert + none; !important beats stray rules) */
+  pointer-events: none !important;
   transition: opacity 0.45s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1));
   isolation: isolate;
   -webkit-tap-highlight-color: transparent;
@@ -19,7 +20,7 @@
 
 .ea-popup-overlay.active {
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: auto !important;
 }
 
 .ea-popup-backdrop {
