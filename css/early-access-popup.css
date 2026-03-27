@@ -1,16 +1,20 @@
 /* Sitewide “Get Early Access” modal — matches hero waitlist styling */
+/* z-index above .vu-card-overlay (9999) so modal shows on mobile hero; below #toast (~999999) */
 .ea-popup-overlay {
   position: fixed;
   inset: 0;
-  z-index: 750;
+  z-index: 10020;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
   box-sizing: border-box;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ea-popup-overlay.active {
@@ -37,8 +41,13 @@
   z-index: 1;
   width: 100%;
   max-width: 420px;
-  max-height: calc(100vh - 40px);
+  /* dvh avoids iOS 100vh cut-off when browser chrome shows */
+  max-height: min(560px, calc(100vh - 24px));
+  max-height: min(560px, calc(100dvh - 24px));
+  overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: linear-gradient(165deg, #2A2624 0%, #1C1A18 100%);
   border: 1px solid rgba(245, 239, 228, 0.12);
   border-radius: 22px;
@@ -56,10 +65,12 @@
 
 .ea-popup-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 36px;
-  height: 36px;
+  top: 12px;
+  right: 12px;
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: 10px;
   background: rgba(245, 239, 228, 0.08);
@@ -199,14 +210,77 @@
 
 body.ea-popup-open {
   overflow: hidden;
+  touch-action: none;
 }
 
-@media (max-width: 480px) {
+/* Phones — bottom sheet feel, full width, readable type, iOS-friendly inputs (16px = no zoom) */
+@media (max-width: 640px) {
+  .ea-popup-overlay {
+    align-items: flex-end;
+    padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .ea-popup-overlay.active .ea-popup-card {
+    transform: scale(1) translateY(0);
+  }
+
   .ea-popup-card {
-    padding: 24px 18px 18px;
+    max-width: none;
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    max-height: min(88vh, 620px);
+    max-height: min(88dvh, 620px);
+    padding: 22px 18px max(20px, calc(12px + env(safe-area-inset-bottom, 0px)));
+    margin: 0;
   }
 
   .ea-popup-title {
-    font-size: 1.28rem;
+    font-size: 1.35rem;
+    margin-right: 48px;
+    padding-right: 0;
+  }
+
+  .ea-popup-sub {
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  .ea-popup-card .h11-form-input {
+    font-size: 16px;
+    padding: 15px 16px;
+    min-height: 48px;
+  }
+
+  .ea-popup-card .h11-mood-chip {
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    min-height: 40px;
+  }
+
+  .ea-popup-submit {
+    padding: 16px 20px;
+    min-height: 52px;
+    font-size: 1rem;
+    border-radius: 16px;
+  }
+
+  .ea-popup-later {
+    padding: 14px 10px;
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
+
+  .ea-popup-note {
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .ea-popup-title {
+    font-size: 1.22rem;
+  }
+
+  .ea-popup-card .h11-mood-row {
+    gap: 6px;
   }
 }
