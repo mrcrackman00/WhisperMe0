@@ -1185,7 +1185,11 @@ function dismissEarlyAccessPopup(snoozeDays) {
     ov.classList.remove('active');
     ov.setAttribute('aria-hidden', 'true');
   }
+  document.documentElement.classList.remove('ea-popup-open');
   document.body.classList.remove('ea-popup-open');
+  /* Extra unlock for WebKit if anything left inline styles stuck */
+  document.documentElement.style.overflow = '';
+  document.body.style.touchAction = '';
   if (typeof snoozeDays === 'number' && snoozeDays > 0) {
     try {
       localStorage.setItem('whisperme_ea_popup_snooze', String(Date.now() + snoozeDays * 86400000));
@@ -1291,7 +1295,11 @@ function showPage(name, opts) {
     // Re-trigger reveals inside this page
     target.querySelectorAll('.reveal').forEach(el => {
       el.classList.remove('in');
-      setTimeout(() => el.classList.add('in'), 80);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          el.classList.add('in');
+        });
+      });
     });
   }
   // Scroll to top
@@ -2577,9 +2585,14 @@ if (!window._wmEscapeBound) {
     if (!ov) return;
     var auth = document.getElementById('authModalOverlay');
     if (auth && auth.classList.contains('active')) return;
-    ov.classList.add('active');
-    ov.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('ea-popup-open');
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        ov.classList.add('active');
+        ov.setAttribute('aria-hidden', 'false');
+        document.documentElement.classList.add('ea-popup-open');
+        document.body.classList.add('ea-popup-open');
+      });
+    });
   }
   function run() {
     if (shouldSkipAutoOpen()) return;

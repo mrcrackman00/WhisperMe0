@@ -21,6 +21,9 @@
   --shadow: rgba(28, 26, 24, 0.08);
   --violet: #8B5CF6;
   --sky: #60A5FA;
+  /* Motion — shared smooth easing (landing + modals) */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {
@@ -35,6 +38,14 @@ html.mobile-perf {
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .page {
+    animation: none !important;
+  }
 }
 
 body {

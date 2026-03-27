@@ -1168,7 +1168,7 @@ footer button {
 
 /* ── PAGE SWITCHING ── */
 .page {
-  animation: pageIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pageIn 0.55s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1)) both;
 }
 
 /* ── SCROLL PERFORMANCE: content-visibility for smoother scroll ── */
@@ -1189,7 +1189,7 @@ section,
 @keyframes pageIn {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(14px);
   }
 
   to {
@@ -1228,13 +1228,17 @@ section,
 /* ── SCROLL REVEAL ── */
 .reveal {
   opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(22px);
+  transition:
+    opacity 0.75s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 0.75s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1));
+  will-change: opacity, transform;
 }
 
 .reveal.in {
   opacity: 1;
   transform: none;
+  will-change: auto;
 }
 
 .reveal-d1 {
