@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="css/app-sim.css">
   <link rel="stylesheet" href="css/pages.css">
   <link rel="stylesheet" href="css/auth-modal.css">
+  <link rel="stylesheet" href="css/early-access-popup.css">
   <link rel="stylesheet" href="css/utilities.css">
   <link rel="stylesheet" href="css/voice-universe.css">
 </head>
@@ -3590,6 +3591,40 @@
   </footer>
 
   <div class="toast" id="toast">🎉 You're on the waitlist! We'll be in touch soon.</div>
+
+  <!-- Sitewide Get Early Access (waitlist) — auto-opens once; same API as hero / Join Beta -->
+  <div class="ea-popup-overlay" id="eaAccessPopupOverlay" aria-hidden="true" role="presentation">
+    <div class="ea-popup-backdrop" onclick="if(event.target===this)dismissEarlyAccessPopup(5)"></div>
+    <div class="ea-popup-card" id="eaEarlyAccessPopup" role="dialog" aria-modal="true" aria-labelledby="eaPopupTitle"
+      onclick="event.stopPropagation()">
+      <button type="button" class="ea-popup-close" onclick="dismissEarlyAccessPopup(5)" aria-label="Close">×</button>
+      <h2 class="ea-popup-title" id="eaPopupTitle">Get Early Access</h2>
+      <p class="ea-popup-sub">Join the WhisperMe waitlist — same as on the site. We’ll only email you about the launch.</p>
+      <input type="text" name="a_password" id="ea_popup_a_password"
+        style="position:absolute;left:-9999px;opacity:0;height:0;width:0" tabindex="-1" autocomplete="off"
+        aria-hidden="true">
+      <label class="h11-form-field" for="eaPopupName">
+        <input type="text" class="h11-form-input" placeholder="Your name" id="eaPopupName" autocomplete="name" />
+      </label>
+      <label class="h11-form-field" for="eaPopupEmail">
+        <input type="email" class="h11-form-input" placeholder="your@email.com" id="eaPopupEmail" autocomplete="email" />
+      </label>
+      <div style="margin-bottom:14px;">
+        <div
+          style="font-size:0.72rem;color:rgba(245,239,228,0.5);margin-bottom:10px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">
+          Your mood today (optional)</div>
+        <div class="h11-mood-row">
+          <button type="button" onclick="h11SelectMood(this)" class="h11-mood-chip">🌱 Calm</button>
+          <button type="button" onclick="h11SelectMood(this)" class="h11-mood-chip">💙 Open</button>
+          <button type="button" onclick="h11SelectMood(this)" class="h11-mood-chip">🔥 Bold</button>
+          <button type="button" onclick="h11SelectMood(this)" class="h11-mood-chip">🌙 Reflective</button>
+        </div>
+      </div>
+      <button type="button" class="ea-popup-submit" onclick="h11HandleSignup(event)">Get Early Access 🎙️</button>
+      <p class="ea-popup-note"><span>Limited early access</span> — no spam. Unsubscribe anytime.</p>
+      <button type="button" class="ea-popup-later" onclick="dismissEarlyAccessPopup(5)">Not now — remind me later</button>
+    </div>
+  </div>
 
   <!-- ══════════════════════════════════════════════
      AUTH MODAL — Login / Sign Up

@@ -1168,6 +1168,32 @@ function h11SelectMood(el) {
   el.classList.add('selected');
 }
 
+function wmResetWaitlistBtn(btn, fromH11, fromPopup) {
+  if (!btn) return;
+  btn.disabled = false;
+  if (fromH11) {
+    btn.innerHTML = '<span>Request Early Access</span><span class="h11-submit-btn-arrow">🎙️</span>';
+  } else {
+    btn.innerHTML = 'Get Early Access 🎙️';
+  }
+}
+
+/** Close early-access modal. `snoozeDays` > 0 hides auto-popup until then. */
+function dismissEarlyAccessPopup(snoozeDays) {
+  var ov = document.getElementById('eaAccessPopupOverlay');
+  if (ov) {
+    ov.classList.remove('active');
+    ov.setAttribute('aria-hidden', 'true');
+  }
+  document.body.classList.remove('ea-popup-open');
+  if (typeof snoozeDays === 'number' && snoozeDays > 0) {
+    try {
+      localStorage.setItem('whisperme_ea_popup_snooze', String(Date.now() + snoozeDays * 86400000));
+    } catch (err) { /* ignore */ }
+  }
+}
+window.dismissEarlyAccessPopup = dismissEarlyAccessPopup;
+
 /* ── PAGE SWITCHING ── */
 const PAGES = ['home', 'features', 'how-it-works', 'stories', 'app-preview', 'join-beta', 'community', 'about', 'blog', 'careers', 'press', 'privacy-policy', 'terms-of-service', 'cookie-policy', 'accessibility'];
 
@@ -2251,12 +2277,33 @@ async function wmGetWaitlistRecaptchaToken() {
 /* ── JOIN BETA / EARLY ACCESS SUBMISSION ── */
 function h11HandleSignup(e) {
   if (e) e.preventDefault();
+  var fromPopup = e && e.target && e.target.closest && e.target.closest('#eaEarlyAccessPopup');
   var fromH11 = e && e.target && e.target.closest && e.target.closest('#h11FormCard');
-  var nameEl = fromH11 ? document.getElementById('h11NameInput') : (document.getElementById('join-beta')?.querySelector('#nameInput') || document.getElementById('nameInput'));
-  var emailEl = fromH11 ? document.getElementById('h11EmailInput') : (document.getElementById('join-beta')?.querySelector('#emailInput') || document.getElementById('emailInput'));
-  var btn = fromH11 ? document.querySelector('.h11-submit-btn') : (document.getElementById('join-beta')?.querySelector('.form-submit') || document.querySelector('.form-submit'));
-  var aPasswordEl = fromH11 ? document.getElementById('h11_a_password') : document.querySelector('#join-beta [name="a_password"]') || document.querySelector('[name="a_password"]');
-  var moodEl = fromH11 ? document.querySelector('#h11FormCard .h11-mood-chip.selected') : document.querySelector('#join-beta .form-mood-chip.selected');
+  var nameEl = fromPopup
+    ? document.getElementById('eaPopupName')
+    : fromH11
+      ? document.getElementById('h11NameInput')
+      : document.getElementById('join-beta')?.querySelector('#nameInput') || document.getElementById('nameInput');
+  var emailEl = fromPopup
+    ? document.getElementById('eaPopupEmail')
+    : fromH11
+      ? document.getElementById('h11EmailInput')
+      : document.getElementById('join-beta')?.querySelector('#emailInput') || document.getElementById('emailInput');
+  var btn = fromPopup
+    ? document.querySelector('#eaEarlyAccessPopup .ea-popup-submit')
+    : fromH11
+      ? document.querySelector('.h11-submit-btn')
+      : document.getElementById('join-beta')?.querySelector('.form-submit') || document.querySelector('.form-submit');
+  var aPasswordEl = fromPopup
+    ? document.getElementById('ea_popup_a_password')
+    : fromH11
+      ? document.getElementById('h11_a_password')
+      : document.querySelector('#join-beta [name="a_password"]') || document.querySelector('[name="a_password"]');
+  var moodEl = fromPopup
+    ? document.querySelector('#eaEarlyAccessPopup .h11-mood-chip.selected')
+    : fromH11
+      ? document.querySelector('#h11FormCard .h11-mood-chip.selected')
+      : document.querySelector('#join-beta .form-mood-chip.selected');
   var aPassword = aPasswordEl ? aPasswordEl.value : '';
   var name = nameEl ? nameEl.value.trim() : '';
   var email = emailEl ? emailEl.value.trim() : '';
@@ -2269,7 +2316,11 @@ function h11HandleSignup(e) {
     return;
   }
 
-  if (btn) { btn.disabled = true; btn.innerHTML = 'Joining...'; }
+  if (btn) {
+    btn.disabled = true;
+    if (fromH11) btn.innerHTML = '<span>Joining...</span>';
+    else btn.innerHTML = 'Joining...';
+  }
 
   async function doWaitlist(retriesLeft) {
     try {
@@ -2308,11 +2359,18 @@ function h11HandleSignup(e) {
         }
         if (isNetworkError) msg = 'Connection failed. Try WiFi or tap again—server may be waking up.';
         showToast('❌ ' + msg);
-        if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
+        wmResetWaitlistBtn(btn, fromH11, fromPopup);
         return;
       }
-      if (btn) { btn.innerHTML = '✓ You\'re on the list!'; btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)'; }
+      try {
+        localStorage.setItem('whisperme_waitlist_joined', '1');
+      } catch (storeErr) { /* ignore */ }
+      if (btn) {
+        btn.innerHTML = '✓ You\'re on the list!';
+        btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)';
+      }
       showToast('🎉 You\'re on the waitlist! Your voice will be heard.');
+      if (fromPopup) dismissEarlyAccessPopup(0);
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';
     } catch (err) {
@@ -2325,7 +2383,7 @@ function h11HandleSignup(e) {
           ? 'Connection error. Is the backend running?'
           : 'Connection failed. Try WiFi or tap again.';
         showToast('❌ ' + msg);
-        if (btn) { btn.disabled = false; btn.innerHTML = 'Get Early Access 🎙️'; }
+        wmResetWaitlistBtn(btn, fromH11, fromPopup);
       }
     }
   }
@@ -2496,4 +2554,40 @@ if (!window._wmEscapeBound) {
     targetY = 0;
     startAnimation();
   });
+})();
+
+/* ── Sitewide “Get Early Access” popup (waitlist) ── */
+(function scheduleEarlyAccessPopup() {
+  var DELAY_MS = 2800;
+  function shouldSkipAutoOpen() {
+    try {
+      if (localStorage.getItem('whisperme_waitlist_joined') === '1') return true;
+      var snooze = localStorage.getItem('whisperme_ea_popup_snooze');
+      if (snooze) {
+        var t = parseInt(snooze, 10);
+        if (!isNaN(t) && Date.now() < t) return true;
+      }
+    } catch (e) { /* ignore */ }
+    if (window.location.hash === '#join-beta') return true;
+    return false;
+  }
+  function tryOpen() {
+    if (shouldSkipAutoOpen()) return;
+    var ov = document.getElementById('eaAccessPopupOverlay');
+    if (!ov) return;
+    var auth = document.getElementById('authModalOverlay');
+    if (auth && auth.classList.contains('active')) return;
+    ov.classList.add('active');
+    ov.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('ea-popup-open');
+  }
+  function run() {
+    if (shouldSkipAutoOpen()) return;
+    setTimeout(tryOpen, DELAY_MS);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
 })();
