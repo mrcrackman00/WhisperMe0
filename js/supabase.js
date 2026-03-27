@@ -1,10 +1,33 @@
 /**
  * Single Supabase client for WhisperMe. Prevents "Multiple GoTrueClient instances" warning.
- * Depends on: config.js (getApiBase, apiFetch), Supabase CDN (window.supabase).
+ * Depends on: config.js (getApiBase, apiFetch). SDK is injected on first use (smaller main-thread block at load).
  * IMPORTANT: Uses project API URL (https://PROJECT_ID.supabase.co), never dashboard URL.
  */
 (function() {
   /** No real keys in git — loaded from backend GET /api/public-config (see docs/PUBLIC-REPO-SECRETS.md) */
+
+  var SUPABASE_SDK_SRC = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  var supabaseSdkPromise = null;
+
+  function loadSupabaseSdk() {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      return Promise.resolve();
+    }
+    if (supabaseSdkPromise) return supabaseSdkPromise;
+    supabaseSdkPromise = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = SUPABASE_SDK_SRC;
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      s.onload = function () { resolve(); };
+      s.onerror = function () {
+        supabaseSdkPromise = null;
+        reject(new Error('Supabase SDK failed to load'));
+      };
+      document.head.appendChild(s);
+    });
+    return supabaseSdkPromise;
+  }
 
   function isValidSupabaseUrl(url) {
     if (!url || typeof url !== 'string') return false;
@@ -30,6 +53,13 @@
 
     supabasePromise = (async function() {
       try {
+        try {
+          await loadSupabaseSdk();
+        } catch (eLoad) {
+          if (console && console.warn) console.warn('[WM] Supabase SDK:', eLoad && eLoad.message);
+          supabasePromise = null;
+          return null;
+        }
         if (!window.supabase || !window.supabase.createClient) {
           console.error('Supabase SDK not loaded');
           supabasePromise = null;

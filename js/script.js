@@ -27,7 +27,13 @@ function apiFetch(path, options) {
 /* ── Email validation helper ── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-(function () {
+window.apsGoTo = function (step) {
+  if (typeof window.__apsGoToImpl === 'function') window.__apsGoToImpl(step);
+};
+
+function initAppSimDemo() {
+  if (initAppSimDemo._ran) return;
+  initAppSimDemo._ran = true;
   // ── Build waveform bars
   function makeWave(el, count, maxH, colors, durBase, animated) {
     if (!el) return;
@@ -216,14 +222,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         clearInterval(apsProgressInterval);
         // Auto advance
         const next = step < 6 ? step + 1 : 1;
-        apsGoTo(next);
+        window.__apsGoToImpl(next);
       }
     }, 50);
   }
 
   // ── Main navigation
   let apsCurrent = 1;
-  window.apsGoTo = function (step) {
+  window.__apsGoToImpl = function (step) {
     if (typeof step !== 'number') return;
     // Clear old
     document.querySelectorAll('.aps-step').forEach(s => s.classList.remove('active'));
@@ -262,7 +268,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        apsGoTo(1);
+        window.__apsGoToImpl(1);
         obs.disconnect();
       }
     });
@@ -270,14 +276,16 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const phoneEl = document.getElementById('apsPhone');
   if (phoneEl) obs.observe(phoneEl);
 
-})();
+}
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* ── WHY WHISPERME JS ── */
-(function initHeroWhisperFeed() {
+function initHeroWhisperFeed() {
+  if (initHeroWhisperFeed._ran) return;
   const stack = document.getElementById('heroWhisperStack');
   if (!stack) return;
+  initHeroWhisperFeed._ran = true;
 
   const stackShell = stack.closest('.hmw-shell');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -604,9 +612,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   window.addEventListener('resize', handleResize, { passive: true });
   if (!prefersReducedMotion.matches) scheduleNext(cycleInterval);
-})();
+}
 
-(function initWW() {
+function initWW() {
+  if (initWW._ran) return;
+  initWW._ran = true;
   // Build waveform for card 1
   const wvEl = document.getElementById('wwWave1');
   if (wvEl) {
@@ -635,6 +645,49 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     card.style.animationPlayState = 'paused';
     observer.observe(card);
   });
+}
+
+(function scheduleHeavyVisualInits() {
+  function ric(cb, timeout) {
+    if (window.requestIdleCallback) return window.requestIdleCallback(cb, { timeout: timeout || 4500 });
+    return setTimeout(function () {
+      cb({ timeRemaining: function () { return 5; }, didTimeout: true });
+    }, 200);
+  }
+  var heroIo = null;
+  function observeHeroFeedEarly() {
+    var el = document.getElementById('heroWhisperStack');
+    if (!el || initHeroWhisperFeed._ran || heroIo) return;
+    heroIo = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          if (heroIo) {
+            heroIo.disconnect();
+            heroIo = null;
+          }
+          initHeroWhisperFeed();
+          return;
+        }
+      }
+    }, { rootMargin: '280px', threshold: 0 });
+    try {
+      heroIo.observe(el);
+    } catch (e) { /* ignore */ }
+  }
+  function runChunk() {
+    observeHeroFeedEarly();
+    ric(function () {
+      initAppSimDemo();
+      setTimeout(function () {
+        initHeroWhisperFeed();
+        setTimeout(function () {
+          initWW();
+        }, 0);
+      }, 0);
+    }, 4000);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runChunk);
+  else runChunk();
 })();
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
@@ -2654,5 +2707,12 @@ if (!window._wmEscapeBound) {
     s.onerror = function () { loadNext(i + 1); };
     document.body.appendChild(s);
   }
-  loadNext(0);
+  function start() {
+    loadNext(0);
+  }
+  if (window.requestIdleCallback) {
+    window.requestIdleCallback(start, { timeout: 5000 });
+  } else {
+    setTimeout(start, 280);
+  }
 })();
