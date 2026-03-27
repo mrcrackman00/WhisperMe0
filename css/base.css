@@ -97,6 +97,12 @@ body {
 .mobile-perf .sp-bubble {
   animation-play-state: paused !important;
 }
+.mobile-perf .wv-bar,
+.mobile-perf .hero-wv-bar,
+.mobile-perf .hw-bar,
+.mobile-perf .tw-bar {
+  animation: none !important;
+}
 
 /* ── Mobile: no “blank screen then fade-in” (heroFadeUp + scroll-reveal) ── */
 html.mobile-perf .reveal {

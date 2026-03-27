@@ -2643,3 +2643,16 @@ if (!window._wmEscapeBound) {
     run();
   }
 })();
+
+(function scheduleFeatureScripts() {
+  var chain = ['js/hero-audio.js', 'js/voice-universe.js', 'js/fv-voice-audio.js'];
+  function loadNext(i) {
+    if (i >= chain.length) return;
+    var s = document.createElement('script');
+    s.src = chain[i];
+    s.onload = function () { loadNext(i + 1); };
+    s.onerror = function () { loadNext(i + 1); };
+    document.body.appendChild(s);
+  }
+  loadNext(0);
+})();
