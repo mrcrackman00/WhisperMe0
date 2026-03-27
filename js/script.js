@@ -963,32 +963,36 @@ window.addEventListener('scroll', function () {
 
 /* ── BENTO WAVEFORM ── */
 const wbento = document.getElementById('waveform-bento');
-const heights = [8, 14, 22, 34, 46, 58, 50, 38, 24, 16, 10, 18, 30, 44, 56, 48, 34, 20, 12, 8, 14, 24, 38, 52, 60, 50, 36, 22, 14, 8, 12, 20, 32, 46, 54, 44, 32, 20, 12, 8];
-heights.forEach((h, i) => {
-  const b = document.createElement('div'); b.className = 'wv-bar';
-  b.style.setProperty('--h', h + 'px');
-  b.style.animationDelay = (i * 0.06) + 's';
-  b.style.animationDuration = (1.2 + Math.random() * 1) + 's';
-  wbento.appendChild(b);
-});
+const wbentoHeights = [8, 14, 22, 34, 46, 58, 50, 38, 24, 16, 10, 18, 30, 44, 56, 48, 34, 20, 12, 8, 14, 24, 38, 52, 60, 50, 36, 22, 14, 8, 12, 20, 32, 46, 54, 44, 32, 20, 12, 8];
+if (wbento) {
+  wbentoHeights.forEach((h, i) => {
+    const b = document.createElement('div'); b.className = 'wv-bar';
+    b.style.setProperty('--h', h + 'px');
+    b.style.animationDelay = (i * 0.06) + 's';
+    b.style.animationDuration = (1.2 + Math.random() * 1) + 's';
+    wbento.appendChild(b);
+  });
+}
 
 /* ── THREADS VISUAL ── */
 const threadColors = ['#E8C5A0', '#B8D4C8', '#D4C5E2'];
 const threadLetters = ['M', 'J', 'S'];
 const threadsVis = document.getElementById('threads-vis');
-for (let i = 0; i < 3; i++) {
-  const div = document.createElement('div'); div.className = 'thread-item';
-  const av = document.createElement('div'); av.className = 'thread-avatar';
-  av.style.background = threadColors[i]; av.style.color = '#1C1A18'; av.style.fontSize = '0.65rem';
-  av.style.fontWeight = '800'; av.style.display = 'flex'; av.style.alignItems = 'center'; av.style.justifyContent = 'center';
-  av.textContent = threadLetters[i];
-  const wave = document.createElement('div'); wave.className = 'thread-wave';
-  for (let j = 0; j < 10 + i * 4; j++) {
-    const b = document.createElement('div'); b.className = 'tw-bar';
-    b.style.height = (4 + Math.random() * 12) + 'px'; wave.appendChild(b);
+if (threadsVis) {
+  for (let i = 0; i < 3; i++) {
+    const div = document.createElement('div'); div.className = 'thread-item';
+    const av = document.createElement('div'); av.className = 'thread-avatar';
+    av.style.background = threadColors[i]; av.style.color = '#1C1A18'; av.style.fontSize = '0.65rem';
+    av.style.fontWeight = '800'; av.style.display = 'flex'; av.style.alignItems = 'center'; av.style.justifyContent = 'center';
+    av.textContent = threadLetters[i];
+    const wave = document.createElement('div'); wave.className = 'thread-wave';
+    for (let j = 0; j < 10 + i * 4; j++) {
+      const b = document.createElement('div'); b.className = 'tw-bar';
+      b.style.height = (4 + Math.random() * 12) + 'px'; wave.appendChild(b);
+    }
+    div.appendChild(av); div.appendChild(wave);
+    threadsVis.appendChild(div);
   }
-  div.appendChild(av); div.appendChild(wave);
-  threadsVis.appendChild(div);
 }
 
 /* ── HERO WAVEFORM ── */
@@ -1313,17 +1317,22 @@ function showPage(name, opts) {
   const target = document.getElementById('page-' + name);
   if (target) {
     target.style.display = 'block';
-    // Re-trigger page animation
+    /* Restart page enter animation without sync layout read (avoids forced reflow). */
     target.style.animation = 'none';
-    target.offsetHeight; // reflow
-    target.style.animation = '';
-    // Re-trigger reveals inside this page
-    target.querySelectorAll('.reveal').forEach(el => {
-      el.classList.remove('in');
+    requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          el.classList.add('in');
-        });
+        target.style.animation = '';
+        /* Let IntersectionObserver re-add .in only for visible rows — not all at once (main-thread + layout). */
+        var rio = window.__wmRevealIo;
+        if (rio) {
+          target.querySelectorAll('.reveal').forEach(function (el) {
+            el.classList.remove('in');
+            try {
+              rio.unobserve(el);
+              rio.observe(el);
+            } catch (eR) { /* ignore */ }
+          });
+        }
       });
     });
   }
@@ -1401,7 +1410,8 @@ buildMarquee('heroMarquee1'); buildMarquee('heroMarquee2');
 const reveals = document.querySelectorAll('.reveal');
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
-}, { threshold: 0.1 });
+}, { threshold: 0.08, rootMargin: '0px 0px 12% 0px' });
+window.__wmRevealIo = io;
 reveals.forEach(el => io.observe(el));
 
 /* ── LANDING SIGNUP (guard against duplicate listeners) ── */
