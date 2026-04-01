@@ -84,10 +84,10 @@ function initAppSimDemo() {
   // ── Build feed (screen 4)
   const feed4 = document.getElementById('apsFeed4');
   const feedData = [
-    { av: 'M', avStyle: 'background:linear-gradient(135deg,#F2C4CE,#D4607A);color:white;', name: 'Maya R.', mood: '💜 Healing', moodColor: 'rgba(139,92,246,0.25)', moodText: '#c4b0f5', color: '#D4607A', likes: '84', cmts: '12' },
-    { av: 'A', avStyle: 'background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);color:rgba(245,239,228,0.5);', name: 'Anonymous', mood: '🌙 Reflective', moodColor: 'rgba(201,160,58,0.2)', moodText: '#d4b96a', color: '#8B5CF6', likes: '231', cmts: '28' },
-    { av: 'J', avStyle: 'background:linear-gradient(135deg,#B8D4C8,#4A8C6F);color:white;', name: 'James L.', mood: '🔥 Bold', moodColor: 'rgba(232,132,106,0.22)', moodText: '#e8a07a', color: '#E8846A', likes: '47', cmts: '6' },
-    { av: 'S', avStyle: 'background:linear-gradient(135deg,#9ABDE0,#4A7FB5);color:white;', name: 'Sofia K.', mood: '✨ Grateful', moodColor: 'rgba(255,213,79,0.18)', moodText: '#f0d070', color: '#60A5FA', likes: '128', cmts: '19' },
+    { av: 'M', avStyle: 'background:linear-gradient(135deg,#F2C4CE,#D4607A);color:white;', name: 'Maya R.', mood: 'Healing', moodColor: 'rgba(139,92,246,0.25)', moodText: '#c4b0f5', color: '#D4607A', likes: '84', cmts: '12' },
+    { av: 'A', avStyle: 'background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);color:rgba(245,239,228,0.5);', name: 'Anonymous', mood: 'Reflective', moodColor: 'rgba(201,160,58,0.2)', moodText: '#d4b96a', color: '#8B5CF6', likes: '231', cmts: '28' },
+    { av: 'J', avStyle: 'background:linear-gradient(135deg,#B8D4C8,#4A8C6F);color:white;', name: 'James L.', mood: 'Bold', moodColor: 'rgba(232,132,106,0.22)', moodText: '#e8a07a', color: '#E8846A', likes: '47', cmts: '6' },
+    { av: 'S', avStyle: 'background:linear-gradient(135deg,#9ABDE0,#4A7FB5);color:white;', name: 'Sofia K.', mood: 'Grateful', moodColor: 'rgba(255,213,79,0.18)', moodText: '#f0d070', color: '#60A5FA', likes: '128', cmts: '19' },
   ];
   if (feed4) {
     feedData.forEach((d, idx) => {
@@ -105,9 +105,9 @@ function initAppSimDemo() {
           </div>
           <div class="aps-fp-wave" id="${wid}"></div>
           <div class="aps-fp-actions">
-            <span class="aps-fp-act">♥ ${d.likes}</span>
-            <span class="aps-fp-act">💬 ${d.cmts}</span>
-            <span class="aps-fp-act">↩ Reply</span>
+            <span class="aps-fp-act">${d.likes}</span>
+            <span class="aps-fp-act">${d.cmts}</span>
+            <span class="aps-fp-act">Reply</span>
           </div>
         `;
       feed4.appendChild(div);
@@ -781,10 +781,10 @@ function switchApvTab(tab) {
 
 /* Build voice feed cards */
 const APV_FEED_DATA = [
-  { name: 'Maya R.', letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', anon: false, mood: '💜 Healing', dur: '0:47', waves: [8, 14, 22, 36, 50, 44, 30, 18, 12, 22, 38, 54, 46, 30, 16, 10, 18, 32] },
-  { name: 'Anonymous', letter: '?', bg: 'rgba(255,255,255,0.1)', anon: true, mood: '🌙 Reflective', dur: '1:12', waves: [10, 18, 28, 42, 54, 46, 32, 20, 14, 24, 40, 56, 48, 32, 18, 12, 22, 36] },
-  { name: 'James L.', letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', anon: false, mood: '🔥 Bold', dur: '0:38', waves: [6, 12, 20, 32, 46, 40, 26, 16, 10, 18, 32, 48, 42, 26, 14, 8, 16, 28] },
-  { name: 'Sofia K.', letter: 'S', bg: 'linear-gradient(135deg,#93C5FD,#3B82F6)', anon: false, mood: '✨ Grateful', dur: '1:05', waves: [12, 20, 30, 44, 58, 50, 36, 22, 14, 26, 42, 58, 50, 34, 18, 10, 20, 34] },
+  { name: 'Maya R.', letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', anon: false, mood: 'Healing', dur: '0:47', waves: [8, 14, 22, 36, 50, 44, 30, 18, 12, 22, 38, 54, 46, 30, 16, 10, 18, 32] },
+  { name: 'Anonymous', letter: '?', bg: 'rgba(255,255,255,0.1)', anon: true, mood: 'Reflective', dur: '1:12', waves: [10, 18, 28, 42, 54, 46, 32, 20, 14, 24, 40, 56, 48, 32, 18, 12, 22, 36] },
+  { name: 'James L.', letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', anon: false, mood: 'Bold', dur: '0:38', waves: [6, 12, 20, 32, 46, 40, 26, 16, 10, 18, 32, 48, 42, 26, 14, 8, 16, 28] },
+  { name: 'Sofia K.', letter: 'S', bg: 'linear-gradient(135deg,#93C5FD,#3B82F6)', anon: false, mood: 'Grateful', dur: '1:05', waves: [12, 20, 30, 44, 58, 50, 36, 22, 14, 26, 42, 58, 50, 34, 18, 10, 20, 34] },
 ];
 let apvPlayingId = null;
 function buildApvFeed() {
@@ -798,7 +798,7 @@ function buildApvFeed() {
     card.id = 'apv-vcard-' + idx;
     card.innerHTML = `
       <div class="apv-vcard-top">
-        <div class="apv-vav" style="background:${post.bg};color:${post.anon ? 'rgba(245,239,228,0.5)' : 'white'};">${post.anon ? '🫧' : post.letter}</div>
+        <div class="apv-vav" style="background:${post.bg};color:${post.anon ? 'rgba(245,239,228,0.5)' : 'white'};">${post.anon ? '·' : post.letter}</div>
         <div><div class="apv-vname">${post.name}</div></div>
         <div class="apv-vmood" style="background:rgba(212,96,122,0.1);color:var(--petal);border:1px solid rgba(212,96,122,0.2);">${post.mood}</div>
       </div>
@@ -806,7 +806,7 @@ function buildApvFeed() {
       <div class="apv-vcard-bottom">
         <button class="apv-vplay" id="apv-vplay-${idx}" onclick="apvTogglePlay(${idx},event)">▶</button>
         <span class="apv-vdur">${post.dur}</span>
-        <div class="apv-vreacts"><span class="apv-vreact">❤️ ${12 + idx * 7}</span><span class="apv-vreact">💬 ${3 + idx * 2}</span></div>
+        <div class="apv-vreacts"><span class="apv-vreact">${12 + idx * 7}</span><span class="apv-vreact">${3 + idx * 2}</span></div>
       </div>
       ${post.anon ? '<div class="apv-vanon">Shared anonymously</div>' : ''}
     `;
@@ -1196,13 +1196,13 @@ if (heroInput && !heroInput.dataset.wmBound) {
   const el = document.getElementById('h11UspInner');
   if (!el) return;
   const items = [
-    { icon: '🫧', bg: 'rgba(139,92,246,0.1)', title: 'Anonymous & Safe Sharing', desc: 'Your voice, your choice, fully optional.' },
-    { icon: '🔴', bg: 'rgba(255,71,87,0.1)', title: 'Live & Private Rooms', desc: 'Join instantly, public or invite-only.' },
-    { icon: '🫂', bg: 'rgba(122,158,135,0.1)', title: 'Micro-Community Circles', desc: 'Belong to meaningful small communities.' },
-    { icon: '✨', bg: 'rgba(96,165,250,0.1)', title: 'AI-Powered Explore Feed', desc: 'Discover voices that resonate with you.' },
-    { icon: '🌙', bg: 'rgba(201,133,58,0.1)', title: 'Mood-Based Discovery', desc: 'Share exactly how you feel right now.' },
-    { icon: '🧵', bg: 'rgba(212,96,122,0.08)', title: 'Voice Threads', desc: 'Reply voice-to-voice, build conversation.' },
-    { icon: '📊', bg: 'rgba(122,158,135,0.08)', title: 'Voice Analytics', desc: 'See who\'s resonating with your voice.' },
+    { icon: '○', bg: 'rgba(139,92,246,0.1)', title: 'Anonymous & Safe Sharing', desc: 'Your voice, your choice, fully optional.' },
+    { icon: '●', bg: 'rgba(255,71,87,0.1)', title: 'Live & Private Rooms', desc: 'Join instantly, public or invite-only.' },
+    { icon: '◇', bg: 'rgba(122,158,135,0.1)', title: 'Micro-Community Circles', desc: 'Belong to meaningful small communities.' },
+    { icon: '▸', bg: 'rgba(96,165,250,0.1)', title: 'AI-Powered Explore Feed', desc: 'Discover voices that resonate with you.' },
+    { icon: '·', bg: 'rgba(201,133,58,0.1)', title: 'Mood-Based Discovery', desc: 'Share exactly how you feel right now.' },
+    { icon: '↳', bg: 'rgba(212,96,122,0.08)', title: 'Voice Threads', desc: 'Reply voice-to-voice, build conversation.' },
+    { icon: '±', bg: 'rgba(122,158,135,0.08)', title: 'Voice Analytics', desc: 'See who\'s resonating with your voice.' },
   ];
   const doubled = [...items, ...items];
   doubled.forEach(item => {
@@ -1229,9 +1229,9 @@ function wmResetWaitlistBtn(btn, fromH11, fromPopup) {
   if (!btn) return;
   btn.disabled = false;
   if (fromH11) {
-    btn.innerHTML = '<span>Request Early Access</span><span class="h11-submit-btn-arrow">🎙️</span>';
+    btn.innerHTML = '<span>Request Early Access</span><span class="h11-submit-btn-arrow" aria-hidden="true">→</span>';
   } else {
-    btn.innerHTML = 'Get Early Access 🎙️';
+    btn.innerHTML = 'Get early access';
   }
 }
 
@@ -1481,16 +1481,16 @@ if (!window._wmSignupBound) {
    ───────────────────────────────────────── */
 const FEED_AUDIO_BASE = 'audio/';
 const FEED_DATA = [
-  { id: 1, letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', name: 'Maya Rivera', handle: '@mayavoices', mood: '💙 Open', time: '2 min ago', dur: '0:47', audio: 'quiet-joy.mp3', likes: 84, replies: 12, waves: [12, 20, 34, 52, 44, 28, 38, 50, 42, 30, 18, 24, 40, 56, 48, 32, 20, 14, 22, 36, 50, 44, 28, 16, 10], anon: false, saved: false },
-  { id: 2, letter: '?', bg: 'rgba(255,255,255,0.07)', name: 'Anonymous', handle: '', mood: '🌙 Reflective', time: '15 min ago', dur: '1:12', audio: 'late-night-thoughts.mp3', likes: 231, replies: 28, waves: [8, 16, 28, 44, 36, 52, 40, 24, 18, 30, 46, 38, 22, 14, 10, 20, 34, 48, 56, 42, 28, 16, 10, 8, 18], anon: true, saved: true },
-  { id: 3, letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', handle: '@jkspeaks', mood: '🔥 Bold', time: '32 min ago', dur: '0:38', audio: 'unfiltered-moment.mp3', likes: 47, replies: 6, waves: [20, 32, 48, 60, 44, 36, 50, 42, 28, 22, 34, 52, 46, 30, 18, 14, 24, 40, 54, 48, 32, 20, 12, 10, 16], anon: false, saved: false },
-  { id: 4, letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', handle: '@sofiatalk', mood: '🌱 Calm', time: '1 hr ago', dur: '1:05', audio: 'city-at-rest.mp3', likes: 168, replies: 19, waves: [6, 12, 22, 38, 50, 42, 30, 20, 14, 26, 40, 54, 46, 28, 16, 10, 18, 32, 48, 56, 44, 30, 18, 12, 8], anon: false, saved: false },
+  { id: 1, letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', name: 'Maya Rivera', handle: '@mayavoices', mood: 'Open', time: '2 min ago', dur: '0:47', audio: 'quiet-joy.mp3', likes: 84, replies: 12, waves: [12, 20, 34, 52, 44, 28, 38, 50, 42, 30, 18, 24, 40, 56, 48, 32, 20, 14, 22, 36, 50, 44, 28, 16, 10], anon: false, saved: false },
+  { id: 2, letter: '?', bg: 'rgba(255,255,255,0.07)', name: 'Anonymous', handle: '', mood: 'Reflective', time: '15 min ago', dur: '1:12', audio: 'late-night-thoughts.mp3', likes: 231, replies: 28, waves: [8, 16, 28, 44, 36, 52, 40, 24, 18, 30, 46, 38, 22, 14, 10, 20, 34, 48, 56, 42, 28, 16, 10, 8, 18], anon: true, saved: true },
+  { id: 3, letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', handle: '@jkspeaks', mood: 'Bold', time: '32 min ago', dur: '0:38', audio: 'unfiltered-moment.mp3', likes: 47, replies: 6, waves: [20, 32, 48, 60, 44, 36, 50, 42, 28, 22, 34, 52, 46, 30, 18, 14, 24, 40, 54, 48, 32, 20, 12, 10, 16], anon: false, saved: false },
+  { id: 4, letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', handle: '@sofiatalk', mood: 'Calm', time: '1 hr ago', dur: '1:05', audio: 'city-at-rest.mp3', likes: 168, replies: 19, waves: [6, 12, 22, 38, 50, 42, 30, 20, 14, 26, 40, 54, 46, 28, 16, 10, 18, 32, 48, 56, 44, 30, 18, 12, 8], anon: false, saved: false },
 ];
 
 const THREAD_REPLIES = [
-  { letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', mood: '🔥 Bold', time: '5 min ago', dur: '0:28', audio: 'honest-doubt.mp3', waves: [8, 14, 22, 36, 44, 34, 22, 14, 20, 34, 44, 36, 22, 14, 8, 12, 24, 38, 46, 38, 24, 14, 8], reactions: ['🙌 24', '💙 18', '🫶 9'] },
-  { letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', mood: '🌱 Calm', time: '8 min ago', dur: '0:42', audio: 'quiet-joy.mp3', waves: [12, 20, 32, 46, 54, 40, 28, 18, 14, 22, 36, 50, 42, 28, 16, 10, 20, 34, 50, 44, 30, 18, 10], reactions: ['💜 31', '✨ 14'] },
-  { letter: 'R', bg: 'linear-gradient(135deg,#F5D5A0,#C9853A)', name: 'Rafael A.', mood: '⭐ Hopeful', time: '12 min ago', dur: '0:55', audio: 'vulnerable-truth.mp3', waves: [10, 18, 28, 42, 54, 46, 30, 20, 16, 28, 44, 52, 38, 24, 14, 10, 18, 32, 46, 54, 40, 26, 14], reactions: ['❤ 22', '🔥 11'] },
+  { letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', mood: 'Bold', time: '5 min ago', dur: '0:28', audio: 'honest-doubt.mp3', waves: [8, 14, 22, 36, 44, 34, 22, 14, 20, 34, 44, 36, 22, 14, 8, 12, 24, 38, 46, 38, 24, 14, 8], reactions: ['24', '18', '9'] },
+  { letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', mood: 'Calm', time: '8 min ago', dur: '0:42', audio: 'quiet-joy.mp3', waves: [12, 20, 32, 46, 54, 40, 28, 18, 14, 22, 36, 50, 42, 28, 16, 10, 20, 34, 50, 44, 30, 18, 10], reactions: ['31', '14'] },
+  { letter: 'R', bg: 'linear-gradient(135deg,#F5D5A0,#C9853A)', name: 'Rafael A.', mood: 'Hopeful', time: '12 min ago', dur: '0:55', audio: 'vulnerable-truth.mp3', waves: [10, 18, 28, 42, 54, 46, 30, 20, 16, 28, 44, 52, 38, 24, 14, 10, 18, 32, 46, 54, 40, 26, 14], reactions: ['22', '11'] },
 ];
 
 let currentScreen = 'feed';
@@ -1586,12 +1586,12 @@ function createVoiceCard(post, isThread) {
     <div class="vc-header">
       <div class="vc-avatar ${post.anon ? 'anon' : ''}" style="background:${post.anon ? 'rgba(255,255,255,0.07)' : post.bg}; color:white; font-size:0.8rem; font-weight:800;">
         <div class="vc-avatar-ring"></div>
-        ${post.anon ? '🫧' : post.letter}
+        ${post.anon ? '·' : post.letter}
       </div>
       <div class="vc-user-info">
         <div class="vc-name">
           ${post.anon ? 'Anonymous Voice' : post.name}
-          ${post.anon ? `<span class="vc-anon-badge">🫧 Anon</span>` : `<span class="vc-mood-badge">${post.mood}</span>`}
+          ${post.anon ? `<span class="vc-anon-badge">Anon</span>` : `<span class="vc-mood-badge">${post.mood}</span>`}
         </div>
         <div class="vc-time">${post.time}</div>
       </div>
@@ -1941,7 +1941,7 @@ function toggleRecord() {
   const btn = document.getElementById('recMainBtn');
   modal.classList.toggle('recording', isRecording);
   btn.classList.toggle('recording', isRecording);
-  btn.textContent = isRecording ? '⏹' : '🎤';
+  btn.textContent = isRecording ? 'Stop' : 'Rec';
   if (isRecording) {
     recordSeconds = 0;
     recordInterval = setInterval(() => {
@@ -1962,7 +1962,7 @@ function stopRecording() {
   const modal = document.getElementById('recordModal');
   const btn = document.getElementById('recMainBtn');
   modal.classList.remove('recording');
-  if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+  if (btn) { btn.classList.remove('recording'); btn.textContent = 'Rec'; }
 }
 
 function selectFormMood(el) {
@@ -2170,8 +2170,8 @@ function amSignupNextStep() {
   var pwEl = document.getElementById('amSignupPw');
   var email = emailEl ? emailEl.value.trim() : '';
   var password = pwEl ? pwEl.value : '';
-  if (!email || !password) { showToast('⚠️ Email and password required.'); return; }
-  if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters.'); return; }
+  if (!email || !password) { showToast('Email and password required.'); return; }
+  if (password.length < 6) { showToast('Password must be at least 6 characters.'); return; }
   showSignupStep(2);
 }
 function amSignupPrevStep() {
@@ -2212,27 +2212,27 @@ function handleAmSignin() {
   var pwEl = document.getElementById('amSigninPw');
   var email = emailEl ? emailEl.value.trim() : '';
   var password = pwEl ? pwEl.value : '';
-  if (!email || !password) { showToast('⚠️ Email and password required.'); return; }
+  if (!email || !password) { showToast('Email and password required.'); return; }
 
   var submitBtn = document.querySelector('#amPanelSignin .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Signing in…'; }
 
   window._getSupabaseClient().then(function (sb) {
-    if (!sb) { showToast('⚠️ Could not load sign-in. Check connection and try again.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; } return; }
+    if (!sb) { showToast('Could not load sign-in. Check connection and try again.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; } return; }
     sb.auth.signInWithPassword({ email: email, password: password }).then(function (result) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
-      if (result.error) { showToast('❌ ' + (result.error.message || 'Sign in failed.')); return; }
+      if (result.error) { showToast('' + (result.error.message || 'Sign in failed.')); return; }
       var token = result.data.session && result.data.session.access_token;
       if (token) { apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function () { }); }
       closeAuthModal();
       updateNavUser(email, '');
-      showToast('👋 Welcome back!');
+      showToast('Welcome back!');
     }).catch(function (err) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
-      showToast('❌ ' + (err.message || 'Sign in failed. Please try again.'));
+      showToast('' + (err.message || 'Sign in failed. Please try again.'));
     });
   }).catch(function () {
-    showToast('⚠️ Cannot connect to auth service.');
+    showToast('Cannot connect to auth service.');
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
   });
 }
@@ -2257,8 +2257,8 @@ function handleAmSignup() {
   var moodEl = document.querySelector('#amPanelSignup .am-mood-chip.selected');
   var mood = moodEl ? moodEl.textContent.trim() : '';
 
-  if (!email || !password) { showToast('⚠️ Email and password required.'); return; }
-  if (password.length < 6) { showToast('⚠️ Password must be at least 6 characters.'); return; }
+  if (!email || !password) { showToast('Email and password required.'); return; }
+  if (password.length < 6) { showToast('Password must be at least 6 characters.'); return; }
 
   var submitBtn = document.querySelector('#amPanelSignup .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Creating…'; }
@@ -2268,7 +2268,7 @@ function handleAmSignup() {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
     if (!res.ok) {
       var msg = (res.data && res.data.error) || 'Sign up failed.';
-      showToast('❌ ' + msg);
+      showToast('' + msg);
       return;
     }
     var data = res.data || {};
@@ -2287,7 +2287,7 @@ function handleAmSignup() {
       if (typeof showVerificationPending === 'function') {
         showVerificationPending(email);
       } else {
-        showToast('✉️ Please check your email inbox to verify your account!');
+        showToast('Please check your email inbox to verify your account!');
         closeAuthModal();
       }
     }
@@ -2295,7 +2295,7 @@ function handleAmSignup() {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Create Account'; }
     var msg = (err && err.message) || 'Sign up failed. Please try again.';
     if (msg.toLowerCase().includes('429') || msg.toLowerCase().includes('rate')) msg = 'Too many attempts. Please wait a few minutes.';
-    showToast('❌ ' + msg);
+    showToast('' + msg);
   });
 }
 /* ── reCAPTCHA v3 (waitlist only; site key from Vercel /api/config or window.__RECAPTCHA_SITE_KEY__) ── */
@@ -2407,7 +2407,7 @@ function h11HandleSignup(e) {
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !EMAIL_RE.test(email)) {
-    showToast('⚠️ Please enter a valid email address.');
+    showToast('Please enter a valid email address.');
     if (emailEl) { emailEl.focus(); emailEl.style.borderColor = '#D4607A'; setTimeout(function () { emailEl.style.borderColor = ''; }, 1500); }
     return;
   }
@@ -2444,17 +2444,17 @@ function h11HandleSignup(e) {
             msg += ' Or try another browser / disable ad blockers for this site.';
           }
         }
-        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist! 🎉';
+        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist.';
         // Network error (status 0) — auto-retry instead of showing "Failed to fetch"
         var isNetworkError = res.status === 0 || (msg && /failed to fetch|network|connection/i.test(msg));
         if (isNetworkError && retriesLeft > 0) {
-          showToast('⚠️ Connection slow. Retrying in 5 sec…');
+          showToast('Connection slow. Retrying in 5 sec…');
           if (btn) { btn.innerHTML = 'Retrying…'; }
           setTimeout(function () { doWaitlist(retriesLeft - 1); }, 5000);
           return;
         }
         if (isNetworkError) msg = 'Connection failed. Try WiFi or tap again—server may be waking up.';
-        showToast('❌ ' + msg);
+        showToast('' + msg);
         wmResetWaitlistBtn(btn, fromH11, fromPopup);
         return;
       }
@@ -2465,20 +2465,20 @@ function h11HandleSignup(e) {
         btn.innerHTML = '✓ You\'re on the list!';
         btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)';
       }
-      showToast('🎉 You\'re on the waitlist! Your voice will be heard.');
+      showToast('You\'re on the waitlist. We\'ll be in touch.');
       if (fromPopup) dismissEarlyAccessPopup(0);
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';
     } catch (err) {
       if (retriesLeft > 0) {
-        showToast('⚠️ Retrying in 5 sec…');
+        showToast('Retrying in 5 sec…');
         if (btn) { btn.innerHTML = 'Retrying…'; }
         setTimeout(function () { doWaitlist(retriesLeft - 1); }, 5000);
       } else {
         var msg = /localhost|127\.0\.0\.1/.test(location.hostname)
           ? 'Connection error. Is the backend running?'
           : 'Connection failed. Try WiFi or tap again.';
-        showToast('❌ ' + msg);
+        showToast('' + msg);
         wmResetWaitlistBtn(btn, fromH11, fromPopup);
       }
     }
