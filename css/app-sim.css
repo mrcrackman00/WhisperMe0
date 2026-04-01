@@ -1893,6 +1893,13 @@
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
+.ww-loop-orb .loop-orb-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: rgba(32, 30, 28, 0.82);
+}
+
 .ww-card:hover .ww-loop-orb {
   transform: scale(1.12);
 }
@@ -2689,6 +2696,13 @@
   position: relative;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s;
   cursor: auto;
+}
+
+.h11-node-orb .loop-orb-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  color: rgba(245, 239, 228, 0.92);
 }
 
 .h11-loop-node:hover .h11-node-orb {

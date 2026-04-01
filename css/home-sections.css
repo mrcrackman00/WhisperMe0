@@ -215,6 +215,13 @@
   cursor: auto;
 }
 
+.h11-node-orb .loop-orb-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  color: rgba(245, 239, 228, 0.92);
+}
+
 .h11-loop-node:hover .h11-node-orb {
   transform: scale(1.1) translateY(-4px);
 }
