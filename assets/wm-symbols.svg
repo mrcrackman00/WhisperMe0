@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="wm-wave" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M4 15V9M8 17V7m4 14V3m4 11v-4m4 7V9"/>
+  </symbol>
+  <symbol id="wm-thread" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" d="M8 4h10a2 2 0 012 2v5a2 2 0 01-2 2h-3l-4 3v-3H8a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" d="M6 13H5a2 2 0 00-2 2v2l3-2"/>
+  </symbol>
+  <symbol id="wm-mask" viewBox="0 0 24 24">
+    <ellipse cx="12" cy="11" rx="9" ry="7" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M8 15c1.6 1.8 6.4 1.8 8 0"/>
+    <circle cx="9" cy="10" r="1.25" fill="currentColor"/>
+    <circle cx="15" cy="10" r="1.25" fill="currentColor"/>
+  </symbol>
+  <symbol id="wm-search" viewBox="0 0 24 24">
+    <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M16.5 16.5L21 21"/>
+  </symbol>
+  <symbol id="wm-headphones" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M4 14v3a2 2 0 002 2h1v-7H6a2 2 0 00-2 2zm16 0v3a2 2 0 01-2 2h-1v-7h1a2 2 0 012 2z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M4 14a8 8 0 0116 0"/>
+  </symbol>
+  <symbol id="wm-mic" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M12 3a3 3 0 013 3v5a3 3 0 11-6 0V6a3 3 0 013-3z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M19 11a7 7 0 01-14 0M12 18v3m-3 0h6"/>
+  </symbol>
+  <symbol id="wm-keyboard" viewBox="0 0 24 24">
+    <rect x="3" y="7" width="18" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" d="M7 11h2m3 0h2m3 0h2M7 14h10"/>
+  </symbol>
+  <symbol id="wm-users" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M4 19v-1a4 4 0 014-4h2a4 4 0 014 4v1"/>
+    <circle cx="17" cy="9" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M17 13h1a3 3 0 013 3v1"/>
+  </symbol>
+  <symbol id="wm-phone" viewBox="0 0 24 24">
+    <rect x="7" y="3" width="10" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="currentColor" d="M10 6h4a1 1 0 010 2h-4a1 1 0 010-2z"/>
+  </symbol>
+  <symbol id="wm-list-mood" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M8 7h11M8 12h11M8 17h7"/>
+    <circle cx="5" cy="7" r="1.2" fill="currentColor"/>
+    <circle cx="5" cy="12" r="1.2" fill="currentColor"/>
+    <circle cx="5" cy="17" r="1.2" fill="currentColor"/>
+  </symbol>
+  <symbol id="wm-grid" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.5" d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/>
+  </symbol>
+  <symbol id="wm-reply-chain" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" d="M9 6L5 10l4 4M5 10h9a4 4 0 014 4v2"/>
+  </symbol>
+  <symbol id="wm-live" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M8.5 8.5a5.5 5.5 0 017 0M6 6a9 9 0 0112 0"/>
+  </symbol>
+  <symbol id="wm-shield" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M9 12l2 2 4-4"/>
+  </symbol>
+  <symbol id="wm-user" viewBox="0 0 24 24">
+    <circle cx="12" cy="9" r="3.5" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M6 20v-1a5 5 0 015-5h2a5 5 0 015 5v1"/>
+  </symbol>
+  <symbol id="wm-lock" viewBox="0 0 24 24">
+    <rect x="6" y="11" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M8 11V8a4 4 0 018 0v3"/>
+  </symbol>
+  <symbol id="wm-mail" viewBox="0 0 24 24">
+    <rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M3 8l9 6 9-6"/>
+  </symbol>
+  <symbol id="wm-spark" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M12 3v4M12 17v4M3 12h4m10 0h4M5.6 5.6l2.9 2.9m7 7l2.9 2.9M5.6 18.4l2.9-2.9m7-7l2.9-2.9"/>
+    <circle cx="12" cy="12" r="2" fill="currentColor"/>
+  </symbol>
+  <symbol id="wm-heart" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+  </symbol>
+  <symbol id="wm-heart-fill" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 20.35l-1.35-1.23C6.28 15.62 3.5 12.85 3.5 9.25 3.5 6.35 5.75 4 8.5 4c1.54 0 3.04.72 4 1.85A5.06 5.06 0 0116.5 4C19.25 4 21.5 6.35 21.5 9.25c0 3.6-2.78 6.37-7.15 9.87L12 20.35z"/>
+  </symbol>
+  <symbol id="wm-bell" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7M13.73 21a2 2 0 01-3.46 0"/>
+  </symbol>
+  <symbol id="wm-chat-dots" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" d="M8 5h11a2 2 0 012 2v6H8l-4 3v-3H4a2 2 0 01-2-2V7a2 2 0 012-2z"/>
+    <circle cx="9" cy="10" r="1" fill="currentColor"/>
+    <circle cx="13" cy="10" r="1" fill="currentColor"/>
+    <circle cx="17" cy="10" r="1" fill="currentColor"/>
+  </symbol>
+  <symbol id="wm-user-plus" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M4 19v-1a4 4 0 014-4h1"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M19 11v6M16 14h6"/>
+  </symbol>
+  <symbol id="wm-at" viewBox="0 0 24 24">
+    <text x="12" y="16.5" text-anchor="middle" font-size="15" font-weight="700" font-family="system-ui,-apple-system,sans-serif" fill="currentColor">@</text>
+  </symbol>
+  <symbol id="wm-signal" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M6 16v-4M10 16V9m4 7V6m4 10v-6"/>
+  </symbol>
+  <symbol id="wm-wifi" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" d="M5 9a12 12 0 0114 0M8.5 12.5a7 7 0 017 0M12 16l1 1-1 1-1-1 1-1z"/>
+  </symbol>
+  <symbol id="wm-battery" viewBox="0 0 24 24">
+    <rect x="4" y="7" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path fill="currentColor" d="M20 10v4h-2v-4h2z"/>
+    <rect x="7" y="10" width="8" height="4" rx="1" fill="currentColor" opacity="0.85"/>
+  </symbol>
+  <symbol id="wm-globe" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.65"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M3 12h18"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M12 3c2.5 3 4 6 4 9s-1.5 6-4 9c-2.5-3-4-6-4-9s1.5-6 4-9z"/>
+  </symbol>
+  <symbol id="wm-mic-sm" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M12 4a2.5 2.5 0 012.5 2.5V11a2.5 2.5 0 11-5 0V6.5A2.5 2.5 0 0112 4z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M8 11a4 4 0 008 0M12 15v3"/>
+  </symbol>
+</svg>

@@ -1,0 +1,178 @@
+/* WhisperMe monochrome icon sprites — use with /assets/wm-symbols.svg#id */
+.wm-use {
+  display: block;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.wm-use use {
+  pointer-events: none;
+}
+
+.wm-use--nf {
+  width: 28px;
+  height: 28px;
+  color: var(--charcoal, #1c1a18);
+}
+
+.nf-card.dark-card .wm-use--nf {
+  color: rgba(245, 239, 228, 0.92);
+}
+
+.wm-use--aps-step {
+  width: 26px;
+  height: 26px;
+  color: var(--charcoal, #1c1a18);
+}
+
+.wm-use--aps-hd {
+  width: 14px;
+  height: 14px;
+  color: rgba(245, 239, 228, 0.75);
+}
+
+.wm-use--apv-side {
+  width: 24px;
+  height: 24px;
+  color: rgba(245, 239, 228, 0.88);
+}
+
+.wm-use--apv-circle {
+  width: 22px;
+  height: 22px;
+  color: rgba(245, 239, 228, 0.85);
+}
+
+.wm-use--comm-step {
+  width: 24px;
+  height: 24px;
+  color: var(--charcoal, #1c1a18);
+}
+
+.wm-use--mini-circle {
+  width: 22px;
+  height: 22px;
+  color: inherit;
+}
+
+.nf-circle-mini .wm-use--mini-circle {
+  color: rgba(245, 239, 228, 0.88);
+}
+
+.h11-circle-mini-icon .wm-use--mini-circle,
+.circle-icon .wm-use--mini-circle {
+  color: var(--charcoal, #1c1a18);
+}
+
+.v-connect-circle-icon .wm-use--mini-circle {
+  color: rgba(245, 239, 228, 0.88);
+}
+
+.wm-use--anon {
+  width: 36px;
+  height: 36px;
+  color: rgba(242, 196, 206, 0.95);
+}
+
+.nf-anon-center .wm-use--anon-nf {
+  width: 26px;
+  height: 26px;
+  color: rgba(124, 92, 191, 0.95);
+}
+
+.wm-use--fv-anon {
+  width: 28px;
+  height: 28px;
+  color: #7c5cbf;
+}
+
+.wm-use--fv-priv {
+  width: 36px;
+  height: 36px;
+  color: var(--rose, #d4607a);
+}
+
+.wm-use--auth {
+  width: 18px;
+  height: 18px;
+  color: rgba(245, 239, 228, 0.45);
+}
+
+.auth-input-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ww-anon-face.masked .wm-use--ww-mask {
+  width: 22px;
+  height: 22px;
+  color: var(--mist, #8c8880);
+}
+
+.ww-ai-spark .wm-use {
+  width: 10px;
+  height: 10px;
+  color: var(--amber, #c9853a);
+}
+
+.feed-notif-btn .wm-use {
+  width: 17px;
+  height: 17px;
+  color: rgba(245, 239, 228, 0.7);
+}
+
+.sp-post-img-placeholder .wm-use--blog-card {
+  width: 44px;
+  height: 44px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.wm-use--status {
+  width: 13px;
+  height: 13px;
+  color: rgba(245, 239, 228, 0.65);
+}
+
+.apv-status-icons .wm-use--status {
+  width: 11px;
+  height: 11px;
+  color: rgba(245, 239, 228, 0.55);
+}
+
+.wm-use--ai-mood {
+  width: 22px;
+  height: 22px;
+  color: rgba(139, 92, 246, 0.95);
+}
+
+.wm-use--notif-badge {
+  width: 11px;
+  height: 11px;
+  color: #0f0e0c;
+}
+
+.notif-icon-badge .wm-use--notif-badge {
+  color: #0f0e0c;
+}
+
+.wm-use--ww-tag {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 4px;
+  color: var(--amber, #c9853a);
+}
+
+.wm-use--apv-hd {
+  width: 15px;
+  height: 15px;
+  color: rgba(245, 239, 228, 0.55);
+}
+
+.wm-use--notif-avatar {
+  width: 20px;
+  height: 20px;
+  color: rgba(245, 239, 228, 0.75);
+}
