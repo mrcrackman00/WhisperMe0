@@ -84,10 +84,10 @@ function initAppSimDemo() {
   // ── Build feed (screen 4)
   const feed4 = document.getElementById('apsFeed4');
   const feedData = [
-    { av: 'M', avStyle: 'background:linear-gradient(135deg,#F2C4CE,#D4607A);color:white;', name: 'Maya R.', mood: 'Healing', moodColor: 'rgba(139,92,246,0.25)', moodText: '#c4b0f5', color: '#D4607A', likes: '84', cmts: '12' },
-    { av: 'A', avStyle: 'background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);color:rgba(245,239,228,0.5);', name: 'Anonymous', mood: 'Reflective', moodColor: 'rgba(201,160,58,0.2)', moodText: '#d4b96a', color: '#8B5CF6', likes: '231', cmts: '28' },
-    { av: 'J', avStyle: 'background:linear-gradient(135deg,#B8D4C8,#4A8C6F);color:white;', name: 'James L.', mood: 'Bold', moodColor: 'rgba(232,132,106,0.22)', moodText: '#e8a07a', color: '#E8846A', likes: '47', cmts: '6' },
-    { av: 'S', avStyle: 'background:linear-gradient(135deg,#9ABDE0,#4A7FB5);color:white;', name: 'Sofia K.', mood: 'Grateful', moodColor: 'rgba(255,213,79,0.18)', moodText: '#f0d070', color: '#60A5FA', likes: '128', cmts: '19' },
+    { av: 'M', avStyle: 'background:linear-gradient(135deg,#F2C4CE,#D4607A);color:white;', name: 'Preview', mood: 'Healing', moodColor: 'rgba(139,92,246,0.25)', moodText: '#c4b0f5', color: '#D4607A', likes: '0', cmts: '0' },
+    { av: 'A', avStyle: 'background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);color:rgba(245,239,228,0.5);', name: 'Anonymous', mood: 'Reflective', moodColor: 'rgba(201,160,58,0.2)', moodText: '#d4b96a', color: '#8B5CF6', likes: '0', cmts: '0' },
+    { av: 'J', avStyle: 'background:linear-gradient(135deg,#B8D4C8,#4A8C6F);color:white;', name: 'Preview', mood: 'Bold', moodColor: 'rgba(232,132,106,0.22)', moodText: '#e8a07a', color: '#E8846A', likes: '0', cmts: '0' },
+    { av: 'S', avStyle: 'background:linear-gradient(135deg,#9ABDE0,#4A7FB5);color:white;', name: 'Preview', mood: 'Grateful', moodColor: 'rgba(255,213,79,0.18)', moodText: '#f0d070', color: '#60A5FA', likes: '0', cmts: '0' },
   ];
   if (feed4) {
     feedData.forEach((d, idx) => {
@@ -290,16 +290,16 @@ function initHeroWhisperFeed() {
   const stackShell = stack.closest('.hmw-shell');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const whispers = [
-    { name: 'Anonymous', location: 'Private • Global', mood: 'Night', timeAgo: '2m ago', duration: '0:31', caption: 'I overthink everything at night...', likes: 96, replies: 7, listeners: 44, size: 'large', tone: 'violet', bars: [10, 14, 18, 24, 28, 24, 18, 14, 12, 18, 22, 16] },
-    { name: 'Anaya Kapoor', location: 'Bangalore, India', mood: 'Open', timeAgo: '4m ago', duration: '0:28', caption: 'Kabhi kabhi bas baat karni hoti hai...', likes: 118, replies: 12, listeners: 53, size: 'medium', tone: 'cyan', bars: [12, 16, 20, 24, 22, 18, 14, 12, 14, 18, 20, 16] },
-    { name: 'Sofia Ruiz', location: 'Barcelona, Spain', mood: 'Bold', timeAgo: '7m ago', duration: '0:35', caption: 'How I changed my mind about AI...', likes: 96, replies: 7, listeners: 44, size: 'large', tone: 'sky', bars: [11, 14, 17, 23, 27, 23, 17, 14, 12, 16, 21, 15] },
-    { name: 'Mason Lee', location: 'Austin, US', mood: 'Soft', timeAgo: '11m ago', duration: '0:27', caption: 'Some days I sound calm. I am not.', likes: 84, replies: 6, listeners: 31, size: 'small', tone: 'amber', bars: [9, 12, 15, 19, 22, 19, 16, 13, 10, 13, 16, 12] },
-    { name: 'Anonymous', location: 'Private • India', mood: 'Heavy', timeAgo: '13m ago', duration: '0:42', caption: 'I am tired of pretending I have it all together...', likes: 141, replies: 16, listeners: 67, size: 'large', tone: 'pink', bars: [10, 13, 18, 22, 26, 21, 17, 13, 12, 16, 19, 14] },
-    { name: 'Rhea Saini', location: 'Delhi, India', mood: 'Honest', timeAgo: '18m ago', duration: '0:24', caption: 'Aaj bas kisi ne pooch liya hota, tu theek hai?', likes: 102, replies: 9, listeners: 46, size: 'medium', tone: 'violet', bars: [8, 11, 16, 20, 24, 21, 17, 13, 11, 14, 18, 13] },
-    { name: 'Noah Carter', location: 'Seattle, US', mood: 'Reflective', timeAgo: '24m ago', duration: '0:37', caption: 'I miss who I was before I started hiding everything...', likes: 127, replies: 11, listeners: 52, size: 'medium', tone: 'cyan', bars: [11, 14, 18, 21, 25, 20, 17, 13, 12, 15, 18, 14] },
-    { name: 'Lina Park', location: 'Seoul, Global', mood: 'Light', timeAgo: '31m ago', duration: '0:29', caption: 'It feels lighter when a voice says the truth out loud.', likes: 74, replies: 5, listeners: 29, size: 'small', tone: 'sky', bars: [9, 12, 16, 21, 24, 19, 15, 12, 10, 14, 18, 13] },
-    { name: 'Anonymous', location: 'Private • Global', mood: 'Quiet', timeAgo: '46m ago', duration: '0:33', caption: 'I keep saving drafts of things I never send...', likes: 89, replies: 8, listeners: 37, size: 'medium', tone: 'pink', bars: [10, 14, 18, 23, 27, 23, 18, 14, 12, 17, 21, 15] },
-    { name: 'Kabir Mehta', location: 'Mumbai, India', mood: 'Restless', timeAgo: '1h ago', duration: '0:39', caption: 'Raat ko sab thoughts aur zyada loud ho jaate hain...', likes: 134, replies: 13, listeners: 61, size: 'large', tone: 'violet', bars: [11, 15, 19, 24, 28, 24, 19, 15, 13, 17, 22, 16] },
+    { name: 'Anonymous', location: 'Sample UI', mood: 'Night', timeAgo: 'sample', duration: '0:31', caption: 'I overthink everything at night...', likes: 0, replies: 0, listeners: 0, size: 'large', tone: 'violet', bars: [10, 14, 18, 24, 28, 24, 18, 14, 12, 18, 22, 16] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Open', timeAgo: 'sample', duration: '0:28', caption: 'Kabhi kabhi bas baat karni hoti hai...', likes: 0, replies: 0, listeners: 0, size: 'medium', tone: 'cyan', bars: [12, 16, 20, 24, 22, 18, 14, 12, 14, 18, 20, 16] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Bold', timeAgo: 'sample', duration: '0:35', caption: 'How I changed my mind about AI...', likes: 0, replies: 0, listeners: 0, size: 'large', tone: 'sky', bars: [11, 14, 17, 23, 27, 23, 17, 14, 12, 16, 21, 15] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Soft', timeAgo: 'sample', duration: '0:27', caption: 'Some days I sound calm. I am not.', likes: 0, replies: 0, listeners: 0, size: 'small', tone: 'amber', bars: [9, 12, 15, 19, 22, 19, 16, 13, 10, 13, 16, 12] },
+    { name: 'Anonymous', location: 'Sample UI', mood: 'Heavy', timeAgo: 'sample', duration: '0:42', caption: 'I am tired of pretending I have it all together...', likes: 0, replies: 0, listeners: 0, size: 'large', tone: 'pink', bars: [10, 13, 18, 22, 26, 21, 17, 13, 12, 16, 19, 14] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Honest', timeAgo: 'sample', duration: '0:24', caption: 'Aaj bas kisi ne pooch liya hota, tu theek hai?', likes: 0, replies: 0, listeners: 0, size: 'medium', tone: 'violet', bars: [8, 11, 16, 20, 24, 21, 17, 13, 11, 14, 18, 13] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Reflective', timeAgo: 'sample', duration: '0:37', caption: 'I miss who I was before I started hiding everything...', likes: 0, replies: 0, listeners: 0, size: 'medium', tone: 'cyan', bars: [11, 14, 18, 21, 25, 20, 17, 13, 12, 15, 18, 14] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Light', timeAgo: 'sample', duration: '0:29', caption: 'It feels lighter when a voice says the truth out loud.', likes: 0, replies: 0, listeners: 0, size: 'small', tone: 'sky', bars: [9, 12, 16, 21, 24, 19, 15, 12, 10, 14, 18, 13] },
+    { name: 'Anonymous', location: 'Sample UI', mood: 'Quiet', timeAgo: 'sample', duration: '0:33', caption: 'I keep saving drafts of things I never send...', likes: 0, replies: 0, listeners: 0, size: 'medium', tone: 'pink', bars: [10, 14, 18, 23, 27, 23, 18, 14, 12, 17, 21, 15] },
+    { name: 'Preview', location: 'Sample UI', mood: 'Restless', timeAgo: 'sample', duration: '0:39', caption: 'Raat ko sab thoughts aur zyada loud ho jaate hain...', likes: 0, replies: 0, listeners: 0, size: 'large', tone: 'violet', bars: [11, 15, 19, 24, 28, 24, 19, 15, 13, 17, 22, 16] },
   ];
   const palettes = {
     violet: {
@@ -781,10 +781,10 @@ function switchApvTab(tab) {
 
 /* Build voice feed cards */
 const APV_FEED_DATA = [
-  { name: 'Maya R.', letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', anon: false, mood: 'Healing', dur: '0:47', waves: [8, 14, 22, 36, 50, 44, 30, 18, 12, 22, 38, 54, 46, 30, 16, 10, 18, 32] },
+  { name: 'Preview', letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', anon: false, mood: 'Healing', dur: '0:47', waves: [8, 14, 22, 36, 50, 44, 30, 18, 12, 22, 38, 54, 46, 30, 16, 10, 18, 32] },
   { name: 'Anonymous', letter: '?', bg: 'rgba(255,255,255,0.1)', anon: true, mood: 'Reflective', dur: '1:12', waves: [10, 18, 28, 42, 54, 46, 32, 20, 14, 24, 40, 56, 48, 32, 18, 12, 22, 36] },
-  { name: 'James L.', letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', anon: false, mood: 'Bold', dur: '0:38', waves: [6, 12, 20, 32, 46, 40, 26, 16, 10, 18, 32, 48, 42, 26, 14, 8, 16, 28] },
-  { name: 'Sofia K.', letter: 'S', bg: 'linear-gradient(135deg,#93C5FD,#3B82F6)', anon: false, mood: 'Grateful', dur: '1:05', waves: [12, 20, 30, 44, 58, 50, 36, 22, 14, 26, 42, 58, 50, 34, 18, 10, 20, 34] },
+  { name: 'Preview', letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', anon: false, mood: 'Bold', dur: '0:38', waves: [6, 12, 20, 32, 46, 40, 26, 16, 10, 18, 32, 48, 42, 26, 14, 8, 16, 28] },
+  { name: 'Preview', letter: 'S', bg: 'linear-gradient(135deg,#93C5FD,#3B82F6)', anon: false, mood: 'Grateful', dur: '1:05', waves: [12, 20, 30, 44, 58, 50, 36, 22, 14, 26, 42, 58, 50, 34, 18, 10, 20, 34] },
 ];
 let apvPlayingId = null;
 function buildApvFeed() {
@@ -1481,16 +1481,16 @@ if (!window._wmSignupBound) {
    ───────────────────────────────────────── */
 const FEED_AUDIO_BASE = 'audio/';
 const FEED_DATA = [
-  { id: 1, letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', name: 'Maya Rivera', handle: '@mayavoices', mood: 'Open', time: '2 min ago', dur: '0:47', audio: 'quiet-joy.mp3', likes: 84, replies: 12, waves: [12, 20, 34, 52, 44, 28, 38, 50, 42, 30, 18, 24, 40, 56, 48, 32, 20, 14, 22, 36, 50, 44, 28, 16, 10], anon: false, saved: false },
-  { id: 2, letter: '?', bg: 'rgba(255,255,255,0.07)', name: 'Anonymous', handle: '', mood: 'Reflective', time: '15 min ago', dur: '1:12', audio: 'late-night-thoughts.mp3', likes: 231, replies: 28, waves: [8, 16, 28, 44, 36, 52, 40, 24, 18, 30, 46, 38, 22, 14, 10, 20, 34, 48, 56, 42, 28, 16, 10, 8, 18], anon: true, saved: true },
-  { id: 3, letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', handle: '@jkspeaks', mood: 'Bold', time: '32 min ago', dur: '0:38', audio: 'unfiltered-moment.mp3', likes: 47, replies: 6, waves: [20, 32, 48, 60, 44, 36, 50, 42, 28, 22, 34, 52, 46, 30, 18, 14, 24, 40, 54, 48, 32, 20, 12, 10, 16], anon: false, saved: false },
-  { id: 4, letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', handle: '@sofiatalk', mood: 'Calm', time: '1 hr ago', dur: '1:05', audio: 'city-at-rest.mp3', likes: 168, replies: 19, waves: [6, 12, 22, 38, 50, 42, 30, 20, 14, 26, 40, 54, 46, 28, 16, 10, 18, 32, 48, 56, 44, 30, 18, 12, 8], anon: false, saved: false },
+  { id: 1, letter: 'M', bg: 'linear-gradient(135deg,#F2C4CE,#D4607A)', name: 'Preview', handle: '@preview', mood: 'Open', time: 'sample', dur: '0:47', audio: 'quiet-joy.mp3', likes: 0, replies: 0, waves: [12, 20, 34, 52, 44, 28, 38, 50, 42, 30, 18, 24, 40, 56, 48, 32, 20, 14, 22, 36, 50, 44, 28, 16, 10], anon: false, saved: false },
+  { id: 2, letter: '?', bg: 'rgba(255,255,255,0.07)', name: 'Anonymous', handle: '', mood: 'Reflective', time: 'sample', dur: '1:12', audio: 'late-night-thoughts.mp3', likes: 0, replies: 0, waves: [8, 16, 28, 44, 36, 52, 40, 24, 18, 30, 46, 38, 22, 14, 10, 20, 34, 48, 56, 42, 28, 16, 10, 8, 18], anon: true, saved: true },
+  { id: 3, letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'Preview', handle: '@preview', mood: 'Bold', time: 'sample', dur: '0:38', audio: 'unfiltered-moment.mp3', likes: 0, replies: 0, waves: [20, 32, 48, 60, 44, 36, 50, 42, 28, 22, 34, 52, 46, 30, 18, 14, 24, 40, 54, 48, 32, 20, 12, 10, 16], anon: false, saved: false },
+  { id: 4, letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Preview', handle: '@preview', mood: 'Calm', time: 'sample', dur: '1:05', audio: 'city-at-rest.mp3', likes: 0, replies: 0, waves: [6, 12, 22, 38, 50, 42, 30, 20, 14, 26, 40, 54, 46, 28, 16, 10, 18, 32, 48, 56, 44, 30, 18, 12, 8], anon: false, saved: false },
 ];
 
 const THREAD_REPLIES = [
-  { letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'James K.', mood: 'Bold', time: '5 min ago', dur: '0:28', audio: 'honest-doubt.mp3', waves: [8, 14, 22, 36, 44, 34, 22, 14, 20, 34, 44, 36, 22, 14, 8, 12, 24, 38, 46, 38, 24, 14, 8], reactions: ['24', '18', '9'] },
-  { letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Sofia T.', mood: 'Calm', time: '8 min ago', dur: '0:42', audio: 'quiet-joy.mp3', waves: [12, 20, 32, 46, 54, 40, 28, 18, 14, 22, 36, 50, 42, 28, 16, 10, 20, 34, 50, 44, 30, 18, 10], reactions: ['31', '14'] },
-  { letter: 'R', bg: 'linear-gradient(135deg,#F5D5A0,#C9853A)', name: 'Rafael A.', mood: 'Hopeful', time: '12 min ago', dur: '0:55', audio: 'vulnerable-truth.mp3', waves: [10, 18, 28, 42, 54, 46, 30, 20, 16, 28, 44, 52, 38, 24, 14, 10, 18, 32, 46, 54, 40, 26, 14], reactions: ['22', '11'] },
+  { letter: 'J', bg: 'linear-gradient(135deg,#B8D4C8,#4A8C6F)', name: 'Preview', mood: 'Bold', time: 'sample', dur: '0:28', audio: 'honest-doubt.mp3', waves: [8, 14, 22, 36, 44, 34, 22, 14, 20, 34, 44, 36, 22, 14, 8, 12, 24, 38, 46, 38, 24, 14, 8], reactions: ['·', '·', '·'] },
+  { letter: 'S', bg: 'linear-gradient(135deg,#D4C5E2,#7C5CBF)', name: 'Preview', mood: 'Calm', time: 'sample', dur: '0:42', audio: 'quiet-joy.mp3', waves: [12, 20, 32, 46, 54, 40, 28, 18, 14, 22, 36, 50, 42, 28, 16, 10, 20, 34, 50, 44, 30, 18, 10], reactions: ['·', '·'] },
+  { letter: 'R', bg: 'linear-gradient(135deg,#F5D5A0,#C9853A)', name: 'Preview', mood: 'Hopeful', time: 'sample', dur: '0:55', audio: 'vulnerable-truth.mp3', waves: [10, 18, 28, 42, 54, 46, 30, 20, 16, 28, 44, 52, 38, 24, 14, 10, 18, 32, 46, 54, 40, 26, 14], reactions: ['·', '·'] },
 ];
 
 let currentScreen = 'feed';

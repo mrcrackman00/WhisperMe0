@@ -1622,6 +1622,23 @@
   line-height: 1.4;
 }
 
+.hiw2-stats--honest {
+  grid-template-columns: 1fr;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hiw2-stat-card--honest {
+  padding: 28px 24px;
+}
+
+.hiw2-stat-label--honest {
+  font-size: 0.9rem;
+  color: rgba(245, 239, 228, 0.55);
+  line-height: 1.55;
+}
+
 /* ── CTA SECTION ── */
 .hiw2-cta {
   padding: 60px 5% 100px;
@@ -3125,6 +3142,117 @@
   width: 1px;
   background: var(--border);
   align-self: stretch;
+}
+
+.comm-stats--honest {
+  display: block;
+  margin-bottom: 48px;
+}
+
+.comm-stats-honest-text {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--mist);
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.comm-beta-card {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(212, 96, 122, 0.06),
+    0 32px 80px rgba(28, 26, 24, 0.12),
+    0 8px 24px rgba(28, 26, 24, 0.06);
+  padding: 36px 32px 40px;
+  text-align: center;
+  animation: svFloat 5s ease-in-out infinite alternate;
+}
+
+.comm-beta-card-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin: 0 0 12px;
+}
+
+.comm-beta-card-line {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-weight: 700;
+  color: var(--charcoal);
+  line-height: 1.35;
+  margin: 0 0 12px;
+}
+
+.comm-beta-card-sub {
+  font-size: 0.88rem;
+  color: var(--mist);
+  line-height: 1.55;
+  margin: 0 0 24px;
+}
+
+.comm-beta-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: none;
+  background: var(--charcoal);
+  color: #fdfcfa;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.comm-beta-card-btn:hover {
+  background: var(--rose);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(212, 96, 122, 0.35);
+}
+
+.comm-voice-grid--honest {
+  grid-template-columns: 1fr;
+  max-width: 560px;
+}
+
+.comm-voices-honest {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.comm-voices-honest-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 14px;
+  line-height: 1.25;
+}
+
+.comm-voices-honest-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* CTA row */

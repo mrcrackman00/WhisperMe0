@@ -289,6 +289,10 @@ body.auth-modal-open footer {
   letter-spacing: 0.02em;
 }
 
+.am-side-stat--wide span {
+  line-height: 1.45;
+}
+
 .am-side-avatars {
   display: flex;
   gap: -6px;

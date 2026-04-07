@@ -2503,6 +2503,20 @@
   transform: translateX(4px);
 }
 
+.ww-strip-honest {
+  flex: 1 1 280px;
+  text-align: center;
+  max-width: 520px;
+}
+
+.ww-strip-honest-text {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--mist);
+  line-height: 1.5;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
 
