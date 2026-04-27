@@ -1,0 +1,14 @@
+﻿WhisperMe Press Kit
+
+Brand: WhisperMe
+Category: Voice-first, mood-discoverable social platform
+Tagline: Find your frequency, not your following.
+
+Boilerplate:
+WhisperMe is building a new layer of emotional presence. It is a voice-first social platform where conversations evolve through shared emotional states instead of profiles, follower counts, or performance metrics.
+
+Media Contact:
+press@whisperme.app
+
+Included Assets:
+- logo-mark.svg

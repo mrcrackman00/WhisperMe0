@@ -1,0 +1,270 @@
+/* ── SMOOTH & MOBILE OPTIMIZATIONS ── */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+a,
+[role="button"],
+.nav-link,
+.vc-play-btn,
+.comm-play-btn,
+.fv-vc-play,
+.fv-pc-play,
+.ww-play-btn,
+.nf-play-btn,
+.hvc-play {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  section {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .app-shell {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .app-bottom-nav {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+
+  button,
+  .vc-play-btn,
+  .comm-play-btn,
+  .fv-vc-play,
+  .fv-pc-play,
+  .ww-play-btn,
+  .nf-play-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Smooth transitions for common interactions */
+a,
+button,
+.nav-link,
+.bento,
+.comm-voice-card,
+.voice-card,
+.fv-prev-card,
+.fv-voice-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  #hero {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .hero-right {
+    display: none;
+  }
+
+  .hero-mini-features {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .features-intro {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .features-bento {
+    grid-template-columns: 1fr;
+  }
+
+  .bento-1,
+  .bento-2,
+  .bento-3,
+  .bento-4,
+  .bento-5,
+  .bento-6 {
+    grid-column: span 1;
+  }
+
+  .steps-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .steps-row::before {
+    display: none;
+  }
+
+  .testi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #join-beta {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .app-screens-row {
+    gap: 10px;
+  }
+
+  .screen-preview-card.main {
+    width: 160px;
+  }
+
+  .screen-preview-card.side {
+    width: 120px;
+  }
+
+  .screen-preview-inner {
+    height: 260px;
+  }
+
+  .app-shell {
+    width: 360px;
+    height: 780px;
+  }
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2.6rem;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-mini-features {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .steps-row {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .app-overlay {
+    align-items: flex-end;
+  }
+
+  .screen-preview-card.side {
+    display: none;
+  }
+}
+
+/* Phone-optimized (480px and below) */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.2rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  .hero-mini-features {
+    grid-template-columns: 1fr;
+  }
+
+  .fv-strip,
+  .fv-strip-flip {
+    flex-direction: column;
+    gap: 32px;
+    padding: 40px 5% !important;
+  }
+
+  .fv-strip-vis {
+    order: -1;
+  }
+
+  .fv-voice-card,
+  .fv-prev-card {
+    max-width: 100%;
+  }
+
+  .fv-prev-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .comm-voice-grid {
+    gap: 16px;
+    padding: 0 4%;
+  }
+
+  .comm-voice-card {
+    padding: 20px;
+  }
+
+  .comm-vc-play-wrap {
+    margin-bottom: 10px;
+  }
+
+  .feed-filter-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  .feed-filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-chip {
+    flex-shrink: 0;
+  }
+
+  .voice-card {
+    padding: 16px;
+  }
+
+  .vc-controls {
+    gap: 6px;
+  }
+
+  .vc-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Prevent horizontal overflow */
+img,
+video,
+svg,
+canvas {
+  max-width: 100%;
+  height: auto;
+}

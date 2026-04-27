@@ -1,0 +1,287 @@
+﻿/* === WhisperMe Hero Redesign: Dark Ambient / Voice Orbs === */
+#cream-hero {
+  --mx: 50;
+  --my: 50;
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 88px);
+  padding: clamp(92px, 11vh, 140px) 6vw clamp(74px, 10vh, 126px);
+  background:
+    radial-gradient(1200px 760px at calc(var(--mx) * 1%) calc(var(--my) * 1%), rgba(130, 111, 214, 0.14), transparent 58%),
+    radial-gradient(900px 560px at 86% 14%, rgba(131, 144, 187, 0.12), transparent 62%),
+    linear-gradient(135deg, #0f1321 0%, #171c2f 52%, #222734 100%);
+}
+
+#cream-hero .wmh-bg-core,
+#cream-hero .wmh-bg-veil {
+  position: absolute;
+  inset: -8%;
+  pointer-events: none;
+}
+
+#cream-hero .wmh-bg-core {
+  background:
+    radial-gradient(420px 320px at 20% 18%, rgba(151, 127, 255, 0.18), transparent 70%),
+    radial-gradient(520px 360px at 82% 76%, rgba(116, 196, 255, 0.1), transparent 72%);
+  filter: blur(36px);
+  opacity: 0.78;
+  transform: translate3d(calc((var(--mx) - 50) * -0.18px), calc((var(--my) - 50) * -0.18px), 0);
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#cream-hero .wmh-bg-veil {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 42%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+#cream-hero .wmh-shell {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(36px, 5vw, 84px);
+  align-items: center;
+}
+
+#cream-hero .wmh-copy {
+  max-width: 640px;
+  animation: wmhFadeIn 840ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#cream-hero .wmh-title {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.35rem, 5.2vw, 5.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: #f4f1ff;
+  text-wrap: balance;
+}
+
+#cream-hero .wmh-subheadline {
+  margin: 24px 0 0;
+  font-family: 'Cabinet Grotesk', 'Segoe UI', sans-serif;
+  font-size: clamp(1.05rem, 1.38vw, 1.3rem);
+  line-height: 1.72;
+  color: rgba(232, 235, 252, 0.88);
+}
+
+#cream-hero .wmh-micro {
+  margin: 16px 0 0;
+  font-family: 'Cabinet Grotesk', 'Segoe UI', sans-serif;
+  font-size: clamp(0.94rem, 1.02vw, 1.06rem);
+  line-height: 1.7;
+  color: rgba(194, 202, 232, 0.8);
+}
+
+#cream-hero .wmh-actions {
+  margin-top: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#cream-hero .wmh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: 'Cabinet Grotesk', 'Segoe UI', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1), background-color 260ms cubic-bezier(0.22, 1, 0.36, 1), border-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#cream-hero .wmh-btn-primary {
+  border: 1px solid rgba(198, 205, 242, 0.22);
+  color: #f6f8ff;
+  background: linear-gradient(145deg, rgba(146, 124, 255, 0.34), rgba(96, 126, 226, 0.34));
+  box-shadow: 0 14px 34px rgba(59, 69, 116, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+#cream-hero .wmh-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 42px rgba(70, 80, 130, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+#cream-hero .wmh-btn-secondary {
+  border: 1px solid rgba(201, 206, 236, 0.22);
+  color: rgba(231, 236, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+#cream-hero .wmh-btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(219, 224, 255, 0.38);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#cream-hero .wmh-visual {
+  position: relative;
+  min-height: clamp(340px, 42vw, 560px);
+  animation: wmhFadeIn 980ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
+
+#cream-hero .wmh-orb-field {
+  position: absolute;
+  inset: 0;
+}
+
+#cream-hero .wmh-orb {
+  position: absolute;
+  width: clamp(130px, 18vw, 198px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  border: 1px solid rgba(228, 235, 255, 0.19);
+  background: radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.22), rgba(172, 189, 255, 0.07) 48%, rgba(83, 101, 151, 0.04) 78%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.22), 0 20px 52px rgba(8, 12, 24, 0.56);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transform: translate3d(calc((var(--mx) - 50) * var(--px, 0.08px)), calc((var(--my) - 50) * var(--py, 0.08px)), 0);
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 360ms cubic-bezier(0.22, 1, 0.36, 1), border-color 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: wmhBreath var(--dur, 7.4s) ease-in-out infinite;
+}
+
+#cream-hero .wmh-orb::after {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  border: 1px solid rgba(174, 194, 255, 0.16);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#cream-hero .wmh-orb:hover {
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.28), 0 26px 62px rgba(38, 56, 115, 0.54), 0 0 40px rgba(134, 158, 255, 0.26);
+  border-color: rgba(214, 223, 255, 0.34);
+}
+
+#cream-hero .wmh-orb:hover::after {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+#cream-hero .wmh-orb-label {
+  font-family: 'Cabinet Grotesk', 'Segoe UI', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(230, 235, 255, 0.88);
+}
+
+#cream-hero .wmh-wave {
+  width: 58%;
+  height: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+#cream-hero .wmh-wave span {
+  width: 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(219, 228, 255, 0.9), rgba(128, 155, 255, 0.46));
+  animation: wmhAudio 1.8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+#cream-hero .wmh-wave span:nth-child(1) { animation-delay: 0s; }
+#cream-hero .wmh-wave span:nth-child(2) { animation-delay: 0.14s; }
+#cream-hero .wmh-wave span:nth-child(3) { animation-delay: 0.26s; }
+#cream-hero .wmh-wave span:nth-child(4) { animation-delay: 0.36s; }
+#cream-hero .wmh-wave span:nth-child(5) { animation-delay: 0.5s; }
+
+#cream-hero .wmh-orb-a { top: 8%; left: 8%; --dur: 8s; --px: -0.16px; --py: -0.12px; }
+#cream-hero .wmh-orb-b { top: 2%; right: 10%; --dur: 7.2s; --px: -0.2px; --py: 0.14px; }
+#cream-hero .wmh-orb-c { top: 43%; left: 30%; --dur: 8.6s; --px: 0.18px; --py: -0.17px; }
+#cream-hero .wmh-orb-d { bottom: 4%; left: 2%; --dur: 7.8s; --px: 0.16px; --py: 0.15px; }
+#cream-hero .wmh-orb-e { bottom: 0%; right: 8%; --dur: 8.9s; --px: -0.14px; --py: 0.16px; }
+
+@keyframes wmhFadeIn {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wmhBreath {
+  0%, 100% { transform: translate3d(calc((var(--mx) - 50) * var(--px, 0.08px)), calc((var(--my) - 50) * var(--py, 0.08px)), 0) scale(1); }
+  50% { transform: translate3d(calc((var(--mx) - 50) * var(--px, 0.08px)), calc((var(--my) - 50) * var(--py, 0.08px)), 0) scale(1.045); }
+}
+
+@keyframes wmhAudio {
+  0%, 100% { height: 6px; opacity: 0.62; }
+  45% { height: 18px; opacity: 1; }
+  70% { height: 11px; opacity: 0.86; }
+}
+
+@media (max-width: 1060px) {
+  #cream-hero .wmh-shell {
+    grid-template-columns: 1fr;
+    gap: 46px;
+  }
+
+  #cream-hero .wmh-copy {
+    max-width: 760px;
+  }
+
+  #cream-hero .wmh-visual {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 720px) {
+  #cream-hero {
+    min-height: auto;
+    padding: 90px 6vw 72px;
+  }
+
+  #cream-hero .wmh-title {
+    font-size: clamp(2.1rem, 11.2vw, 3.4rem);
+  }
+
+  #cream-hero .wmh-subheadline {
+    font-size: 1rem;
+    line-height: 1.68;
+  }
+
+  #cream-hero .wmh-actions {
+    gap: 10px;
+  }
+
+  #cream-hero .wmh-btn {
+    width: 100%;
+  }
+
+  #cream-hero .wmh-visual {
+    min-height: 360px;
+  }
+
+  #cream-hero .wmh-orb {
+    width: clamp(112px, 31vw, 160px);
+  }
+
+  #cream-hero .wmh-wave {
+    width: 64%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cream-hero *,
+  #cream-hero *::before,
+  #cream-hero *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

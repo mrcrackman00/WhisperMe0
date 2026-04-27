@@ -1,0 +1,357 @@
+/* Sitewide “Get Early Access” modal — matches hero waitlist styling */
+/* z-index above .vu-card-overlay (9999) so modal shows on mobile hero; below #toast (~999999) */
+.ea-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+  opacity: 0;
+  /* Closed: never intercept clicks (inert + none; !important beats stray rules) */
+  pointer-events: none !important;
+  transition: opacity 0.45s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1));
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ea-popup-overlay.active {
+  opacity: 1;
+  pointer-events: auto !important;
+}
+
+.ea-popup-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 16, 14, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.45s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.mobile-perf .ea-popup-backdrop {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(18, 16, 14, 0.82);
+}
+
+.ea-popup-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  /* dvh avoids iOS 100vh cut-off when browser chrome shows */
+  max-height: min(560px, calc(100vh - 24px));
+  max-height: min(560px, calc(100dvh - 24px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  background: linear-gradient(165deg, #2A2624 0%, #1C1A18 100%);
+  border: 1px solid rgba(245, 239, 228, 0.12);
+  border-radius: 22px;
+  padding: 28px 24px 24px;
+  box-shadow:
+    0 0 0 1px rgba(28, 26, 24, 0.08),
+    0 28px 80px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: scale(0.94) translate3d(0, 18px, 0);
+  transition:
+    opacity 0.42s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 0.55s var(--ease-out-soft, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ea-popup-overlay.active .ea-popup-card {
+  opacity: 1;
+  transform: scale(1) translate3d(0, 0, 0);
+}
+
+.ea-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(245, 239, 228, 0.08);
+  color: rgba(245, 239, 228, 0.85);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.28s var(--ease-smooth, ease),
+    color 0.28s ease,
+    transform 0.2s var(--ease-smooth, ease);
+}
+
+.ea-popup-close:hover {
+  background: rgba(245, 239, 228, 0.14);
+  color: #f5efe4;
+}
+
+.ea-popup-close:active {
+  transform: scale(0.94);
+}
+
+.ea-popup-title {
+  font-family: 'Playfair Display', 'Instrument Serif', Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #f5efe4;
+  margin: 0 36px 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.ea-popup-sub {
+  font-size: 0.88rem;
+  color: rgba(245, 239, 228, 0.62);
+  line-height: 1.45;
+  margin: 0 0 20px;
+}
+
+.ea-popup-card .h11-form-field {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.ea-popup-card .h11-form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 239, 228, 0.12);
+  background: rgba(245, 239, 228, 0.06);
+  color: #f5efe4;
+  font-size: 0.95rem;
+  font-family: 'Cabinet Grotesk', 'DM Sans', sans-serif;
+  transition:
+    border-color 0.28s var(--ease-smooth, ease),
+    background 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.ea-popup-card .h11-form-input:focus {
+  outline: none;
+  border-color: rgba(212, 96, 122, 0.45);
+  background: rgba(245, 239, 228, 0.09);
+  box-shadow: 0 0 0 3px rgba(212, 96, 122, 0.12);
+}
+
+.ea-popup-card .h11-form-input::placeholder {
+  color: rgba(245, 239, 228, 0.35);
+}
+
+.ea-popup-card .h11-mood-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ea-popup-card .h11-mood-chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 239, 228, 0.15);
+  background: rgba(245, 239, 228, 0.05);
+  color: rgba(245, 239, 228, 0.75);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  transition:
+    border-color 0.28s var(--ease-smooth, ease),
+    background 0.28s ease,
+    transform 0.2s var(--ease-smooth, ease);
+}
+
+.ea-popup-card .h11-mood-chip:active {
+  transform: scale(0.97);
+}
+
+.ea-popup-card .h11-mood-chip.selected {
+  border-color: rgba(212, 96, 122, 0.55);
+  background: rgba(212, 96, 122, 0.12);
+  color: #f5efe4;
+}
+
+.ea-popup-submit {
+  width: 100%;
+  margin-top: 6px;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  cursor: pointer;
+  background: linear-gradient(135deg, #d4607a, #c9853a);
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(212, 96, 122, 0.28);
+  transition:
+    transform 0.3s var(--ease-smooth, ease),
+    opacity 0.25s ease,
+    box-shadow 0.3s ease;
+}
+
+.ea-popup-submit:hover:not(:disabled) {
+  transform: translate3d(0, -2px, 0);
+  box-shadow: 0 12px 36px rgba(212, 96, 122, 0.35);
+}
+
+.ea-popup-submit:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.ea-popup-note {
+  font-size: 0.72rem;
+  color: rgba(245, 239, 228, 0.45);
+  margin: 14px 0 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.ea-popup-note span {
+  color: rgba(212, 96, 122, 0.85);
+  font-weight: 600;
+}
+
+.ea-popup-later {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(245, 239, 228, 0.45);
+  font-size: 0.82rem;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.28s ease, opacity 0.28s ease;
+}
+
+.ea-popup-later:hover {
+  color: rgba(245, 239, 228, 0.78);
+}
+
+/* Lock page scroll while popup is open. Do NOT use touch-action:none on body — iOS/Android often
+   keep scroll broken after close. html + body overflow is enough. */
+html.ea-popup-open,
+body.ea-popup-open {
+  overflow: hidden;
+}
+
+/* Phones — bottom sheet feel, full width, readable type, iOS-friendly inputs (16px = no zoom) */
+@media (max-width: 640px) {
+  .ea-popup-overlay {
+    align-items: flex-end;
+    padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .ea-popup-card {
+    max-width: none;
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    max-height: min(88vh, 620px);
+    max-height: min(88dvh, 620px);
+    padding: 22px 18px max(20px, calc(12px + env(safe-area-inset-bottom, 0px)));
+    margin: 0;
+    opacity: 1;
+    transform: translate3d(0, 112%, 0);
+    transition:
+      transform 0.52s var(--ease-smooth, cubic-bezier(0.22, 1, 0.36, 1)),
+      opacity 0.35s ease;
+  }
+
+  .ea-popup-overlay.active .ea-popup-card {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .ea-popup-title {
+    font-size: 1.35rem;
+    margin-right: 48px;
+    padding-right: 0;
+  }
+
+  .ea-popup-sub {
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  .ea-popup-card .h11-form-input {
+    font-size: 16px;
+    padding: 15px 16px;
+    min-height: 48px;
+  }
+
+  .ea-popup-card .h11-mood-chip {
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    min-height: 40px;
+  }
+
+  .ea-popup-submit {
+    padding: 16px 20px;
+    min-height: 52px;
+    font-size: 1rem;
+    border-radius: 16px;
+  }
+
+  .ea-popup-later {
+    padding: 14px 10px;
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
+
+  .ea-popup-note {
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .ea-popup-title {
+    font-size: 1.22rem;
+  }
+
+  .ea-popup-card .h11-mood-row {
+    gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ea-popup-overlay,
+  .ea-popup-backdrop,
+  .ea-popup-card,
+  .ea-popup-close,
+  .ea-popup-card .h11-form-input,
+  .ea-popup-card .h11-mood-chip,
+  .ea-popup-submit,
+  .ea-popup-later {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  .ea-popup-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .ea-popup-overlay:not(.active) .ea-popup-card {
+    opacity: 0 !important;
+  }
+
+  .ea-popup-submit:hover:not(:disabled) {
+    transform: none;
+  }
+}

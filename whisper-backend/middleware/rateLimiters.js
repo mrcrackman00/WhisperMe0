@@ -1,0 +1,56 @@
+const rateLimit = require('express-rate-limit');
+
+/**
+ * Strict rate limiter for sensitive authentication endpoints (signup, login tracking)
+ * Limits: 5 requests per 15 minutes per IP
+ */
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication attempts from this IP, please try again in 15 minutes.' },
+});
+
+/**
+ * Rate limiter for the waitlist form
+ * Limits: 60 requests per hour per IP
+ */
+const waitlistLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, 
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many waitlist submissions from this IP, please try again later.' },
+});
+
+/**
+ * Rate limiter for forgot-password (prevents abuse)
+ * Limits: 5 requests per 15 minutes per IP
+ */
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many reset requests. Try again in 15 minutes.' },
+});
+
+/**
+ * Rate limiter for resend verification email
+ * Limits: 3 requests per 15 minutes per IP
+ */
+const resendVerificationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Check spam folder or try again in 15 minutes.' },
+});
+
+module.exports = {
+  authLimiter,
+  waitlistLimiter,
+  forgotPasswordLimiter,
+  resendVerificationLimiter,
+};

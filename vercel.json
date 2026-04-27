@@ -1,0 +1,56 @@
+{
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }]
+    },
+    {
+      "source": "/css/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }]
+    },
+    {
+      "source": "/js/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }]
+    }
+  ],
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/pages/about.html", "destination": "/about", "permanent": true },
+    { "source": "/pages/blog.html", "destination": "/blog", "permanent": true },
+    { "source": "/pages/careers.html", "destination": "/careers", "permanent": true },
+    { "source": "/pages/press.html", "destination": "/press", "permanent": true },
+    { "source": "/pages/privacy.html", "destination": "/privacy", "permanent": true },
+    { "source": "/pages/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/pages/cookies.html", "destination": "/cookies", "permanent": true },
+    { "source": "/pages/accessibility.html", "destination": "/accessibility", "permanent": true },
+    { "source": "/pages/profile.html", "destination": "/profile", "permanent": true },
+    { "source": "/pages/blog-article.html", "destination": "/blog-article", "permanent": true },
+    { "source": "/about.html", "destination": "/about", "permanent": true },
+    { "source": "/blog.html", "destination": "/blog", "permanent": true },
+    { "source": "/blog-article.html", "destination": "/blog-article", "permanent": true },
+    { "source": "/careers.html", "destination": "/careers", "permanent": true },
+    { "source": "/press.html", "destination": "/press", "permanent": true },
+    { "source": "/privacy.html", "destination": "/privacy", "permanent": true },
+    { "source": "/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/cookies.html", "destination": "/cookies", "permanent": true },
+    { "source": "/accessibility.html", "destination": "/accessibility", "permanent": true },
+    { "source": "/profile.html", "destination": "/profile", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/about", "destination": "/pages/about.html" },
+    { "source": "/blog", "destination": "/pages/blog.html" },
+    { "source": "/blog-article", "destination": "/pages/blog-article.html" },
+    { "source": "/careers", "destination": "/pages/careers.html" },
+    { "source": "/press", "destination": "/pages/press.html" },
+    { "source": "/privacy", "destination": "/pages/privacy.html" },
+    { "source": "/privacy-policy", "destination": "/pages/privacy.html" },
+    { "source": "/terms", "destination": "/pages/terms.html" },
+    { "source": "/terms-of-service", "destination": "/pages/terms.html" },
+    { "source": "/cookies", "destination": "/pages/cookies.html" },
+    { "source": "/cookie-policy", "destination": "/pages/cookies.html" },
+    { "source": "/accessibility", "destination": "/pages/accessibility.html" },
+    { "source": "/profile", "destination": "/pages/profile.html" },
+    { "source": "/((?!api|js|css|pages|screenshots|email-templates|whisper-backend)(?!.*\\.).*)", "destination": "/index.html" }
+  ]
+}

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile — WhisperMe</title>
+<link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/logo-mark.svg">
+<meta name="description" content="Your WhisperMe profile dashboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Tokens ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FAF7F2;--warm:#F5EFE4;--petal:#F2C4CE;--rose:#D4607A;
+  --coral:#E8846A;--amber:#C9853A;--sage:#7A9E87;--charcoal:#1C1A18;
+  --ink:#2D2B28;--mist:#8C8880;--border:rgba(28,26,24,0.09);
+  --shadow:rgba(28,26,24,0.07);--violet:#8B5CF6;--sky:#60A5FA;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cabinet Grotesk',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--warm)}
+::-webkit-scrollbar-thumb{background:var(--petal);border-radius:4px}
+
+/* ── Navbar ── */
+.p-nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1180px,calc(100% - 28px));z-index:200;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 8px 8px 18px;border-radius:100px;background:rgba(252,250,246,0.85);border:1px solid rgba(28,26,24,0.07);box-shadow:0 2px 4px rgba(28,26,24,0.03),0 8px 28px rgba(28,26,24,0.07);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);}
+.p-nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.p-nav-logo{width:32px;height:32px;border-radius:9px;background:#1C1A18;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 4px rgba(28,26,24,0.18)}
+.p-nav-logo svg{width:18px;height:18px}
+.p-nav-wordmark{font-family:'Playfair Display',Georgia,serif;font-size:1.12rem;font-weight:700;color:#1C1A18;letter-spacing:-0.025em}
+.p-nav-wordmark em{font-style:italic;color:var(--rose)}
+.p-nav-center{position:absolute;left:50%;transform:translateX(-50%)}
+.p-nav-links{display:flex;align-items:center;gap:1px;list-style:none;padding:4px;background:rgba(28,26,24,0.028);border:1px solid rgba(28,26,24,0.04);border-radius:100px}
+.p-nav-links a{display:block;color:rgba(44,40,36,0.52);font-size:0.8rem;font-weight:600;padding:6px 14px;border-radius:100px;white-space:nowrap;transition:color 0.2s,background 0.2s}
+.p-nav-links a:hover,.p-nav-links a.active{color:#1C1A18;background:#fff;font-weight:700;box-shadow:0 1px 4px rgba(28,26,24,0.07)}
+.p-nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.p-nav-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--amber));display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+.p-nav-avatar:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(212,96,122,0.35)}
+.p-nav-icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:rgba(255,255,255,0.65);display:flex;align-items:center;justify-content:center;transition:background 0.2s,transform 0.2s}
+.p-nav-icon-btn:hover{background:#fff;transform:scale(1.05)}
+.p-nav-icon-btn svg{width:15px;height:15px;color:var(--ink)}
+.p-nav-logout{padding:7px 16px;border-radius:100px;background:var(--charcoal);color:rgba(250,247,242,0.94);font-size:0.8rem;font-weight:700;letter-spacing:0.01em;transition:background 0.25s,transform 0.25s,box-shadow 0.25s;box-shadow:0 2px 6px rgba(28,26,24,0.18)}
+.p-nav-logout:hover{background:var(--rose);box-shadow:0 4px 16px rgba(212,96,122,0.35);transform:translateY(-1px)}
+
+/* ── Page Wrapper ── */
+.p-page{padding-top:100px;padding-bottom:80px;max-width:1100px;margin:0 auto;padding-left:24px;padding-right:24px}
+
+/* ── Profile Header ── */
+.p-header{display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:start;padding:40px;background:#fff;border:1px solid var(--border);border-radius:24px;box-shadow:0 2px 4px var(--shadow),0 12px 40px rgba(28,26,24,0.05);margin-bottom:24px;animation:fadeUp 0.5s ease both}
+.p-avatar-wrap{position:relative;flex-shrink:0}
+.p-avatar{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--amber));display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:800;color:#fff;box-shadow:0 4px 20px rgba(212,96,122,0.3);cursor:pointer;transition:transform 0.3s,box-shadow 0.3s;position:relative}
+.p-avatar:hover{transform:scale(1.04);box-shadow:0 8px 30px rgba(212,96,122,0.4)}
+.p-avatar-edit{position:absolute;bottom:2px;right:2px;width:26px;height:26px;border-radius:50%;background:var(--charcoal);border:2px solid #fff;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s}
+.p-avatar:hover .p-avatar-edit{opacity:1}
+.p-avatar-edit svg{width:12px;height:12px;color:#fff}
+.p-info{min-width:0}
+.p-display-name{font-family:'Playfair Display',Georgia,serif;font-size:1.65rem;font-weight:700;color:var(--charcoal);letter-spacing:-0.02em;margin-bottom:2px}
+.p-handle{font-size:0.9rem;color:var(--mist);font-weight:500;margin-bottom:10px}
+.p-bio{font-size:0.95rem;color:var(--ink);opacity:0.75;line-height:1.55;max-width:480px;margin-bottom:14px}
+.p-badges{display:flex;gap:8px;flex-wrap:wrap}
+.p-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:100px;font-size:0.72rem;font-weight:700;letter-spacing:0.03em;text-transform:uppercase}
+.p-badge.early{background:rgba(212,96,122,0.09);color:var(--rose);border:1px solid rgba(212,96,122,0.2)}
+.p-badge.beta{background:rgba(139,92,246,0.09);color:var(--violet);border:1px solid rgba(139,92,246,0.2)}
+.p-badge.member{background:rgba(122,158,135,0.1);color:var(--sage);border:1px solid rgba(122,158,135,0.22)}
+.p-header-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.p-edit-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:100px;background:var(--charcoal);color:rgba(250,247,242,0.94);font-size:0.82rem;font-weight:700;transition:background 0.25s,transform 0.25s,box-shadow 0.25s;box-shadow:0 2px 8px rgba(28,26,24,0.16);white-space:nowrap}
+.p-edit-btn:hover{background:var(--rose);box-shadow:0 6px 20px rgba(212,96,122,0.35);transform:translateY(-1px)}
+.p-share-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:100px;border:1px solid var(--border);background:rgba(255,255,255,0.7);color:var(--ink);font-size:0.82rem;font-weight:600;transition:background 0.2s,border-color 0.2s}
+.p-share-btn:hover{background:#fff;border-color:rgba(28,26,24,0.18)}
+
+/* ── Stats Row ── */
+.p-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;animation:fadeUp 0.5s 0.08s ease both}
+.p-stat-card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:22px 24px;text-align:center;transition:transform 0.25s,box-shadow 0.25s;box-shadow:0 2px 4px var(--shadow)}
+.p-stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(28,26,24,0.1)}
+.p-stat-num{font-family:'Playfair Display',Georgia,serif;font-size:2rem;font-weight:700;color:var(--charcoal);letter-spacing:-0.03em;line-height:1}
+.p-stat-label{font-size:0.78rem;color:var(--mist);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-top:6px}
+
+/* ── Two-column layout ── */
+.p-grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+
+/* ── Section card ── */
+.p-section{background:#fff;border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:0 2px 4px var(--shadow);margin-bottom:24px;animation:fadeUp 0.5s 0.12s ease both}
+.p-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.p-section-title{font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;font-weight:700;color:var(--charcoal)}
+.p-section-action{font-size:0.8rem;color:var(--rose);font-weight:600;cursor:pointer;transition:opacity 0.2s}
+.p-section-action:hover{opacity:0.75}
+
+/* ── Anon Toggle ── */
+.p-anon-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:14px;background:var(--warm);border:1px solid rgba(28,26,24,0.06);margin-bottom:20px}
+.p-anon-label{display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:600;color:var(--ink)}
+.p-anon-label span{font-size:1.1rem}
+.p-toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.p-toggle input{opacity:0;width:0;height:0}
+.p-toggle-slider{position:absolute;inset:0;background:rgba(28,26,24,0.15);border-radius:100px;transition:background 0.3s;cursor:pointer}
+.p-toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.p-toggle input:checked+.p-toggle-slider{background:var(--rose)}
+.p-toggle input:checked+.p-toggle-slider::before{transform:translateX(18px)}
+
+/* ── Voice Post Card ── */
+.p-voice-card{border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;background:rgba(252,250,246,0.5);animation:fadeUp 0.4s ease both}
+.p-voice-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(28,26,24,0.09);border-color:rgba(28,26,24,0.14)}
+.p-vc-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.p-vc-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:800;color:#fff;flex-shrink:0}
+.p-vc-info{flex:1;min-width:0}
+.p-vc-name{font-size:0.9rem;font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:6px}
+.p-vc-mood{font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(212,96,122,0.08);color:var(--rose);border:1px solid rgba(212,96,122,0.15)}
+.p-vc-time{font-size:0.75rem;color:var(--mist);margin-top:2px}
+.p-vc-wave{height:40px;display:flex;align-items:center;gap:2px;margin-bottom:12px;overflow:hidden;position:relative}
+.p-vc-bar{flex-shrink:0;width:3px;border-radius:100px;background:linear-gradient(to top,var(--petal),var(--rose));opacity:0.6;transition:opacity 0.2s;animation:wvBounce var(--dur,1.3s) ease-in-out infinite;animation-delay:var(--del,0s)}
+.p-voice-card:hover .p-vc-bar{opacity:0.9}
+@keyframes wvBounce{0%,100%{transform:scaleY(0.4)}50%{transform:scaleY(1)}}
+.p-vc-controls{display:flex;align-items:center;gap:10px}
+.p-vc-play{width:34px;height:34px;border-radius:50%;background:var(--charcoal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;transition:background 0.2s,transform 0.2s;flex-shrink:0}
+.p-vc-play:hover{background:var(--rose);transform:scale(1.1)}
+.p-vc-bar-track{flex:1;height:4px;background:rgba(28,26,24,0.08);border-radius:100px;overflow:hidden}
+.p-vc-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--rose),var(--amber));border-radius:100px;transition:width 0.1s linear}
+.p-vc-dur{font-size:0.75rem;color:var(--mist);font-weight:500;flex-shrink:0}
+.p-vc-actions{display:flex;align-items:center;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.p-vc-act-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:100px;font-size:0.78rem;font-weight:600;color:var(--mist);transition:background 0.18s,color 0.18s}
+.p-vc-act-btn:hover{background:rgba(28,26,24,0.05);color:var(--ink)}
+.p-vc-act-btn.liked{color:var(--rose)}
+.p-vc-act-btn svg{width:13px;height:13px}
+
+/* ── Activity Feed ── */
+.p-activity-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid rgba(28,26,24,0.05)}
+.p-activity-item:last-child{border-bottom:none}
+.p-act-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:var(--warm)}
+.p-act-text{flex:1;min-width:0}
+.p-act-desc{font-size:0.85rem;color:var(--ink);line-height:1.45;margin-bottom:2px}
+.p-act-desc strong{font-weight:700}
+.p-act-time{font-size:0.72rem;color:var(--mist);font-weight:500}
+
+/* ── Settings Panel ── */
+.p-settings-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(28,26,24,0.05);cursor:pointer;transition:opacity 0.18s}
+.p-settings-item:last-child{border-bottom:none}
+.p-settings-item:hover{opacity:0.75}
+.p-set-label{display:flex;align-items:center;gap:12px}
+.p-set-icon{width:36px;height:36px;border-radius:10px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.p-set-title{font-size:0.88rem;font-weight:600;color:var(--charcoal);line-height:1.2}
+.p-set-sub{font-size:0.75rem;color:var(--mist);margin-top:1px}
+.p-set-arrow{color:var(--mist);font-size:1rem}
+
+/* ── CTA Banner ── */
+.p-cta{background:linear-gradient(135deg,var(--charcoal) 0%,#2A2420 100%);border-radius:22px;padding:40px;text-align:center;position:relative;overflow:hidden;margin-bottom:24px;animation:fadeUp 0.5s 0.2s ease both}
+.p-cta::before{content:'';position:absolute;inset:-40%;background:radial-gradient(ellipse at 50% 50%,rgba(212,96,122,0.18) 0%,transparent 65%);pointer-events:none}
+.p-cta-title{font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;font-weight:700;color:#F5EFE4;margin-bottom:8px;position:relative;letter-spacing:-0.02em}
+.p-cta-sub{font-size:0.95rem;color:rgba(245,239,228,0.6);margin-bottom:24px;position:relative}
+.p-cta-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;background:linear-gradient(135deg,var(--rose),var(--amber));color:#fff;font-size:0.9rem;font-weight:700;letter-spacing:0.01em;position:relative;transition:transform 0.25s,box-shadow 0.25s;box-shadow:0 4px 18px rgba(212,96,122,0.4)}
+.p-cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,96,122,0.5)}
+
+/* ── Footer ── */
+.p-footer{text-align:center;padding:32px 0;border-top:1px solid var(--border);margin-top:8px}
+.p-footer-brand{font-family:'Playfair Display',Georgia,serif;font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:6px}
+.p-footer-brand em{font-style:italic;color:var(--rose)}
+.p-footer-note{font-size:0.8rem;color:var(--mist)}
+
+/* ── Edit Profile Modal ── */
+.p-modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(18,16,14,0.55);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 0.3s,visibility 0.3s}
+.p-modal-overlay.open{opacity:1;visibility:visible;pointer-events:auto}
+.p-modal{background:#fff;border-radius:22px;padding:36px;width:min(520px,94vw);box-shadow:0 24px 80px rgba(0,0,0,0.2);transform:translateY(20px) scale(0.97);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.p-modal-overlay.open .p-modal{transform:none}
+.p-modal-title{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;font-weight:700;color:var(--charcoal);margin-bottom:6px}
+.p-modal-sub{font-size:0.85rem;color:var(--mist);margin-bottom:24px}
+.p-modal-field{margin-bottom:18px}
+.p-modal-label{font-size:0.78rem;font-weight:700;color:var(--charcoal);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;display:block}
+.p-modal-input{width:100%;padding:11px 15px;border:1.5px solid var(--border);border-radius:12px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.9rem;color:var(--ink);background:var(--cream);transition:border-color 0.2s,box-shadow 0.2s;outline:none}
+.p-modal-input:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(212,96,122,0.12)}
+.p-modal-input.textarea{resize:vertical;min-height:80px}
+.p-modal-actions{display:flex;gap:10px;margin-top:24px}
+.p-modal-save{flex:1;padding:12px;border-radius:12px;background:var(--charcoal);color:rgba(250,247,242,0.94);font-size:0.88rem;font-weight:700;transition:background 0.25s,transform 0.2s}
+.p-modal-save:hover{background:var(--rose);transform:translateY(-1px)}
+.p-modal-cancel{padding:12px 20px;border-radius:12px;border:1px solid var(--border);font-size:0.88rem;font-weight:600;color:var(--mist);transition:background 0.2s,color 0.2s}
+.p-modal-cancel:hover{background:var(--warm);color:var(--ink)}
+
+/* ── Toast ── */
+.p-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:var(--warm);padding:12px 24px;border-radius:100px;font-size:0.88rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.25);z-index:9999;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;opacity:0;pointer-events:none;white-space:nowrap}
+.p-toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── Auth loading ── */
+.p-auth-guard{position:fixed;inset:0;z-index:5000;background:var(--cream);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.p-auth-guard-text{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;color:var(--charcoal)}
+.p-auth-spinner{width:36px;height:36px;border:3px solid rgba(212,96,122,0.2);border-top-color:var(--rose);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  .p-nav-center{display:none}
+  .p-header{grid-template-columns:auto 1fr;grid-template-rows:auto auto}
+  .p-header-actions{flex-direction:row;grid-column:1/-1}
+  .p-grid{grid-template-columns:1fr}
+  .p-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:640px){
+  .p-page{padding-top:90px;padding-left:14px;padding-right:14px}
+  .p-header{grid-template-columns:1fr;text-align:center;gap:16px}
+  .p-avatar-wrap{margin:0 auto}
+  .p-info{display:flex;flex-direction:column;align-items:center}
+  .p-badges{justify-content:center}
+  .p-header-actions{justify-content:center}
+  .p-stats{grid-template-columns:repeat(3,1fr);gap:10px}
+  .p-stat-num{font-size:1.6rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Auth guard overlay -->
+<div class="p-auth-guard" id="authGuard">
+  <div class="p-auth-spinner"></div>
+  <div class="p-auth-guard-text">Loading your profile…</div>
+</div>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="p-nav">
+  <a class="p-nav-brand" href="../index.html">
+    <div class="p-nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9" stroke="#D4607A" stroke-width="1.5"/>
+        <path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="#F2C4CE" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="2" fill="#D4607A"/>
+      </svg>
+    </div>
+    <span class="p-nav-wordmark">Whisper<em>Me</em></span>
+  </a>
+
+  <div class="p-nav-center">
+    <ul class="p-nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../index.html#explore">Explore</a></li>
+      <li><a href="../index.html#features">Features</a></li>
+      <li><a href="profile.html" class="active">Profile</a></li>
+    </ul>
+  </div>
+
+  <div class="p-nav-right">
+    <div class="p-nav-avatar" id="navAvatar" title="Your profile">U</div>
+    <button class="p-nav-icon-btn" title="Settings" onclick="openSettings()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </button>
+    <button class="p-nav-logout" onclick="handleLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- ══ MAIN PAGE ══ -->
+<main class="p-page" id="mainPage" style="display:none">
+
+  <!-- Profile Header -->
+  <div class="p-header">
+    <div class="p-avatar-wrap">
+      <div class="p-avatar" id="profileAvatar" onclick="openEditModal()">
+        <span id="profileAvatarLetter">U</span>
+        <div class="p-avatar-edit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="p-info">
+      <div class="p-display-name" id="profileDisplayName">Your Name</div>
+      <div class="p-handle" id="profileHandle">@yourvoice</div>
+      <div class="p-bio" id="profileBio">Sharing thoughts through voice. 🎙️</div>
+      <div class="p-badges">
+        <span class="p-badge early">✦ Early User</span>
+        <span class="p-badge beta">⚡ Beta Member</span>
+        <span class="p-badge member">🌱 Community</span>
+      </div>
+    </div>
+    <div class="p-header-actions">
+      <button class="p-edit-btn" onclick="openEditModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit Profile
+      </button>
+      <button class="p-share-btn" onclick="shareProfile()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="p-stats">
+    <div class="p-stat-card">
+      <div class="p-stat-num" id="statPosts">0</div>
+      <div class="p-stat-label">Voice Posts</div>
+    </div>
+    <div class="p-stat-card">
+      <div class="p-stat-num" id="statFollowers">—</div>
+      <div class="p-stat-label">Followers</div>
+    </div>
+    <div class="p-stat-card">
+      <div class="p-stat-num" id="statFollowing">—</div>
+      <div class="p-stat-label">Following</div>
+    </div>
+  </div>
+
+  <!-- Two-column grid -->
+  <div class="p-grid">
+    <!-- Left column -->
+    <div>
+      <!-- Voice Posts Feed -->
+      <div class="p-section">
+        <div class="p-section-head">
+          <div class="p-section-title">Voice Posts</div>
+          <span class="p-section-action" onclick="pToast('🎙️ Coming soon — recording is in beta!')">+ New Post</span>
+        </div>
+
+        <!-- Anonymous toggle -->
+        <div class="p-anon-bar">
+          <div class="p-anon-label">
+            <span>🫧</span>
+            Post Anonymously
+          </div>
+          <label class="p-toggle">
+            <input type="checkbox" id="anonToggle" onchange="onAnonToggle(this)">
+            <span class="p-toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Post cards -->
+        <div id="voiceFeed"></div>
+      </div>
+
+      <!-- CTA -->
+      <div class="p-cta">
+        <div class="p-cta-title">Share Your First Voice</div>
+        <div class="p-cta-sub">Your thoughts deserve to be heard. Start your voice journey.</div>
+        <button class="p-cta-btn" onclick="pToast('🎙️ Recording feature coming soon!')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          Create Voice Post
+        </button>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div>
+      <!-- Recent Activity -->
+      <div class="p-section">
+        <div class="p-section-head">
+          <div class="p-section-title">Recent Activity</div>
+          <span class="p-section-action">See all</span>
+        </div>
+        <div id="activityFeed">
+          <div class="p-activity-item">
+            <div class="p-act-icon">❤️</div>
+            <div class="p-act-text">
+              <div class="p-act-desc"><strong>Preview</strong> — sample notification (UI mockup)</div>
+              <div class="p-act-time">sample</div>
+            </div>
+          </div>
+          <div class="p-activity-item">
+            <div class="p-act-icon">💬</div>
+            <div class="p-act-text">
+              <div class="p-act-desc"><strong>Preview</strong> — sample reply (UI mockup)</div>
+              <div class="p-act-time">sample</div>
+            </div>
+          </div>
+          <div class="p-activity-item">
+            <div class="p-act-icon">🌱</div>
+            <div class="p-act-text">
+              <div class="p-act-desc">Sample: community feature preview</div>
+              <div class="p-act-time">sample</div>
+            </div>
+          </div>
+          <div class="p-activity-item">
+            <div class="p-act-icon">✦</div>
+            <div class="p-act-text">
+              <div class="p-act-desc">Sample: achievements preview</div>
+              <div class="p-act-time">sample</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="p-section">
+        <div class="p-section-head">
+          <div class="p-section-title">Settings</div>
+        </div>
+        <div class="p-settings-item" onclick="openEditModal()">
+          <div class="p-set-label">
+            <div class="p-set-icon">✏️</div>
+            <div>
+              <div class="p-set-title">Edit Profile</div>
+              <div class="p-set-sub">Name, bio, display name</div>
+            </div>
+          </div>
+          <span class="p-set-arrow">›</span>
+        </div>
+        <div class="p-settings-item" onclick="pToast('🖼️ Avatar upload coming soon!')">
+          <div class="p-set-label">
+            <div class="p-set-icon">🖼️</div>
+            <div>
+              <div class="p-set-title">Change Avatar</div>
+              <div class="p-set-sub">Upload a profile photo</div>
+            </div>
+          </div>
+          <span class="p-set-arrow">›</span>
+        </div>
+        <div class="p-settings-item" onclick="pToast('🔒 Privacy settings coming soon!')">
+          <div class="p-set-label">
+            <div class="p-set-icon">🔒</div>
+            <div>
+              <div class="p-set-title">Privacy Settings</div>
+              <div class="p-set-sub">Who can hear your voice</div>
+            </div>
+          </div>
+          <span class="p-set-arrow">›</span>
+        </div>
+        <div class="p-settings-item" onclick="handleLogout()">
+          <div class="p-set-label">
+            <div class="p-set-icon">👋</div>
+            <div>
+              <div class="p-set-title" style="color:var(--rose)">Sign Out</div>
+              <div class="p-set-sub">Log out of your account</div>
+            </div>
+          </div>
+          <span class="p-set-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="p-footer">
+    <div class="p-footer-brand">Whisper<em>Me</em></div>
+    <div class="p-footer-note">WhisperMe is currently in private beta. © 2025 WhisperMe.</div>
+  </footer>
+
+</main>
+
+<!-- ══ EDIT MODAL ══ -->
+<div class="p-modal-overlay" id="editModal" onclick="handleModalOutside(event)">
+  <div class="p-modal">
+    <div class="p-modal-title">Edit Profile</div>
+    <div class="p-modal-sub">Update your name, handle, and bio.</div>
+    <div class="p-modal-field">
+      <label class="p-modal-label">Display Name</label>
+      <input class="p-modal-input" type="text" id="editDisplayName" placeholder="Your full name">
+    </div>
+    <div class="p-modal-field">
+      <label class="p-modal-label">Handle</label>
+      <input class="p-modal-input" type="text" id="editHandle" placeholder="@yourvoice">
+    </div>
+    <div class="p-modal-field">
+      <label class="p-modal-label">Bio</label>
+      <textarea class="p-modal-input textarea" id="editBio" placeholder="Tell us about yourself…"></textarea>
+    </div>
+    <div class="p-modal-actions">
+      <button class="p-modal-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="p-modal-save" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="p-toast" id="pToastEl"></div>
+
+<!-- Supabase -->
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<script src="../js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/supabase.js"></script>
+<script>
+let sb = null;
+let currentUser = null;
+let anonMode = false;
+
+const PROFILE_AUDIO_BASE = '../audio/';
+const DEMO_POSTS = [
+  { id:1, bg:'linear-gradient(135deg,#F2C4CE,#D4607A)', letter:'', name:'', mood:'💙 Open', time:'2 min ago', dur:'0:47', audio:'quiet-joy.mp3', likes:84, replies:12, waves:[12,20,34,52,44,28,38,50,42,30,18,24,40,56,48,32,20,14,22,36] },
+  { id:2, bg:'linear-gradient(135deg,#D4C5E2,#7C5CBF)', letter:'', name:'', mood:'🌙 Reflective', time:'1 hr ago', dur:'1:12', audio:'late-night-thoughts.mp3', likes:231, replies:28, waves:[8,16,28,44,36,52,40,24,18,30,46,38,22,14,10,20,34,48,56,42] },
+];
+
+async function init() {
+  sb = await window._getSupabaseClient();
+  if (!sb) { redirectToLogin('Cannot connect to backend.'); return; }
+
+  let { data } = await sb.auth.getSession();
+  let session = data && data.session;
+  const h = window.location.hash || '';
+  const q = window.location.search || '';
+  if (!session && (h.indexOf('access_token') !== -1 || q.indexOf('code=') !== -1)) {
+    await new Promise(function(r) { setTimeout(r, 300); });
+    const again = await sb.auth.getSession();
+    session = again.data && again.data.session;
+    if (session) window.history.replaceState('', document.title, window.location.pathname);
+  }
+  if (!session) { redirectToLogin(); return; }
+
+  currentUser = session.user;
+  document.getElementById('authGuard').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+
+  loadUserData(currentUser);
+  buildVoiceFeed();
+}
+
+function redirectToLogin(msg) {
+  if (msg) alert(msg);
+  window.location.href = '../index.html';
+}
+
+function loadUserData(user) {
+  const meta = user.user_metadata || {};
+  const email = user.email || '';
+  const displayName = meta.full_name || meta.display_name || email.split('@')[0] || 'Whisper User';
+  const handle = meta.display_name || ('@' + displayName.toLowerCase().replace(/\s+/g,''));
+  const bio = meta.bio || 'Sharing thoughts through voice. 🎙️';
+  const initial = (displayName.replace(/^@+/,'').charAt(0) || 'U').toUpperCase();
+
+  document.getElementById('profileAvatarLetter').textContent = initial;
+  document.getElementById('navAvatar').textContent = initial;
+  document.getElementById('profileDisplayName').textContent = displayName;
+  document.getElementById('profileHandle').textContent = handle.startsWith('@') ? handle : '@' + handle;
+  document.getElementById('profileBio').textContent = bio;
+
+  // pre-fill edit modal
+  document.getElementById('editDisplayName').value = displayName;
+  document.getElementById('editHandle').value = handle;
+  document.getElementById('editBio').value = bio;
+}
+
+function buildVoiceFeed() {
+  const feed = document.getElementById('voiceFeed');
+  feed.innerHTML = '';
+  const user = currentUser;
+  const meta = user && user.user_metadata || {};
+  const displayName = anonMode ? 'Anonymous Voice' : (meta.full_name || meta.display_name || (user && user.email && user.email.split('@')[0]) || 'You');
+  const initial = anonMode ? '🫧' : (displayName.replace(/^@+/,'').charAt(0) || 'U').toUpperCase();
+  const avatarBg = anonMode ? 'rgba(28,26,24,0.12)' : 'linear-gradient(135deg,#D4607A,#C9853A)';
+
+  DEMO_POSTS.forEach((p, idx) => {
+    p.letter = initial;
+    p.name = displayName;
+    p.bg = avatarBg;
+
+    const card = document.createElement('div');
+    card.className = 'p-voice-card';
+    card.style.animationDelay = (idx * 0.08) + 's';
+
+    const waveId = 'pw-' + p.id;
+    const fillId = 'pf-' + p.id;
+    const playId = 'pp-' + p.id;
+
+    card.innerHTML = `
+      <div class="p-vc-header">
+        <div class="p-vc-av" style="background:${p.bg};font-size:${anonMode ? '1rem' : '0.88rem'}">${p.letter}</div>
+        <div class="p-vc-info">
+          <div class="p-vc-name">${p.name} <span class="p-vc-mood">${p.mood}</span></div>
+          <div class="p-vc-time">${p.time}</div>
+        </div>
+      </div>
+      <div class="p-vc-wave" id="${waveId}"></div>
+      <div class="p-vc-controls">
+        <button class="p-vc-play" id="${playId}" onclick="togglePost(${p.id}, event)">▶</button>
+        <div class="p-vc-bar-track"><div class="p-vc-bar-fill" id="${fillId}"></div></div>
+        <span class="p-vc-dur" id="pd-${p.id}">${p.dur}</span>
+      </div>
+      <div class="p-vc-actions">
+        <button class="p-vc-act-btn" id="like-${p.id}" onclick="toggleLike(${p.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <span id="lc-${p.id}">${p.likes}</span>
+        </button>
+        <button class="p-vc-act-btn" onclick="pToast('💬 Reply feature coming soon!')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Reply
+        </button>
+        <button class="p-vc-act-btn" onclick="pToast('📤 Share feature coming soon!')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share
+        </button>
+      </div>
+    `;
+    feed.appendChild(card);
+
+    // build wave bars
+    const waveEl = card.querySelector('#' + waveId);
+    p.waves.forEach((h, i) => {
+      const b = document.createElement('div');
+      b.className = 'p-vc-bar';
+      b.style.height = h + 'px';
+      b.style.setProperty('--dur', (1.1 + Math.random() * 0.8) + 's');
+      b.style.setProperty('--del', (i * 0.06) + 's');
+      waveEl.appendChild(b);
+    });
+  });
+
+  document.getElementById('statPosts').textContent = DEMO_POSTS.length;
+}
+
+let profileAudio = null;
+let profilePlayingId = null;
+function formatProfileTime(sec) {
+  if (!isFinite(sec) || sec < 0) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+function togglePost(id, e) {
+  if (e) e.stopPropagation();
+  const post = DEMO_POSTS.find(p => p.id === id);
+  if (!post || !post.audio) return;
+  const btn = document.getElementById('pp-' + id);
+  const fill = document.getElementById('pf-' + id);
+  const durEl = document.getElementById('pd-' + id);
+  if (profilePlayingId === id && profileAudio) {
+    profileAudio.pause();
+    profileAudio.currentTime = 0;
+    profileAudio = null;
+    profilePlayingId = null;
+    if (btn) btn.textContent = '▶';
+    if (fill) fill.style.width = '0%';
+    if (durEl) durEl.textContent = post.dur;
+    return;
+  }
+  if (profileAudio) {
+    profileAudio.pause();
+    profileAudio.currentTime = 0;
+    const prev = DEMO_POSTS.find(p => p.id === profilePlayingId);
+    const prevBtn = document.getElementById('pp-' + profilePlayingId);
+    const prevFill = document.getElementById('pf-' + profilePlayingId);
+    const prevDur = document.getElementById('pd-' + profilePlayingId);
+    if (prevBtn) prevBtn.textContent = '▶';
+    if (prevFill) prevFill.style.width = '0%';
+    if (prevDur && prev) prevDur.textContent = prev.dur;
+  }
+  profilePlayingId = id;
+  profileAudio = new Audio(new URL(PROFILE_AUDIO_BASE + post.audio, window.location.href).href);
+  if (btn) btn.textContent = '⏸';
+  function upd() {
+    if (!profileAudio) return;
+    const cur = profileAudio.currentTime;
+    const tot = profileAudio.duration;
+    const pct = isFinite(tot) && tot > 0 ? (cur / tot) * 100 : 0;
+    if (fill) fill.style.width = pct + '%';
+    if (durEl) durEl.textContent = isFinite(tot) && tot > 0 ? formatProfileTime(cur) + ' / ' + formatProfileTime(tot) : formatProfileTime(cur);
+  }
+  profileAudio.addEventListener('timeupdate', upd);
+  profileAudio.addEventListener('loadedmetadata', upd);
+  profileAudio.addEventListener('ended', () => {
+    profileAudio = null;
+    profilePlayingId = null;
+    if (btn) btn.textContent = '▶';
+    if (fill) fill.style.width = '0%';
+    if (durEl) durEl.textContent = post.dur;
+  });
+  profileAudio.addEventListener('error', () => {
+    profileAudio = null;
+    profilePlayingId = null;
+    if (btn) btn.textContent = '▶';
+    if (fill) fill.style.width = '0%';
+    if (durEl) durEl.textContent = post.dur;
+  });
+  profileAudio.play().catch(() => {
+    profileAudio = null;
+    profilePlayingId = null;
+    if (btn) btn.textContent = '▶';
+    if (fill) fill.style.width = '0%';
+    if (durEl) durEl.textContent = post.dur;
+  });
+  upd();
+}
+
+const liked = new Set();
+function toggleLike(id) {
+  const btn = document.getElementById('like-' + id);
+  const cnt = document.getElementById('lc-' + id);
+  const post = DEMO_POSTS.find(p => p.id === id);
+  if (liked.has(id)) {
+    liked.delete(id);
+    btn.classList.remove('liked');
+    if (post) { post.likes--; cnt.textContent = post.likes; }
+  } else {
+    liked.add(id);
+    btn.classList.add('liked');
+    btn.style.transform = 'scale(1.3)';
+    setTimeout(() => btn.style.transform = '', 200);
+    if (post) { post.likes++; cnt.textContent = post.likes; }
+  }
+}
+
+function onAnonToggle(el) {
+  anonMode = el.checked;
+  pToast(anonMode ? '🫧 Posting as Anonymous' : '👤 Posting as yourself');
+  buildVoiceFeed();
+}
+
+// Edit Modal
+function openEditModal() {
+  document.getElementById('editModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleModalOutside(e) {
+  if (e.target === document.getElementById('editModal')) closeEditModal();
+}
+
+async function saveProfile() {
+  if (!sb || !currentUser) return;
+  const displayName = document.getElementById('editDisplayName').value.trim();
+  const handle = document.getElementById('editHandle').value.trim();
+  const bio = document.getElementById('editBio').value.trim();
+
+  const btn = document.querySelector('.p-modal-save');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
+  const { error } = await sb.auth.updateUser({ data: { full_name: displayName, display_name: handle, bio: bio } });
+  btn.textContent = 'Save Changes'; btn.disabled = false;
+
+  if (error) { pToast('❌ ' + error.message); return; }
+
+  // update UI
+  currentUser.user_metadata = { ...(currentUser.user_metadata || {}), full_name: displayName, display_name: handle, bio: bio };
+  loadUserData(currentUser);
+  buildVoiceFeed();
+  closeEditModal();
+  pToast('✅ Profile updated!');
+}
+
+// Settings panel link
+function openSettings() {
+  const settingsSection = document.querySelector('.p-section:last-child');
+  if (settingsSection) settingsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Share profile
+function shareProfile() {
+  if (navigator.share) {
+    navigator.share({ title: 'WhisperMe Profile', url: window.location.href }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => pToast('🔗 Profile link copied!')).catch(() => pToast('🔗 ' + window.location.href));
+  }
+}
+
+// Logout
+async function handleLogout() {
+  if (!sb) { window.location.href = '../index.html'; return; }
+  await sb.auth.signOut();
+  window.location.href = '../index.html';
+}
+
+// Toast
+let toastTimer;
+function pToast(msg) {
+  const el = document.getElementById('pToastEl');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Nav scroll style
+window.addEventListener('scroll', () => {
+  document.querySelector('.p-nav').style.background = window.scrollY > 30
+    ? 'rgba(252,250,246,0.96)' : 'rgba(252,250,246,0.85)';
+});
+
+// ESC closes edit modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('editModal')?.classList.contains('open')) closeEditModal();
+});
+
+// Init
+init();
+</script>
+</body>
+</html>

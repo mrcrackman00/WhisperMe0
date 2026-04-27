@@ -1,0 +1,11 @@
+# Render Blueprint — WhisperMe Backend
+# Deploy whisper-backend as the API service
+services:
+  - type: web
+    name: whisperme0
+    rootDir: whisper-backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production

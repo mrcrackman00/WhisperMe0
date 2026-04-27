@@ -1,0 +1,198 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --cream: #FAF7F2;
+  --warm: #F5EFE4;
+  --petal: #F2C4CE;
+  --rose: #D4607A;
+  --coral: #E8846A;
+  --amber: #C9853A;
+  --sage: #7A9E87;
+  --charcoal: #1C1A18;
+  --ink: #2D2B28;
+  --mist: #8C8880;
+  --border: rgba(28, 26, 24, 0.1);
+  --shadow: rgba(28, 26, 24, 0.08);
+  --violet: #8B5CF6;
+  --sky: #60A5FA;
+  /* Motion — shared smooth easing (landing + modals) */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  /* Stops grey flash on tap (iOS/Android) */
+  -webkit-tap-highlight-color: transparent;
+}
+html.mobile-perf {
+  scroll-behavior: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .page {
+    animation: none !important;
+  }
+}
+
+body {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+  cursor: auto;
+}
+
+/* Custom cursor — disabled, using normal browser cursor */
+.cursor,
+.cursor-ring {
+  display: none !important;
+}
+
+/* ── Performance: pause non-critical animations when off-screen ── */
+.perf-lite [class*="orb"],
+.perf-lite [class*="blob"],
+.perf-lite .sp-bubble {
+  animation-duration: 60s !important;
+}
+
+/* ── During scroll: reduce animations for smoother feel ── */
+.scroll-active [class*="orb"],
+.scroll-active [class*="blob"],
+.scroll-active .sp-bubble,
+.scroll-active [class*="marquee"],
+.scroll-active .hg-blob {
+  animation-play-state: paused !important;
+}
+
+/* ── Mobile perf: Instagram/Snapchat-level smoothness ── */
+.mobile-perf #hero-v11 {
+  animation: none !important;
+  background-position: 50% 50% !important;
+}
+.mobile-perf .hg-blob {
+  filter: none !important;
+  animation: none !important;
+  opacity: 0.85;
+}
+.mobile-perf .hg-noise {
+  animation: none !important;
+}
+.mobile-perf [class*="marquee"],
+.mobile-perf [class*="Marquee"],
+.mobile-perf .h11-usp-inner,
+.mobile-perf .sp-bubble {
+  animation-play-state: paused !important;
+}
+.mobile-perf .wv-bar,
+.mobile-perf .hero-wv-bar,
+.mobile-perf .hw-bar,
+.mobile-perf .tw-bar {
+  animation: none !important;
+}
+
+/* ── Mobile: no “blank screen then fade-in” (heroFadeUp + scroll-reveal) ── */
+html.mobile-perf .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+html.mobile-perf #hero-v11 .hero-badge,
+html.mobile-perf #hero-v11 .hero-headline,
+html.mobile-perf #hero-v11 .hero-sub,
+html.mobile-perf #hero-v11 .hero-cta-row,
+html.mobile-perf #hero-v11 .hero-proof-row,
+html.mobile-perf #hero-v11 .hero-signin-link,
+html.mobile-perf #hero-v11 .hero-scroll-hint,
+html.mobile-perf #hero-v11 .hero-vcard,
+html.mobile-perf .hero-mobile-whispers,
+html.mobile-perf .hero-mobile-voicenote {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/*
+  Landing hero: phones struggle with 3D scene + large backdrop-filter + animated blur.
+  Strip the expensive bits on narrow viewports (same targets as html.mobile-perf).
+*/
+/* Match hero.css @media (max-width: 860px) where mobile whispers + 3D still paint */
+@media (max-width: 860px) {
+  #hero-v11 .hero-3d-scene {
+    display: none !important;
+  }
+
+  #hero-v11 .hero-v11-backdrop::after {
+    opacity: 0.02 !important;
+  }
+
+  #hero-v11 .hmw-shell {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  #hero-v11 .hmw-shell::after {
+    animation: none !important;
+    opacity: 0.35 !important;
+    filter: blur(16px) !important;
+  }
+
+  #hero-v11 .hmw-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    will-change: auto !important;
+    filter: none !important;
+  }
+
+  #hero-v11 {
+    contain: layout style;
+  }
+}
+
+html.mobile-perf #hero-v11 .hero-3d-scene {
+  display: none !important;
+}
+
+html.mobile-perf #hero-v11 .hmw-shell,
+html.mobile-perf #hero-v11 .hmw-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.mobile-perf #hero-v11 .hmw-card {
+  animation: none !important;
+  will-change: auto !important;
+  filter: none !important;
+}
+
+html.mobile-perf #hero-v11 .hmw-shell::after {
+  animation: none !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--warm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--petal);
+  border-radius: 4px;
+}
