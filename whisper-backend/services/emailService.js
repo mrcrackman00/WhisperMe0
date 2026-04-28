@@ -271,6 +271,97 @@ async function sendPasswordResetEmailAny(to, resetLink) {
   return { ok: false, error: 'Email not configured. Set RESEND_API_KEY or GMAIL_USER+GMAIL_APP_PASSWORD.' };
 }
 
+/** Plain-text fallback for the launch announcement (deliverability + accessibility). */
+const ANNOUNCEMENT_TEXT = (name) => `June 20. Then everything sounds different.
+
+Hi ${name || 'there'},
+
+For years, social has gotten louder. We're building it quieter — on purpose.
+
+WhisperMe is the first social platform built around your voice. Not your face. Not your metrics. Not your performance. Just the way you actually sound when you stop performing.
+
+EARLY ACCESS OPENS — JUNE 20
+Save the date. Your invite arrives that morning.
+
+What we've built:
+
+01 / Voice posts
+Up to 60 seconds. No filters, no faces, no performance theatre. Your real voice — louder than any caption.
+
+02 / Mood as language
+Tag every post with what you actually felt. Find the people feeling the same thing — right now.
+
+03 / Quiet by design
+No infinite scroll. No likes-as-numbers. No notification storms. Just the moments that matter, at the volume you set.
+
+"Some thoughts deserve a voice, not a caption."
+
+What's next:
+JUN 20 — Early access opens for waitlist members
+JUL    — iOS app rollout
+LATER  — A few things we're not ready to spoil today
+
+You were among the first to believe this was possible.
+On June 20, we'll prove it.
+
+— The WhisperMe team
+
+whisperme.co — Slow social, by design.
+Instagram: https://www.instagram.com/whisperme.co
+X (Twitter): https://x.com/buildwhisper
+
+You're receiving this because you joined the WhisperMe waitlist at whisperme.co.
+If this landed in spam, mark as "Not spam" so future emails reach your inbox.`;
+
+/**
+ * Send the launch-announcement email (Apple-keynote style) to a single recipient.
+ * Uses Resend (HTTPS API). Returns { ok, id?, via?, error? }.
+ */
+async function sendLaunchAnnouncement(to, name) {
+  const subject = 'June 20. Then everything sounds different.';
+  const safeName = escapeHtml(firstName(name) || 'there').slice(0, 60);
+  const assetBase = (process.env.EMAIL_ASSET_BASE || 'https://whisperme.co/assets/email').replace(/\/$/, '');
+  const tpl = loadTemplate('launch-announcement.html');
+  const html = tpl
+    ? renderTemplate(tpl, { NAME: safeName, ASSET_BASE: assetBase })
+    : `<h1>WhisperMe opens June 20.</h1><p>Hi ${safeName},</p><p>Three weeks. Then everything sounds different.</p>`;
+  const text = ANNOUNCEMENT_TEXT(firstName(name));
+
+  const apiKey = (process.env.RESEND_API_KEY || '').trim();
+  const resendKeyOk = apiKey && apiKey !== 're_...' && apiKey.length > 8;
+  if (resendKeyOk) {
+    try {
+      const { Resend } = require('resend');
+      const resend = new Resend(apiKey);
+      const from = process.env.FROM_EMAIL || 'WhisperMe <onboarding@resend.dev>';
+      const { data, error } = await resend.emails.send({ from, to, subject, html, text });
+      if (!error) return { ok: true, id: data?.id, via: 'resend' };
+      const msg = error.message || String(error);
+      console.warn('[announcement] Resend failed for', to, '-', msg);
+      return { ok: false, error: msg };
+    } catch (err) {
+      const msg = err.message || String(err);
+      console.warn('[announcement] Resend error for', to, '-', msg);
+      return { ok: false, error: msg };
+    }
+  }
+
+  if (transporter) {
+    const r = await sendMail(to, subject, html, text);
+    return { ...r, via: r.ok ? 'gmail' : r.via };
+  }
+
+  return { ok: false, error: 'Email not configured. Set RESEND_API_KEY in whisper-backend/.env.' };
+}
+
+/** "Avinash Saini" -> "Avinash"; null/empty -> ''. */
+function firstName(name) {
+  if (!name) return '';
+  const trimmed = String(name).trim();
+  if (!trimmed) return '';
+  return trimmed.split(/\s+/)[0].slice(0, 40);
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendWaitlistConfirmation,
@@ -278,4 +369,5 @@ module.exports = {
   sendVerificationEmailViaResend,
   sendPasswordResetEmail,
   sendPasswordResetEmailAny,
+  sendLaunchAnnouncement,
 };

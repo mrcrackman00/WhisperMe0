@@ -98,22 +98,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Visit /preview/waitlist-email?name=Avinash to see the email design with the local logo.
 if (process.env.NODE_ENV !== 'production') {
   const fs = require('fs');
-  app.get('/preview/waitlist-email', (req, res) => {
-    try {
-      const tplPath = path.join(__dirname, '..', 'email-templates', 'waitlist-confirmation.html');
-      const tpl = fs.readFileSync(tplPath, 'utf8');
-      const name = String(req.query.name || 'Avinash').slice(0, 60)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      const assetBase = `${req.protocol}://${req.get('host')}/email`;
-      const html = tpl
-        .replace(/\{\{NAME\}\}/g, name)
-        .replace(/\{\{ASSET_BASE\}\}/g, assetBase);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    } catch (err) {
-      res.status(500).send('Preview error: ' + err.message);
-    }
-  });
+  function renderEmailPreview(file) {
+    return (req, res) => {
+      try {
+        const tplPath = path.join(__dirname, '..', 'email-templates', file);
+        const tpl = fs.readFileSync(tplPath, 'utf8');
+        const rawName = String(req.query.name || 'Avinash').slice(0, 60);
+        const name = rawName.split(/\s+/)[0]
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const assetBase = `${req.protocol}://${req.get('host')}/email`;
+        const html = tpl
+          .replace(/\{\{NAME\}\}/g, name)
+          .replace(/\{\{ASSET_BASE\}\}/g, assetBase);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.send(html);
+      } catch (err) {
+        res.status(500).send('Preview error: ' + err.message);
+      }
+    };
+  }
+  app.get('/preview/waitlist-email', renderEmailPreview('waitlist-confirmation.html'));
+  app.get('/preview/launch-announcement', renderEmailPreview('launch-announcement.html'));
 }
 
 // ——— Landing (optional) ———

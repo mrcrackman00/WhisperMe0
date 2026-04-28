@@ -23,3 +23,6 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Local script state (skip-log for bulk send)
+whisper-backend/scripts/.announcement-sent.log
