@@ -2328,9 +2328,12 @@ function wmLoadRecaptchaScript(siteKey) {
 }
 
 async function wmWaitRecaptchaSiteKey(maxWaitMs) {
-  var deadline = Date.now() + (maxWaitMs || 8000);
   var k = (window.RECAPTCHA_SITE_KEY || window.__RECAPTCHA_SITE_KEY__ || '').trim();
   if (k) return k;
+  // Local dev: backend skips reCAPTCHA when secret isn't set, so don't stall the UI waiting for a key that will never arrive.
+  var isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (isLocalHost) return '';
+  var deadline = Date.now() + (maxWaitMs || 4000);
   while (Date.now() < deadline) {
     await new Promise(function (r) { setTimeout(r, 80); });
     k = (window.RECAPTCHA_SITE_KEY || window.__RECAPTCHA_SITE_KEY__ || '').trim();
@@ -2340,7 +2343,7 @@ async function wmWaitRecaptchaSiteKey(maxWaitMs) {
 }
 
 async function wmGetWaitlistRecaptchaToken() {
-  var siteKey = await wmWaitRecaptchaSiteKey(8000);
+  var siteKey = await wmWaitRecaptchaSiteKey(4000);
   if (!siteKey) return '';
   try {
     await wmLoadRecaptchaScript(siteKey);

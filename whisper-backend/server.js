@@ -94,6 +94,28 @@ app.head('/api/health', (req, res) => res.status(200).end());
 // ——— Static files ———
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ——— Email preview (dev only — render the waitlist HTML in a browser) ———
+// Visit /preview/waitlist-email?name=Avinash to see the email design with the local logo.
+if (process.env.NODE_ENV !== 'production') {
+  const fs = require('fs');
+  app.get('/preview/waitlist-email', (req, res) => {
+    try {
+      const tplPath = path.join(__dirname, '..', 'email-templates', 'waitlist-confirmation.html');
+      const tpl = fs.readFileSync(tplPath, 'utf8');
+      const name = String(req.query.name || 'Avinash').slice(0, 60)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const assetBase = `${req.protocol}://${req.get('host')}/email`;
+      const html = tpl
+        .replace(/\{\{NAME\}\}/g, name)
+        .replace(/\{\{ASSET_BASE\}\}/g, assetBase);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(html);
+    } catch (err) {
+      res.status(500).send('Preview error: ' + err.message);
+    }
+  });
+}
+
 // ——— Landing (optional) ———
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'landing.html'));

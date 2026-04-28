@@ -3,7 +3,37 @@
  * Setup: Enable 2FA on your Google account, then create an App Password
  * at https://myaccount.google.com/apppasswords
  */
+const fs = require('fs');
+const path = require('path');
 const nodemailer = require('nodemailer');
+
+const TEMPLATES_DIR = path.join(__dirname, '..', '..', 'email-templates');
+const _templateCache = new Map();
+function loadTemplate(name) {
+  if (_templateCache.has(name)) return _templateCache.get(name);
+  try {
+    const html = fs.readFileSync(path.join(TEMPLATES_DIR, name), 'utf8');
+    _templateCache.set(name, html);
+    return html;
+  } catch (err) {
+    console.warn('[email] template missing:', name, err.message);
+    return null;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderTemplate(html, vars) {
+  if (!html) return '';
+  return html.replace(/\{\{(\w+)\}\}/g, (m, k) => (vars && vars[k] != null ? String(vars[k]) : ''));
+}
 
 const gmailUser = process.env.GMAIL_USER;
 const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
@@ -20,7 +50,7 @@ if (gmailUser && gmailAppPassword) {
   });
 }
 
-async function sendMail(to, subject, html) {
+async function sendMail(to, subject, html, text) {
   if (!transporter) {
     console.warn('Email not configured; skipping email to', to);
     return { ok: false, skipped: true };
@@ -31,6 +61,7 @@ async function sendMail(to, subject, html) {
       to,
       subject,
       html,
+      ...(text ? { text } : {}),
     });
     return { ok: true, id: info.messageId };
   } catch (error) {
@@ -48,13 +79,84 @@ async function sendWelcomeEmail(to, displayName = 'there') {
   `);
 }
 
+/** Plain-text fallback for clients that don't render HTML (better deliverability + accessibility). */
+const WAITLIST_TEXT = (name) => `You're in.
+The wait begins.
+
+Hi ${name || 'there'},
+
+Thank you for joining the WhisperMe waitlist. You're one of the early few who believe a softer, more intentional kind of social is possible.
+
+EARLY ACCESS OPENS — JUNE 20
+Save the date. Your invite arrives that morning.
+
+What's coming:
+1. Voice posts — speak instead of type. Your real voice, your real self.
+2. Mood tagging — say how you feel without saying a word.
+3. Intentional community — slow social, by design.
+
+What happens next:
+· On June 20, you'll receive your early-access link.
+· Until then — no spam, no noise. Just one quiet update if there's something worth sharing.
+· You can reply to this email any time. We read every word.
+
+See you on launch day,
+— The WhisperMe team
+
+whisperme.co — Slow social, by design.
+Instagram: https://www.instagram.com/whisperme.co
+X (Twitter): https://x.com/buildwhisper
+
+If this landed in spam, mark as "Not spam" so future emails reach your inbox.
+You're receiving this because you signed up at whisperme.co.`;
+
+/**
+ * Send waitlist confirmation. Tries Resend first (HTTPS API ~200ms),
+ * then Gmail SMTP fallback. Returns { ok, id?, via?, error?, skipped? }.
+ */
 async function sendWaitlistConfirmation(to, name) {
-  return sendMail(to, "You're on the WhisperMe waitlist", `
-    <h1>You're in!</h1>
-    <p>Hi ${name || 'there'},</p>
-    <p>You're on the list. We'll notify you when WhisperMe launches.</p>
-    <p>— The WhisperMe team</p>
-  `);
+  const subject = "You're in — WhisperMe early access opens June 20";
+  const safeName = escapeHtml(name || 'there').slice(0, 60);
+  const assetBase = (process.env.EMAIL_ASSET_BASE || 'https://whisperme.co/assets/email').replace(/\/$/, '');
+  const tpl = loadTemplate('waitlist-confirmation.html');
+  const html = tpl
+    ? renderTemplate(tpl, { NAME: safeName, ASSET_BASE: assetBase })
+    : `<h1>You're in!</h1><p>Hi ${safeName}, you're on the WhisperMe waitlist. Early access opens June 20.</p>`;
+  const text = WAITLIST_TEXT(name || 'there');
+
+  const apiKey = (process.env.RESEND_API_KEY || '').trim();
+  // Treat the placeholder "re_..." in .env.example as unset so we don't 401-loop.
+  const resendKeyOk = apiKey && apiKey !== 're_...' && apiKey.length > 8;
+
+  let resendError = null;
+  if (resendKeyOk) {
+    try {
+      const { Resend } = require('resend');
+      const resend = new Resend(apiKey);
+      const from = process.env.FROM_EMAIL || 'WhisperMe <onboarding@resend.dev>';
+      const { data, error } = await resend.emails.send({ from, to, subject, html, text });
+      if (!error) return { ok: true, id: data?.id, via: 'resend' };
+      resendError = error.message || String(error);
+      const sandbox = /only send testing emails|verify a domain/i.test(resendError);
+      console.warn('[waitlist email] Resend failed:', resendError);
+      if (sandbox) {
+        console.warn('[waitlist email] Resend is in sandbox mode. Verify a domain at https://resend.com/domains and set FROM_EMAIL=WhisperMe <hello@yourdomain.com> to send to anyone.');
+      }
+    } catch (err) {
+      resendError = err.message || String(err);
+      console.warn('[waitlist email] Resend error:', resendError);
+    }
+  }
+
+  if (transporter) {
+    const r = await sendMail(to, subject, html, text);
+    return { ...r, via: r.ok ? 'gmail' : r.via };
+  }
+
+  if (!resendError) {
+    console.warn('[waitlist email] No email backend configured. Set RESEND_API_KEY (recommended) or GMAIL_USER + GMAIL_APP_PASSWORD in whisper-backend/.env so confirmation emails actually send.');
+  }
+  return { ok: false, skipped: !resendError, error: resendError || 'Email not configured' };
 }
 
 const VERIFICATION_HTML = (verificationLink) => `

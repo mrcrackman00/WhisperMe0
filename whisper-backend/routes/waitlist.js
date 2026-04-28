@@ -108,16 +108,23 @@ router.post('/', waitlistLimiter, [
       return sendJson(500, { error: 'Could not join waitlist. Try again later.' });
     }
 
-    try {
-      await trackEvent(EVENTS.WAITLIST_JOIN, null, { email, mood });
-    } catch (trackErr) {
-      console.error('[waitlist] trackEvent error:', trackErr);
-    }
-    try {
-      await sendWaitlistConfirmation(email, name || 'there');
-    } catch (mailErr) {
-      console.error('[waitlist] sendWaitlistConfirmation error:', mailErr);
-    }
+    // Respond first; analytics + email run in the background so the user sees instant success
+    // (Gmail SMTP / Resend can take 1–5s and shouldn't block the UI).
+    setImmediate(() => {
+      Promise.resolve()
+        .then(() => trackEvent(EVENTS.WAITLIST_JOIN, null, { email, mood }))
+        .catch((trackErr) => console.error('[waitlist] trackEvent error:', trackErr));
+      Promise.resolve()
+        .then(() => sendWaitlistConfirmation(email, name || 'there'))
+        .then((result) => {
+          if (result && result.ok) {
+            console.log('[waitlist] confirmation email sent to', email, 'via', result.via || 'unknown', 'id=', result.id || '');
+          } else {
+            console.warn('[waitlist] confirmation email NOT sent to', email, '-', (result && (result.error || (result.skipped ? 'email not configured' : 'unknown'))) || 'no result');
+          }
+        })
+        .catch((mailErr) => console.error('[waitlist] sendWaitlistConfirmation error:', mailErr));
+    });
 
     return sendJson(201, { success: true, message: "You're on the list! We'll notify you when WhisperMe launches." });
   } catch (err) {
