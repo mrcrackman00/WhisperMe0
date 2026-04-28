@@ -101,7 +101,7 @@ if (process.env.NODE_ENV !== 'production') {
   function renderEmailPreview(file) {
     return (req, res) => {
       try {
-        const tplPath = path.join(__dirname, '..', 'email-templates', file);
+        const tplPath = path.join(__dirname, 'email-templates', file);
         const tpl = fs.readFileSync(tplPath, 'utf8');
         const rawName = String(req.query.name || 'Avinash').slice(0, 60);
         const name = rawName.split(/\s+/)[0]

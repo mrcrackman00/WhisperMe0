@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 
-const TEMPLATES_DIR = path.join(__dirname, '..', '..', 'email-templates');
+const TEMPLATES_DIR = path.join(__dirname, '..', 'email-templates');
 const _templateCache = new Map();
 function loadTemplate(name) {
   if (_templateCache.has(name)) return _templateCache.get(name);
