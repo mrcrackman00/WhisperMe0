@@ -11,4 +11,4 @@ Media Contact:
 press@whisperme.app
 
 Included Assets:
-- logo-mark.svg
+- logo-mark.png

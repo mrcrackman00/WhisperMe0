@@ -59,7 +59,37 @@ const server = http.createServer((req, res) => {
   }
 
   if (reqPath === '/') reqPath = '/index.html';
-  if (reqPath === '/blog-article' || reqPath === '/blog') reqPath = reqPath === '/blog-article' ? '/blog-article.html' : '/blog.html';
+
+  const pageRoutes = new Set([
+    'about',
+    'accessibility',
+    'blog',
+    'blog-article',
+    'careers',
+    'cookies',
+    'press',
+    'privacy',
+    'profile',
+    'terms',
+  ]);
+
+  const cleanRoute = reqPath.replace(/^\/+/, '').replace(/\/$/, '').replace(/\.html$/, '');
+  if (pageRoutes.has(cleanRoute)) {
+    reqPath = `/pages/${cleanRoute}.html`;
+  }
+
+  const homeRoutes = new Set([
+    'app',
+    'community',
+    'features',
+    'how-it-works',
+    'join-beta',
+    'stories',
+  ]);
+
+  if (homeRoutes.has(cleanRoute)) {
+    reqPath = '/index.html';
+  }
 
   const filePath = path.resolve(path.join(base, reqPath));
 

@@ -1051,7 +1051,19 @@ footer button {
   font-weight: 700;
   color: var(--cream);
   margin-bottom: 16px;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-brand .f-logo::before {
+  content: '';
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #0f1320 url('../assets/logo-mark.png?v=20260511') center/cover no-repeat;
+  box-shadow: 0 0 18px rgba(116, 255, 240, 0.22);
+  flex-shrink: 0;
 }
 
 .footer-brand .f-tagline {

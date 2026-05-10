@@ -915,7 +915,7 @@ function onDOMReady() {
   try {
     const navLogoImg = document.querySelector('.nav-logo-mark img');
     if (navLogoImg && navLogoImg.src && navLogoImg.src.startsWith('data:image/')) {
-      navLogoImg.src = 'assets/logo-mark.svg';
+      navLogoImg.src = 'assets/logo-mark.png?v=20260511';
     }
     var apvFeed = document.getElementById('apvFeedScroll');
     if (document.getElementById('page-app-preview') && apvFeed && !apvFeed.dataset.built) {

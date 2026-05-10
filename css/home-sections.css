@@ -1805,4 +1805,70 @@
   .sp-proof-stats { flex-wrap: wrap; }
   .sp-proof-divider { display: none; }
   .sp-proof-stat { min-width: 45%; }
+
+  #join-beta {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+
+  .h11-form-card {
+    width: min(100%, 290px);
+    margin: 0 auto;
+    padding: 22px 18px 20px;
+    border-radius: 20px;
+    box-shadow: 0 18px 46px rgba(28, 26, 24, 0.075);
+  }
+
+  .h11-form-title {
+    font-size: 1.18rem;
+    margin-bottom: 5px;
+  }
+
+  .h11-form-sub {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    margin-bottom: 14px;
+    max-width: 200px;
+  }
+
+  .h11-form-field {
+    margin-bottom: 8px;
+  }
+
+  .h11-form-input {
+    min-height: 38px;
+    padding: 9px 12px;
+    border-radius: 11px;
+    font-size: 0.8rem;
+  }
+
+  .h11-form-label {
+    font-size: 0.6rem;
+    margin: 3px 0 7px;
+  }
+
+  .h11-mood-row {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .h11-mood-chip {
+    padding: 6px 10px;
+    font-size: 0.64rem;
+  }
+
+  .h11-submit-btn {
+    min-height: 40px;
+    padding: 10px 14px;
+    border-radius: 11px;
+    font-size: 0.82rem;
+    margin-top: 0;
+  }
+
+  .h11-form-note {
+    max-width: 200px;
+    margin: 10px auto 0;
+    font-size: 0.6rem;
+    line-height: 1.3;
+  }
 }
