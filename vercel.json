@@ -14,6 +14,12 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "whisper-me.vercel.app" }],
+      "destination": "https://www.whisperme.co/:path*",
+      "permanent": true
+    },
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/pages/about.html", "destination": "/about", "permanent": true },
     { "source": "/pages/blog.html", "destination": "/blog", "permanent": true },

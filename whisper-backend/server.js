@@ -94,6 +94,10 @@ app.head('/api/health', (req, res) => res.status(200).end());
 // ——— Static files ———
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/sitemap.xml', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'sitemap.xml'));
+});
+
 // ——— Email preview (dev only — render the waitlist HTML in a browser) ———
 // Visit /preview/waitlist-email?name=Avinash to see the email design with the local logo.
 if (process.env.NODE_ENV !== 'production') {
