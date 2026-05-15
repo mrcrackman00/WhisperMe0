@@ -92,6 +92,7 @@ app.get('/api/health', healthOk);
 app.head('/api/health', (req, res) => res.status(200).end());
 
 // ——— Static files ———
+app.use(express.static(path.join(__dirname, '..')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/sitemap.xml', (req, res) => {
