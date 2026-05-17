@@ -16,7 +16,7 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "whisper-me.vercel.app" }],
+      "has": [{ "type": "host", "value": "(.*)\\.vercel\\.app" }],
       "destination": "https://www.whisperme.co/:path*",
       "permanent": true
     },
