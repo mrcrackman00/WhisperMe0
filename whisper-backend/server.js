@@ -131,10 +131,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'landing.html'));
 });
 
-app.get('/avinash', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'avinash.html'));
-});
-
 app.get('/blog/avinash', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'pages', 'avinash-blog.html'));
 });

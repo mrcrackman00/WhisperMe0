@@ -20,6 +20,7 @@
       "destination": "https://www.whisperme.co/:path*",
       "permanent": true
     },
+    { "source": "/avinash", "destination": "/blog/avinash", "permanent": false },
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/pages/about.html", "destination": "/about", "permanent": true },
     { "source": "/pages/blog.html", "destination": "/blog", "permanent": true },
@@ -48,7 +49,6 @@
     { "source": "/blog", "destination": "/pages/blog.html" },
     { "source": "/blog/avinash", "destination": "/pages/avinash-blog.html" },
     { "source": "/blog-article", "destination": "/pages/blog-article.html" },
-    { "source": "/avinash", "destination": "/avinash.html" },
     { "source": "/careers", "destination": "/pages/careers.html" },
     { "source": "/press", "destination": "/pages/press.html" },
     { "source": "/privacy", "destination": "/pages/privacy.html" },
