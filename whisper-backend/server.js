@@ -115,6 +115,9 @@ function issueCsrfToken(req, res) {
 
 function requireCsrf(req, res, next) {
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+  // The waitlist is a public, unauthenticated marketing form. It keeps Origin
+  // validation, reCAPTCHA, honeypot, validation, and strict IP rate limits.
+  if (req.method === 'POST' && /^\/waitlist\/?$/.test(req.path || '')) return next();
   const cookies = parseCookies(req);
   const cookieToken = cookies[CSRF_COOKIE];
   const headerToken = req.headers['x-csrf-token'];
