@@ -61,12 +61,20 @@
       mode: 'cors',
     })
       .then(function(r) { return r.ok ? r.json() : {}; })
-      .then(function(d) { return d.csrfToken || ''; })
+      .then(function(d) {
+        var token = d.csrfToken || '';
+        if (!token) csrfTokenPromise = null;
+        return token;
+      })
       .catch(function() {
         csrfTokenPromise = null;
         return '';
       });
     return csrfTokenPromise;
+  }
+
+  function resetCsrfToken() {
+    csrfTokenPromise = null;
   }
 
   window.apiFetch = async function(path, options) {
@@ -86,6 +94,25 @@
       var data = await res.json().catch(function() { return {}; });
       if (window._wmLog) window._wmLog('API response', path + ' ' + res.status);
       return { ok: res.ok, status: res.status, data: data };
+    }
+
+    async function doFetchWithFreshCsrf(base) {
+      var result = await doFetch(base);
+      if (
+        result &&
+        result.status === 403 &&
+        result.data &&
+        /csrf/i.test(String(result.data.error || '')) &&
+        !/^(GET|HEAD|OPTIONS)$/.test(method)
+      ) {
+        resetCsrfToken();
+        var freshToken = await getCsrfToken();
+        if (freshToken) {
+          fetchOpts.headers['X-CSRF-Token'] = freshToken;
+          result = await doFetch(base);
+        }
+      }
+      return result;
     }
 
     /** Mobile / flaky networks often drop the first cross-origin request to Render; 502/503 during cold start. */
@@ -109,7 +136,7 @@
           await new Promise(function(r) { setTimeout(r, delays[i] || 2000); });
         }
         try {
-          lastResult = await doFetch(baseGetter());
+          lastResult = await doFetchWithFreshCsrf(baseGetter());
           lastErr = null;
           if (lastResult.ok || !isTransientFailure(lastResult, null)) {
             return lastResult;
@@ -139,7 +166,7 @@
             );
           }
           window.API_BASE_URL = PRODUCTION_API_URL;
-          return await doFetch(PRODUCTION_API_URL);
+          return await doFetchWithFreshCsrf(PRODUCTION_API_URL);
         } catch (err2) {
           console.error('API fetch error:', err2);
           if (window._wmLog) window._wmLog('API error', path + ' ' + (err2.message || ''));
