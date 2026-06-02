@@ -3,6 +3,7 @@
  * Voice-first social platform API
  */
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+const crypto = require('crypto');
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -40,11 +41,83 @@ const fromEnv = (process.env.FRONTEND_URL || '')
   .map(s => s.trim())
   .filter(Boolean);
 const CORS_ORIGINS = [...new Set([...fromEnv, ...CORS_DEFAULT_ORIGINS])];
+const ALLOWED_ORIGINS = new Set(CORS_ORIGINS.map((origin) => origin.replace(/\/$/, '')));
+const CSRF_COOKIE = 'wm_csrf';
+
+function parseCookies(req) {
+  return Object.fromEntries(String(req.headers.cookie || '')
+    .split(';')
+    .map((part) => part.trim().split('='))
+    .filter((part) => part.length === 2 && part[0])
+    .map(([key, value]) => [key, decodeURIComponent(value)]));
+}
+
+function requireHttps(req, res, next) {
+  const host = req.headers.host || '';
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  if (process.env.NODE_ENV === 'production' && proto !== 'https') {
+    return res.redirect(301, `https://${host}${req.originalUrl}`);
+  }
+  return next();
+}
+
+function validateOrigin(req, res, next) {
+  if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+  const origin = req.headers.origin;
+  if (!origin) return res.status(403).json({ error: 'Missing origin.' });
+  const normalized = origin.replace(/\/$/, '');
+  if (!ALLOWED_ORIGINS.has(normalized)) return res.status(403).json({ error: 'Invalid origin.' });
+  return next();
+}
+
+function issueCsrfToken(req, res) {
+  const token = crypto.randomBytes(32).toString('hex');
+  res.cookie(CSRF_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 2 * 60 * 60 * 1000,
+    path: '/',
+  });
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ csrfToken: token });
+}
+
+function requireCsrf(req, res, next) {
+  if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+  const cookies = parseCookies(req);
+  const cookieToken = cookies[CSRF_COOKIE];
+  const headerToken = req.headers['x-csrf-token'];
+  if (!cookieToken || !headerToken || cookieToken !== headerToken) {
+    return res.status(403).json({ error: 'Invalid CSRF token.' });
+  }
+  return next();
+}
 
 // ——— Security: Helmet & Basics ———
 app.disable('x-powered-by');
+app.use(requireHttps);
 app.use(helmet({
-  contentSecurityPolicy: false, // relax if you need inline scripts for landing
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://www.google.com', 'https://www.gstatic.com'],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", ...CORS_ORIGINS, 'https://*.supabase.co', 'https://www.google.com', 'https://www.gstatic.com'],
+      frameSrc: ['https://www.google.com', 'https://www.gstatic.com'],
+      frameAncestors: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  },
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  referrerPolicy: { policy: 'strict-origin' },
   crossOriginEmbedderPolicy: false,
 }));
 
@@ -62,7 +135,7 @@ app.use(cors({
   origin: CORS_ORIGINS,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   optionsSuccessStatus: 204,
 }));
 
@@ -78,6 +151,9 @@ app.use((err, req, res, next) => {
   }
   next(err);
 });
+
+app.get('/api/csrf-token', issueCsrfToken);
+app.use('/api', validateOrigin, requireCsrf);
 
 // ——— Request logging ———
 app.use(requestLogger);

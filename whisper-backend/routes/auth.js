@@ -11,6 +11,53 @@ const { sendWelcomeEmail, sendPasswordResetEmailAny, sendVerificationEmailViaRes
 const { authLimiter, forgotPasswordLimiter, resendVerificationLimiter } = require('../middleware/rateLimiters');
 
 const router = express.Router();
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+const PASSWORD_RE = /^(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+const PASSWORD_MSG = 'Password must be at least 8 characters and include 1 number and 1 special character.';
+const GENERIC_RESET_OK = { success: true, ok: true, message: 'If an account exists, a reset link has been sent.' };
+
+function cleanText(value, max = 200) {
+  return String(value || '')
+    .normalize('NFKC')
+    .replace(/[<>]/g, '')
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .trim()
+    .slice(0, max);
+}
+
+function cleanEmail(value) {
+  return String(value || '').normalize('NFKC').trim().toLowerCase().slice(0, 320);
+}
+
+function getAllowedRedirectOrigins() {
+  const configured = process.env.AUTH_REDIRECT_ALLOWLIST || process.env.FRONTEND_URL || 'https://www.whisperme.co,https://whisperme.co';
+  const origins = configured
+    .split(',')
+    .map((s) => s.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+  return origins.length ? origins : ['https://www.whisperme.co', 'https://whisperme.co'];
+}
+
+function getDefaultRedirect() {
+  return getAllowedRedirectOrigins()[0] || 'https://www.whisperme.co';
+}
+
+function getSafeRedirect(rawRedirect) {
+  const fallback = getDefaultRedirect().replace(/\/$/, '') + '/';
+  if (!rawRedirect || typeof rawRedirect !== 'string') return fallback;
+  try {
+    const parsed = new URL(rawRedirect);
+    const allowed = getAllowedRedirectOrigins();
+    if (!allowed.includes(parsed.origin)) return fallback;
+    parsed.hash = '';
+    ['access_token', 'refresh_token', 'token_hash', 'code', 'type', 'error', 'error_description'].forEach((key) => {
+      parsed.searchParams.delete(key);
+    });
+    return parsed.toString();
+  } catch {
+    return fallback;
+  }
+}
 
 /** GET /api/auth/me — return current user if valid JWT (for session check). */
 router.get('/me', authMiddleware, (req, res) => {
@@ -29,6 +76,46 @@ router.get('/me', authMiddleware, (req, res) => {
 router.post('/track-login', authMiddleware, authLimiter, async (req, res) => {
   await trackEvent(EVENTS.LOGIN, req.user.id, {});
   res.json({ ok: true });
+});
+
+/**
+ * POST /api/auth/login — rate-limited email/password login proxy.
+ * Body: { email, password }
+ */
+router.post('/login', authLimiter, async (req, res) => {
+  const sendJson = (status, body) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(status).json(body);
+  };
+  try {
+    const email = cleanEmail(req.body?.email);
+    const password = req.body?.password;
+
+    if (!email || !EMAIL_RE.test(email) || !password || typeof password !== 'string') {
+      return sendJson(400, { error: 'Invalid email or password.' });
+    }
+    if (!supabaseAnon) {
+      console.error('[login] Supabase anon client not configured');
+      return sendJson(503, { error: 'Auth not configured.' });
+    }
+
+    const { data, error } = await supabaseAnon.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.warn('[login] Supabase signIn error:', error.code || '', error.message || '');
+      return sendJson(400, { error: 'Invalid email or password.' });
+    }
+
+    const token = data?.session?.access_token;
+    if (data?.user?.id) {
+      Promise.resolve()
+        .then(() => trackEvent(EVENTS.LOGIN, data.user.id, {}))
+        .catch((trackErr) => console.error('[login] trackEvent error:', trackErr));
+    }
+    return sendJson(200, { session: data.session, user: data.user, access_token: token });
+  } catch (err) {
+    console.error('[login] Unexpected error:', err.message, err.stack);
+    return sendJson(500, { error: 'Something went wrong. Please try again.' });
+  }
 });
 
 /**
@@ -55,21 +142,20 @@ router.post('/signup', authLimiter, async (req, res) => {
     res.status(status).json(body);
   };
   try {
-    const email = (req.body?.email || '').trim().toLowerCase();
+    const email = cleanEmail(req.body?.email);
     const password = req.body?.password;
-    const displayName = (req.body?.display_name || '').trim();
-    const fullName = (req.body?.full_name || '').trim();
-    const mood = (req.body?.mood || '').trim();
+    const displayName = cleanText(req.body?.display_name, 80);
+    const fullName = cleanText(req.body?.full_name, 120);
+    const mood = cleanText(req.body?.mood, 100);
 
-    const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-    if (!email || !emailRe.test(email)) {
+    if (!email || !EMAIL_RE.test(email)) {
       return sendJson(400, { error: 'Please enter a valid email address.' });
     }
     if (!password || typeof password !== 'string') {
       return sendJson(400, { error: 'Password is required.' });
     }
-    if (password.length < 6) {
-      return sendJson(400, { error: 'Password must be at least 6 characters.' });
+    if (!PASSWORD_RE.test(password)) {
+      return sendJson(400, { error: PASSWORD_MSG });
     }
 
     if (!supabaseAnon) {
@@ -82,7 +168,7 @@ router.post('/signup', authLimiter, async (req, res) => {
       password,
       options: {
         data: { full_name: fullName, display_name: displayName || fullName, mood },
-        emailRedirectTo: (process.env.FRONTEND_URL || 'https://whisperme.co').split(',')[0]?.trim() || undefined,
+        emailRedirectTo: getDefaultRedirect().replace(/\/$/, '') + '/',
       },
     });
 
@@ -109,7 +195,7 @@ router.post('/signup', authLimiter, async (req, res) => {
       return sendJson(200, { session: data.session, user: data.user, access_token: token });
     }
     // User created but needs email confirmation — send via our Gmail/Resend (Supabase SMTP often fails)
-    const redirectTo = (process.env.FRONTEND_URL || 'https://whisperme.co').split(',')[0]?.trim();
+    const redirectTo = getDefaultRedirect();
     try {
       const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
         type: 'signup',
@@ -148,15 +234,14 @@ router.post('/resend-verification', resendVerificationLimiter, async (req, res) 
     res.status(status).json(body);
   };
   try {
-    const email = (req.body?.email || '').trim().toLowerCase();
-    const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-    if (!email || !emailRe.test(email)) {
+    const email = cleanEmail(req.body?.email);
+    if (!email || !EMAIL_RE.test(email)) {
       return sendJson(400, { error: 'Please enter a valid email address.' });
     }
     if (!supabaseAdmin) {
       return sendJson(503, { error: 'Service temporarily unavailable.' });
     }
-    const redirectTo = (process.env.FRONTEND_URL || 'https://whisperme.co').split(',')[0]?.trim();
+    const redirectTo = getDefaultRedirect();
     const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
       type: 'signup',
       email,
@@ -185,30 +270,12 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
     res.status(status).json(body);
   };
   try {
-    const email = (req.body?.email || '').trim().toLowerCase();
-    const emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-    if (!email || !emailRe.test(email)) {
+    const email = cleanEmail(req.body?.email);
+    if (!email || !EMAIL_RE.test(email)) {
       return sendJson(400, { error: 'Please enter a valid email address.' });
     }
 
-    const frontendUrl = process.env.FRONTEND_URL?.split(',')[0]?.trim() || 'https://whisperme.co';
-    const allowedOrigins = (process.env.FRONTEND_URL || '')
-      .split(',')
-      .map((s) => s.trim().replace(/\/$/, ''))
-      .filter(Boolean);
-    if (!allowedOrigins.length) allowedOrigins.push('https://whisperme.co');
-
-    let rawRedirect = req.body?.redirectTo;
-    let redirectTo = (typeof rawRedirect === 'string' ? rawRedirect : frontendUrl)
-      .trim()
-      .replace(/\/index\.html\/?$/, '/');
-    if (!redirectTo.endsWith('/')) redirectTo += '/';
-
-    const isAllowed = allowedOrigins.some((origin) => {
-      const base = origin.replace(/\/$/, '');
-      return redirectTo.startsWith(base + '/') || redirectTo === base;
-    });
-    const finalRedirect = isAllowed ? redirectTo : frontendUrl.replace(/\/$/, '') + '/';
+    const finalRedirect = getSafeRedirect(req.body?.redirectTo);
 
     if (!supabaseAnon) {
       console.error('[forgot-password] Supabase anon client not configured');
@@ -222,7 +289,7 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
     if (error) {
       const msg = (error.message || '').toLowerCase();
       if (msg.includes('user not found') || msg.includes('email not found') || msg.includes('user with this email not found')) {
-        return sendJson(200, { success: true, ok: true });
+        return sendJson(200, GENERIC_RESET_OK);
       }
       // Supabase's built-in email often fails ("Error sending recovery email") when SMTP isn't configured.
       // Fallback: generate link via admin API and send via our own email (Resend/Gmail).
@@ -236,41 +303,37 @@ router.post('/forgot-password', forgotPasswordLimiter, async (req, res) => {
           });
           if (linkErr) {
             if (linkErr.message?.toLowerCase().includes('user not found')) {
-              return sendJson(200, { success: true, ok: true });
+              return sendJson(200, GENERIC_RESET_OK);
             }
             console.error('[forgot-password] generateLink error:', linkErr.message);
-            return sendJson(400, { error: 'Failed to generate reset link.' });
+            return sendJson(200, GENERIC_RESET_OK);
           }
           const actionLink = linkData?.properties?.action_link || linkData?.action_link;
           if (!actionLink) {
             console.error('[forgot-password] generateLink missing action_link:', Object.keys(linkData || {}));
-            return sendJson(500, { error: 'Failed to generate reset link.' });
+            return sendJson(200, GENERIC_RESET_OK);
           }
           const sendResult = await sendPasswordResetEmailAny(email, actionLink);
           if (sendResult.ok) {
-            return sendJson(200, { success: true, ok: true });
+            return sendJson(200, GENERIC_RESET_OK);
           }
           console.error('[forgot-password] Custom email failed:', sendResult.error);
-          return sendJson(500, { error: 'Could not send reset email. Please try again later or contact support.' });
+          return sendJson(200, GENERIC_RESET_OK);
         } catch (fallbackErr) {
           console.error('[forgot-password] Fallback error:', fallbackErr.message);
-          return sendJson(500, { error: 'Something went wrong. Please try again.' });
+          return sendJson(200, GENERIC_RESET_OK);
         }
       }
-      // Other Supabase errors (e.g. invalid redirect)
-      const safeMsg = msg.includes('<') || msg.includes('html') || msg.length > 200
-        ? 'Failed to send reset link.'
-        : (error.message || 'Failed to send reset link.');
       console.error('[forgot-password] resetPasswordForEmail error:', error.message);
-      return sendJson(400, { error: safeMsg });
+      return sendJson(200, GENERIC_RESET_OK);
     }
 
-    return sendJson(200, { success: true, ok: true });
+    return sendJson(200, GENERIC_RESET_OK);
   } catch (err) {
     const errMsg = (err?.message || String(err)).toLowerCase();
     const isHtml = errMsg.includes('<') || errMsg.includes('html');
     console.error('[forgot-password] Unexpected error:', isHtml ? 'Supabase returned non-JSON (possibly HTML)' : err.message || err, err.stack);
-    return sendJson(500, { error: 'Something went wrong. Please try again.' });
+    return sendJson(200, GENERIC_RESET_OK);
   }
 });
 

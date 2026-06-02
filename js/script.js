@@ -2165,13 +2165,36 @@ function showSignupStep(step) {
     if (d2) d2.classList.add('active');
   }
 }
+
+function wmSanitizeInput(value, max) {
+  return String(value || '')
+    .normalize('NFKC')
+    .replace(/[<>]/g, '')
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .trim()
+    .slice(0, max || 320);
+}
+
+function wmValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(email || '');
+}
+
+function wmValidPassword(password) {
+  return /^(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password || '');
+}
+
+function wmPasswordMessage() {
+  return 'Password must be at least 8 characters and include 1 number and 1 special character.';
+}
+
 function amSignupNextStep() {
   var emailEl = document.getElementById('amSignupEmail');
   var pwEl = document.getElementById('amSignupPw');
-  var email = emailEl ? emailEl.value.trim() : '';
+  var email = emailEl ? wmSanitizeInput(emailEl.value, 320) : '';
   var password = pwEl ? pwEl.value : '';
   if (!email || !password) { showToast('Email and password required.'); return; }
-  if (password.length < 6) { showToast('Password must be at least 6 characters.'); return; }
+  if (!wmValidEmail(email)) { showToast('Please enter a valid email address.'); return; }
+  if (!wmValidPassword(password)) { showToast(wmPasswordMessage()); return; }
   showSignupStep(2);
 }
 function amSignupPrevStep() {
@@ -2197,7 +2220,7 @@ function updatePwStrength(val) {
   const hasNum = /[0-9]/.test(val);
   const hasSpecial = /[^A-Za-z0-9]/.test(val);
   let score = 0;
-  if (len >= 6) score++;
+  if (len >= 8) score++;
   if (len >= 10) score++;
   if (hasUpper || hasNum) score++;
   if (hasSpecial && len >= 8) score++;
@@ -2210,20 +2233,33 @@ function updatePwStrength(val) {
 function handleAmSignin() {
   var emailEl = document.getElementById('amSigninEmail');
   var pwEl = document.getElementById('amSigninPw');
-  var email = emailEl ? emailEl.value.trim() : '';
+  var email = emailEl ? wmSanitizeInput(emailEl.value, 320) : '';
   var password = pwEl ? pwEl.value : '';
   if (!email || !password) { showToast('Email and password required.'); return; }
+  if (!wmValidEmail(email)) { showToast('Please enter a valid email address.'); return; }
 
   var submitBtn = document.querySelector('#amPanelSignin .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Signing in…'; }
 
-  window._getSupabaseClient().then(function (sb) {
-    if (!sb) { showToast('Could not load sign-in. Check connection and try again.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; } return; }
-    sb.auth.signInWithPassword({ email: email, password: password }).then(function (result) {
+  apiFetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password }),
+  }).then(function (res) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
-      if (result.error) { showToast('' + (result.error.message || 'Sign in failed.')); return; }
-      var token = result.data.session && result.data.session.access_token;
-      if (token) { apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function () { }); }
+      if (!res.ok) { showToast('' + ((res.data && res.data.error) || 'Sign in failed.')); return; }
+      var data = res.data || {};
+      var token = data.access_token || (data.session && data.session.access_token);
+      if (token) {
+        window._getSupabaseClient().then(function (sb) {
+          if (sb && data.session) {
+            sb.auth.setSession({
+              access_token: data.session.access_token,
+              refresh_token: data.session.refresh_token || '',
+            }).catch(function () { });
+          }
+        }).catch(function () { });
+      }
       closeAuthModal();
       updateNavUser(email, '');
       showToast('Welcome back!');
@@ -2231,10 +2267,6 @@ function handleAmSignin() {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
       showToast('' + (err.message || 'Sign in failed. Please try again.'));
     });
-  }).catch(function () {
-    showToast('Cannot connect to auth service.');
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.querySelector('span').textContent = 'Sign In'; }
-  });
 }
 function handleAmSignup() {
   var nameEl = document.getElementById('amSignupName');
@@ -2250,15 +2282,16 @@ function handleAmSignup() {
     return;
   }
 
-  var email = emailEl ? emailEl.value.trim() : '';
+  var email = emailEl ? wmSanitizeInput(emailEl.value, 320) : '';
   var password = pwEl ? pwEl.value : '';
-  var name = nameEl ? nameEl.value.trim() : '';
-  var displayName = displayEl ? displayEl.value.trim() : name;
+  var name = nameEl ? wmSanitizeInput(nameEl.value, 120) : '';
+  var displayName = displayEl ? wmSanitizeInput(displayEl.value, 80) : name;
   var moodEl = document.querySelector('#amPanelSignup .am-mood-chip.selected');
-  var mood = moodEl ? moodEl.textContent.trim() : '';
+  var mood = moodEl ? wmSanitizeInput(moodEl.textContent, 100) : '';
 
   if (!email || !password) { showToast('Email and password required.'); return; }
-  if (password.length < 6) { showToast('Password must be at least 6 characters.'); return; }
+  if (!wmValidEmail(email)) { showToast('Please enter a valid email address.'); return; }
+  if (!wmValidPassword(password)) { showToast(wmPasswordMessage()); return; }
 
   var submitBtn = document.querySelector('#amPanelSignup .am-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.querySelector('span').textContent = 'Creating…'; }
@@ -2404,12 +2437,11 @@ function h11HandleSignup(e) {
       ? document.querySelector('#h11FormCard .h11-mood-chip.selected')
       : document.querySelector('#join-beta .form-mood-chip.selected');
   var aPassword = aPasswordEl ? aPasswordEl.value : '';
-  var name = nameEl ? nameEl.value.trim() : '';
-  var email = emailEl ? emailEl.value.trim() : '';
-  var mood = moodEl ? moodEl.textContent.trim() : '';
+  var name = nameEl ? wmSanitizeInput(nameEl.value, 200) : '';
+  var email = emailEl ? wmSanitizeInput(emailEl.value, 320) : '';
+  var mood = moodEl ? wmSanitizeInput(moodEl.textContent, 100) : '';
 
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !EMAIL_RE.test(email)) {
+  if (!email || !wmValidEmail(email)) {
     showToast('Please enter a valid email address.');
     if (emailEl) { emailEl.focus(); emailEl.style.borderColor = '#D4607A'; setTimeout(function () { emailEl.style.borderColor = ''; }, 1500); }
     return;
@@ -2447,7 +2479,7 @@ function h11HandleSignup(e) {
             msg += ' Or try another browser / disable ad blockers for this site.';
           }
         }
-        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'This email is already on the waitlist.';
+        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('duplicate')) msg = 'If your email is valid, check your inbox to confirm your waitlist spot.';
         // Network error (status 0) — auto-retry instead of showing "Failed to fetch"
         var isNetworkError = res.status === 0 || (msg && /failed to fetch|network|connection/i.test(msg));
         if (isNetworkError && retriesLeft > 0) {
@@ -2468,7 +2500,7 @@ function h11HandleSignup(e) {
         btn.innerHTML = '✓ You\'re on the list!';
         btn.style.background = 'linear-gradient(135deg,#7A9E87,#4A8C6F)';
       }
-      showToast('You\'re on the waitlist. We\'ll be in touch.');
+      showToast('Check your inbox to confirm your waitlist spot.');
       if (fromPopup) dismissEarlyAccessPopup(0);
       if (nameEl) nameEl.value = '';
       if (emailEl) emailEl.value = '';

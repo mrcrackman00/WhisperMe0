@@ -1579,9 +1579,8 @@
           <div class="h11-form-card" id="h11FormCard">
             <div class="h11-form-title">Get Early Access</div>
             <div class="h11-form-sub">Join the waitlist — we’re building WhisperMe with our founding community.</div>
-            <input type="text" name="a_password" id="h11_a_password"
-              style="position:absolute;left:-9999px;opacity:0;height:0;width:0" tabindex="-1" autocomplete="off"
-              aria-hidden="true">
+            <input type="text" name="a_password" id="h11_a_password" class="wm-honeypot" tabindex="-1"
+              autocomplete="off" aria-hidden="true">
             <label class="h11-form-field" for="h11NameInput">
               <input type="text" class="h11-form-input" placeholder="Your name" id="h11NameInput" />
             </label>
@@ -2838,8 +2837,8 @@
         <div class="form-wrap">
           <div class="form-title">Get Early Access</div>
           <div class="form-sub">Join the waitlist — we’ll email you when early access opens.</div>
-          <input type="text" name="a_password" id="a_password" style="display:none" tabindex="-1"
-            autocomplete="new-password">
+          <input type="text" name="a_password" id="a_password" class="wm-honeypot" tabindex="-1" autocomplete="off"
+            aria-hidden="true">
           <div class="form-field">
             <input type="text" class="form-input" placeholder="Your name" id="nameInput" />
           </div>
@@ -3072,7 +3071,7 @@
     </div>
   </footer>
 
-  <div class="toast" id="toast">You're on the waitlist. We'll be in touch soon.</div>
+  <div class="toast" id="toast">Check your inbox to confirm your waitlist spot.</div>
 
   <!-- Sitewide Get Early Access (waitlist) — `inert` while closed so fixed overlay never steals clicks from the page -->
   <div class="ea-popup-overlay" id="eaAccessPopupOverlay" aria-hidden="true" role="presentation" inert>
@@ -3081,9 +3080,8 @@
       <button type="button" class="ea-popup-close" onclick="dismissEarlyAccessPopup(5)" aria-label="Close">×</button>
       <h2 class="ea-popup-title" id="eaPopupTitle">Get Early Access</h2>
       <p class="ea-popup-sub">Join the WhisperMe waitlist — same as on the site. We’ll only email you about the launch.</p>
-      <input type="text" name="a_password" id="ea_popup_a_password"
-        style="position:absolute;left:-9999px;opacity:0;height:0;width:0" tabindex="-1" autocomplete="off"
-        aria-hidden="true">
+      <input type="text" name="a_password" id="ea_popup_a_password" class="wm-honeypot" tabindex="-1"
+        autocomplete="off" aria-hidden="true">
       <label class="h11-form-field" for="eaPopupName">
         <input type="text" class="h11-form-input" placeholder="Your name" id="eaPopupName" autocomplete="name" />
       </label>
@@ -3317,8 +3315,8 @@
               </label>
             </div>
 
-            <input type="text" name="a_password" id="a_password_desktop" style="display:none" tabindex="-1"
-              autocomplete="new-password">
+            <input type="text" name="a_password" id="a_password_desktop" class="wm-honeypot" tabindex="-1"
+              autocomplete="off" aria-hidden="true">
             <label class="am-field am-field-tappable" for="amSignupEmail">
               <span class="am-label">Email</span>
               <div class="am-input-wrap">
@@ -3478,7 +3476,7 @@
               <rect x="3" y="11" width="18" height="11" rx="2" />
               <path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            <input type="password" id="newPasswordInput" class="am-input" placeholder="Min 6 characters"
+            <input type="password" id="newPasswordInput" class="am-input" placeholder="8+ chars, 1 number, 1 special"
               autocomplete="new-password" />
           </div>
         </div>
@@ -3531,8 +3529,8 @@
               <input id="authSignupDisplayName" class="auth-input" type="text"
                 placeholder="Anonymous display name (optional)" />
             </div>
-            <input type="text" name="a_password" id="a_password_mobile" style="display:none" tabindex="-1"
-              autocomplete="new-password">
+            <input type="text" name="a_password" id="a_password_mobile" class="wm-honeypot" tabindex="-1"
+              autocomplete="off" aria-hidden="true">
             <div class="auth-input-wrap">
               <span class="auth-input-icon" aria-hidden="true"><svg class="wm-use wm-use--auth" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/wm-symbols.svg#wm-mail"/></svg></span>
               <input id="authSignupEmail" class="auth-input" type="email" placeholder="your@email.com" />
@@ -3893,6 +3891,23 @@
       function getApiBase() {
         return (typeof window.getApiBase === 'function') ? window.getApiBase() : ((window.API_BASE_URL && String(window.API_BASE_URL).trim()) || 'https://whisperme0.onrender.com').replace(/\/$/, '');
       }
+      function wmInlineSanitize(value, max) {
+        return String(value || '').normalize('NFKC').replace(/[<>]/g, '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, max || 320);
+      }
+      function wmInlineValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(email || '');
+      }
+      function wmInlineValidPassword(password) {
+        return /^(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password || '');
+      }
+      function wmInlinePasswordMessage() {
+        return 'Password must be at least 8 characters and include 1 number and 1 special character.';
+      }
+      function wmSafeOAuthRedirect() {
+        var allowed = ['https://www.whisperme.co', 'https://whisperme.co', 'http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:3000', 'http://127.0.0.1:5500'];
+        var origin = window.location.origin;
+        return allowed.indexOf(origin) !== -1 ? origin + (window.location.pathname || '/') : 'https://www.whisperme.co/';
+      }
 
       /** Supabase puts #error=... or ?error=... (some flows) when confirm/magic link fails */
       window.handleSupabaseAuthUrlErrors = function () {
@@ -3910,7 +3925,7 @@
         window.history.replaceState('', document.title, window.location.pathname);
         var msg = 'Email link invalid or expired. Use Sign In → Forgot password, or sign up again for a new email.';
         if (errCode === 'otp_expired') {
-          msg = 'This link expired or was already used. Fresh emails can fail if Gmail/antivirus opened the link first — tap Resend, then open the link once in incognito (or long-press → Copy link → paste in browser). Links expire ~1 hour from send time.';
+          msg = 'This link expired or was already used. Fresh emails can fail if Gmail/antivirus opened the link first — tap Resend, then open the link once in incognito (or long-press → Copy link → paste in browser). Links expire in about 15 minutes.';
         }
         if (desc && desc.indexOf('expired') !== -1 && errCode !== 'otp_expired') msg = 'Link expired. Request a new verification email.';
         if (typeof showToast === 'function') showToast('' + msg);
@@ -3999,9 +4014,8 @@
         var emailInput = document.getElementById('forgotPasswordEmail');
         var errEl = document.getElementById('forgotPasswordError');
         var btn = document.getElementById('forgotPasswordBtn');
-        var email = emailInput ? emailInput.value.trim() : '';
-        var emailRe = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-        if (!email || !emailRe.test(email)) {
+        var email = emailInput ? wmInlineSanitize(emailInput.value, 320) : '';
+        if (!email || !wmInlineValidEmail(email)) {
           if (errEl) { errEl.textContent = 'Please enter a complete, valid email (e.g. you@gmail.com).'; errEl.style.display = 'block'; }
           if (emailInput) emailInput.focus();
           return;
@@ -4073,8 +4087,8 @@
         var errEl = document.getElementById('setNewPasswordError');
         var btn = document.getElementById('setNewPasswordBtn');
         var password = input ? input.value : '';
-        if (!password || password.length < 6) {
-          if (errEl) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; }
+        if (!wmInlineValidPassword(password)) {
+          if (errEl) { errEl.textContent = wmInlinePasswordMessage(); errEl.style.display = 'block'; }
           return;
         }
         if (errEl) errEl.style.display = 'none';
@@ -4220,14 +4234,15 @@
           return;
         }
 
-        var email = document.getElementById('authSignupEmail') && document.getElementById('authSignupEmail').value.trim();
+        var email = document.getElementById('authSignupEmail') && wmInlineSanitize(document.getElementById('authSignupEmail').value, 320);
         var password = document.getElementById('authSignupPassword') && document.getElementById('authSignupPassword').value;
         if (!email || !password) { showAuthError('Email and password required.', false); return; }
-        if (password.length < 6) { showAuthError('Password must be at least 6 characters.', false); return; }
-        var name = (document.getElementById('authSignupName') && document.getElementById('authSignupName').value.trim()) || '';
-        var displayName = (document.getElementById('authSignupDisplayName') && document.getElementById('authSignupDisplayName').value.trim()) || name;
+        if (!wmInlineValidEmail(email)) { showAuthError('Please enter a valid email address.', false); return; }
+        if (!wmInlineValidPassword(password)) { showAuthError(wmInlinePasswordMessage(), false); return; }
+        var name = (document.getElementById('authSignupName') && wmInlineSanitize(document.getElementById('authSignupName').value, 120)) || '';
+        var displayName = (document.getElementById('authSignupDisplayName') && wmInlineSanitize(document.getElementById('authSignupDisplayName').value, 80)) || name;
         var moodEl = document.querySelector('.auth-mood-chip.selected');
-        var mood = moodEl ? moodEl.textContent.trim() : '';
+        var mood = moodEl ? wmInlineSanitize(moodEl.textContent, 100) : '';
         var btn = document.getElementById('authSignupBtn');
         if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
         try {
@@ -4262,19 +4277,32 @@
       };
       window.handleAuthSignin = async function () {
         showAuthError('', true);
-        var email = document.getElementById('authSigninEmail') && document.getElementById('authSigninEmail').value.trim();
+        var email = document.getElementById('authSigninEmail') && wmInlineSanitize(document.getElementById('authSigninEmail').value, 320);
         var password = document.getElementById('authSigninPassword') && document.getElementById('authSigninPassword').value;
         if (!email || !password) { showAuthError('Email and password required.', true); return; }
-        var sb = await window._getSupabaseClient();
-        if (!sb) { showAuthError('Could not load sign-in. Check your connection and try again.', true); return; }
+        if (!wmInlineValidEmail(email)) { showAuthError('Please enter a valid email address.', true); return; }
         var btn = document.getElementById('authSigninBtn');
         if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
-        var { data, error } = await sb.auth.signInWithPassword({ email: email, password: password });
+        var res = await (typeof window.apiFetch === 'function'
+          ? window.apiFetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password })
+          })
+          : { ok: false, data: { error: 'API not configured.' } });
         if (btn) { btn.disabled = false; btn.textContent = 'Sign In →'; }
-        if (error) { showAuthError(error.message || 'Sign in failed.', true); return; }
+        var data = res.data || {};
+        if (!res.ok) { showAuthError(data.error || 'Sign in failed.', true); return; }
         var token = data.session && data.session.access_token;
-        if (token && typeof window.apiFetch === 'function') {
-          window.apiFetch('/api/auth/track-login', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(function () { });
+        if (token && data.session) {
+          window._getSupabaseClient().then(function (sb) {
+            if (sb) {
+              sb.auth.setSession({
+                access_token: data.session.access_token,
+                refresh_token: data.session.refresh_token || ''
+              }).catch(function () { });
+            }
+          }).catch(function () { });
         }
         showToast('Welcome back!');
         if (typeof updateNavUser === 'function') updateNavUser(email, '');
@@ -4290,7 +4318,7 @@
             }
             return;
           }
-          var redirectTo = window.location.origin + (window.location.pathname || '/');
+          var redirectTo = wmSafeOAuthRedirect();
           var result = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo } });
           if (result.error) { if (typeof showToast === 'function') showToast('' + (result.error.message || 'Google sign-in failed.')); return; }
           if (result.data && result.data.url) window.location.href = result.data.url;
@@ -4309,7 +4337,7 @@
             }
             return;
           }
-          var redirectTo = window.location.origin + (window.location.pathname || '/');
+          var redirectTo = wmSafeOAuthRedirect();
           var result = await sb.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: redirectTo } });
           if (result.error) { if (typeof showToast === 'function') showToast('' + (result.error.message || 'Apple sign-in failed.')); return; }
           if (result.data && result.data.url) window.location.href = result.data.url;
@@ -4394,6 +4422,15 @@
     })();
   </script>
   <style>
+    .wm-honeypot {
+      position: absolute !important;
+      left: -10000px !important;
+      width: 1px !important;
+      height: 1px !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
     .nav-user {
       display: flex;
       align-items: center;
@@ -4482,7 +4519,6 @@
       opacity: 1;
     }
   </style>
-  <div id="toast"></div>
 </body>
 
 </html>

@@ -44,6 +44,27 @@
     return { supabaseUrl: url.replace(/\/$/, ''), supabaseAnonKey: key };
   }
 
+  function stripAuthParams() {
+    try {
+      var sensitive = ['access_token', 'refresh_token', 'code', 'token_hash', 'type', 'error', 'error_description', 'error_code'];
+      var url = new URL(window.location.href);
+      var changed = false;
+      sensitive.forEach(function(k) {
+        if (url.searchParams.has(k)) {
+          url.searchParams.delete(k);
+          changed = true;
+        }
+      });
+      if (window.location.hash && /access_token|refresh_token|token_hash|error|error_description/.test(window.location.hash)) {
+        url.hash = '';
+        changed = true;
+      }
+      if (changed) {
+        history.replaceState(null, document.title, url.pathname + url.search);
+      }
+    } catch (e) {}
+  }
+
   var supabase = null;
   var supabasePromise = null;
 
@@ -98,21 +119,25 @@
           var hash = window.location.hash || '';
           if (hash.indexOf('error=') !== -1 && typeof window.handleSupabaseAuthUrlErrors === 'function') {
             window.handleSupabaseAuthUrlErrors();
+            stripAuthParams();
           }
           var codeMatch = search.match(/[?&]code=([^&]+)/);
           if (codeMatch && codeMatch[1] && typeof supabase.auth.exchangeCodeForSession === 'function') {
             var authCode = decodeURIComponent(codeMatch[1].replace(/\+/g, ' '));
             var ex = await supabase.auth.exchangeCodeForSession(authCode);
             if (ex && ex.error && console && console.warn) console.warn('[WM] exchangeCodeForSession:', ex.error.message);
+            stripAuthParams();
           }
           // Give SDK a tick to parse hash fragments after client creation
           if (hash.indexOf('access_token') !== -1 || hash.indexOf('refresh_token') !== -1) {
             await supabase.auth.getSession();
             await new Promise(function(r) { setTimeout(r, 50); });
             await supabase.auth.getSession();
+            stripAuthParams();
           }
         } catch (urlAuthErr) {
           if (console && console.warn) console.warn('[WM] URL auth handling:', urlAuthErr && urlAuthErr.message);
+          stripAuthParams();
         }
 
         try {
@@ -120,6 +145,7 @@
             try {
               if (event === 'PASSWORD_RECOVERY') {
                 if (typeof openSetNewPasswordModal === 'function') openSetNewPasswordModal();
+                stripAuthParams();
                 return;
               }
               if (event === 'SIGNED_IN' && session) {
@@ -129,7 +155,7 @@
                 var h = window.location.hash || '';
                 var s = window.location.search || '';
                 if (h.indexOf('access_token') !== -1 || s.indexOf('code=') !== -1) {
-                  history.replaceState(null, document.title, window.location.pathname);
+                  stripAuthParams();
                 }
               }
             } catch (authErr) {

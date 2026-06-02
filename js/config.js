@@ -53,9 +53,31 @@
     return isLocal && /localhost|127\.0\.0\.1/.test(String(base || ''));
   }
 
+  var csrfTokenPromise = null;
+  async function getCsrfToken() {
+    if (csrfTokenPromise) return csrfTokenPromise;
+    csrfTokenPromise = fetch(window.getApiBase() + '/api/csrf-token', {
+      credentials: 'include',
+      mode: 'cors',
+    })
+      .then(function(r) { return r.ok ? r.json() : {}; })
+      .then(function(d) { return d.csrfToken || ''; })
+      .catch(function() {
+        csrfTokenPromise = null;
+        return '';
+      });
+    return csrfTokenPromise;
+  }
+
   window.apiFetch = async function(path, options) {
     var pathNorm = path.startsWith('/') ? path : '/' + path;
-    var fetchOpts = Object.assign({ credentials: 'omit', mode: 'cors' }, options || {});
+    var fetchOpts = Object.assign({ credentials: 'include', mode: 'cors' }, options || {});
+    fetchOpts.headers = Object.assign({}, fetchOpts.headers || {});
+    var method = String(fetchOpts.method || 'GET').toUpperCase();
+    if (!/^(GET|HEAD|OPTIONS)$/.test(method) && pathNorm !== '/api/csrf-token') {
+      var csrfToken = await getCsrfToken();
+      if (csrfToken) fetchOpts.headers['X-CSRF-Token'] = csrfToken;
+    }
 
     async function doFetch(base) {
       var url = String(base || '').replace(/\/$/, '') + pathNorm;

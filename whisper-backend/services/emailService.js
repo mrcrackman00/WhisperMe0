@@ -159,6 +159,43 @@ async function sendWaitlistConfirmation(to, name) {
   return { ok: false, skipped: !resendError, error: resendError || 'Email not configured' };
 }
 
+async function sendWaitlistVerifyEmail(to, name, verifyLink) {
+  const subject = 'Confirm your WhisperMe waitlist spot';
+  const safeName = escapeHtml(name || 'there').slice(0, 60);
+  const safeLink = escapeHtml(verifyLink);
+  const html = `
+    <h1>Confirm your email</h1>
+    <p>Hi ${safeName},</p>
+    <p>Click below to confirm your WhisperMe waitlist spot.</p>
+    <p><a href="${safeLink}" style="background:#000;color:#fff;padding:10px 18px;text-decoration:none;border-radius:8px;display:inline-block;">Confirm email</a></p>
+    <p>This link expires in 15 minutes. If you did not request this, ignore this email.</p>
+    <p>— The WhisperMe team</p>
+  `;
+  const text = `Confirm your WhisperMe waitlist spot: ${verifyLink}\n\nThis link expires in 15 minutes.`;
+  const apiKey = (process.env.RESEND_API_KEY || '').trim();
+  const resendKeyOk = apiKey && apiKey !== 're_...' && apiKey.length > 8;
+
+  if (resendKeyOk) {
+    try {
+      const { Resend } = require('resend');
+      const resend = new Resend(apiKey);
+      const from = process.env.FROM_EMAIL || 'WhisperMe <onboarding@resend.dev>';
+      const { data, error } = await resend.emails.send({ from, to, subject, html, text });
+      if (!error) return { ok: true, id: data?.id, via: 'resend' };
+      console.warn('[waitlist verify] Resend failed:', error.message || String(error));
+    } catch (err) {
+      console.warn('[waitlist verify] Resend error:', err.message || String(err));
+    }
+  }
+
+  if (transporter) {
+    const r = await sendMail(to, subject, html, text);
+    return { ...r, via: r.ok ? 'gmail' : r.via };
+  }
+
+  return { ok: false, skipped: true, error: 'Email not configured' };
+}
+
 const VERIFICATION_HTML = (verificationLink) => `
   <h1>Verify your WhisperMe email</h1>
   <p>Click the link below to activate your account:</p>
@@ -212,9 +249,9 @@ async function sendVerificationEmail(to, verificationLink) {
 const PASSWORD_RESET_HTML = (resetLink) => `
   <h1>Reset your password</h1>
   <p>Click the link below to set a new password:</p>
-  <p><a href="${resetLink}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
-  <p>Or copy this link: ${resetLink}</p>
-  <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+  <p><a href="${escapeHtml(resetLink)}" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
+  <p>Or copy this link: ${escapeHtml(resetLink)}</p>
+  <p>This link expires in 15 minutes. If you didn't request this, ignore this email.</p>
   <p><small>If this landed in spam, mark as "Not spam" so future emails reach your inbox.</small></p>
   <p>— The WhisperMe team</p>
 `;
@@ -365,6 +402,7 @@ function firstName(name) {
 module.exports = {
   sendWelcomeEmail,
   sendWaitlistConfirmation,
+  sendWaitlistVerifyEmail,
   sendVerificationEmail,
   sendVerificationEmailViaResend,
   sendPasswordResetEmail,
