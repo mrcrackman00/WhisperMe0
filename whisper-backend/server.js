@@ -43,6 +43,11 @@ const fromEnv = (process.env.FRONTEND_URL || '')
 const CORS_ORIGINS = [...new Set([...fromEnv, ...CORS_DEFAULT_ORIGINS])];
 const ALLOWED_ORIGINS = new Set(CORS_ORIGINS.map((origin) => origin.replace(/\/$/, '')));
 const CSRF_COOKIE = 'wm_csrf';
+const CSRF_TTL_MS = 2 * 60 * 60 * 1000;
+const CSRF_SECRET = process.env.CSRF_SECRET
+  || process.env.SUPABASE_SERVICE_ROLE_KEY
+  || process.env.JWT_SECRET
+  || 'whisperme-dev-csrf-secret';
 
 function parseCookies(req) {
   return Object.fromEntries(String(req.headers.cookie || '')
@@ -70,13 +75,38 @@ function validateOrigin(req, res, next) {
   return next();
 }
 
+function signCsrfPayload(payload) {
+  return crypto.createHmac('sha256', CSRF_SECRET).update(payload).digest('hex');
+}
+
+function createCsrfToken() {
+  const expiresAt = Date.now() + CSRF_TTL_MS;
+  const nonce = crypto.randomBytes(24).toString('hex');
+  const payload = `${expiresAt}.${nonce}`;
+  return `${payload}.${signCsrfPayload(payload)}`;
+}
+
+function isValidSignedCsrfToken(token) {
+  const parts = String(token || '').split('.');
+  if (parts.length !== 3) return false;
+  const [expiresAtRaw, nonce, signature] = parts;
+  if (!/^\d+$/.test(expiresAtRaw) || !/^[a-f0-9]{48}$/i.test(nonce) || !/^[a-f0-9]{64}$/i.test(signature)) {
+    return false;
+  }
+  if (Number(expiresAtRaw) < Date.now()) return false;
+
+  const payload = `${expiresAtRaw}.${nonce}`;
+  const expected = signCsrfPayload(payload);
+  return crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expected, 'hex'));
+}
+
 function issueCsrfToken(req, res) {
-  const token = crypto.randomBytes(32).toString('hex');
+  const token = createCsrfToken();
   res.cookie(CSRF_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    maxAge: 2 * 60 * 60 * 1000,
+    maxAge: CSRF_TTL_MS,
     path: '/',
   });
   res.setHeader('Content-Type', 'application/json');
@@ -88,7 +118,9 @@ function requireCsrf(req, res, next) {
   const cookies = parseCookies(req);
   const cookieToken = cookies[CSRF_COOKIE];
   const headerToken = req.headers['x-csrf-token'];
-  if (!cookieToken || !headerToken || cookieToken !== headerToken) {
+  const hasMatchingCookieToken = cookieToken && headerToken && cookieToken === headerToken;
+  const hasValidSignedToken = headerToken && isValidSignedCsrfToken(headerToken);
+  if (!hasMatchingCookieToken && !hasValidSignedToken) {
     return res.status(403).json({ error: 'Invalid CSRF token.' });
   }
   return next();
