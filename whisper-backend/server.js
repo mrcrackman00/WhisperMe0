@@ -142,7 +142,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", ...CORS_ORIGINS, 'https://*.supabase.co', 'https://www.google.com', 'https://www.gstatic.com'],
+      connectSrc: ["'self'", ...CORS_ORIGINS, 'https://*.supabase.co', 'https://cdn.jsdelivr.net', 'https://www.google.com', 'https://www.gstatic.com'],
       frameSrc: ['https://www.google.com', 'https://www.gstatic.com'],
       frameAncestors: ["'none'"],
       objectSrc: ["'none'"],
