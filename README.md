@@ -1,147 +1,204 @@
-[README.md](https://github.com/user-attachments/files/28632704/README.md)
-# WhisperMe — Say What You Can't Say
+# WhisperMe
 
-> A voice-first social media platform. No text. No photos. Just your real voice.
+**WhisperMe is an open-source reference implementation for a privacy-conscious, voice-first social platform.**
 
-**Live Site:** [whisperme.co](https://www.whisperme.co)
+The project combines a static marketing site, an Express API, Supabase Auth, secure waitlist flows, transactional email, and production-oriented security controls. It is built as a practical example for founders and maintainers who want to study how a real early-stage social product handles authentication, waitlists, security headers, rate limiting, and public deployment hygiene.
 
----
+Live site: [whisperme.co](https://www.whisperme.co)
 
-## Overview
+## Why This Exists
 
-WhisperMe is a voice-first social platform where people share thoughts, stories, and conversations authentically — no filters, no performance, just real human voice. Users record short voice posts, reply voice-to-voice, join live audio rooms, and find their community through AI-powered mood-based discovery.
+Most social products are optimized around text, images, metrics, and performance. WhisperMe explores a different direction: short voice-first expression, mood-aware discovery, optional anonymity, and safer emotional spaces.
 
-Currently in **private beta**, building a founding community of early adopters.
+This repository is useful beyond the product itself because it documents and implements common production patterns for:
 
----
+- Secure public waitlist collection
+- Supabase authentication and password recovery
+- Express API security middleware
+- Static-site deployment with strict headers
+- Secrets-safe public repository structure
+- Privacy-first product thinking for social software
 
-## Pages
+## Current Status
 
-| Route | Description |
-|---|---|
-| `/` | Homepage — hero, interactive demo, features, waitlist |
-| `/features` | Full feature breakdown |
-| `/how-it-works` | 4-step walkthrough (Record → Share → Explore → Belong) |
-| `/stories` | Community stories (coming soon) |
-| `/app` | Interactive app preview / simulation |
-| `/community` | Community hub |
-| `/join-beta` | Early access waitlist signup |
-| `/profile` | User profile (auth required) |
+WhisperMe is in active private beta development. The repository currently focuses on the web presence, auth/waitlist backend, public pages, deployment configuration, and security foundation. Mobile and full app features are planned separately.
 
----
+## Features
 
-## Core Features
+- Voice-first product landing experience
+- Early access waitlist with mood selection
+- Email/password authentication through Supabase
+- Password reset and verification email flows
+- Public profile route scaffolding
+- Static pages for privacy, terms, accessibility, blog, press, and careers
+- Security headers, rate limiting, input validation, and no hardcoded secrets
+- Responsive mobile-first frontend
 
-**Voice Posts**
-Record 30–90 second voice clips and share publicly, privately, or within niche groups. No editing, no filters — raw and authentic.
+## Security Highlights
 
-**Threaded Voice Replies**
-Reply to any post with your voice. Layered, natural voice-to-voice conversations — not shallow text comments.
+The project includes security controls that are intentionally visible in code:
 
-**Live Voice Rooms**
-Real-time topic-based audio rooms. Raise your hand, join the stage, feel the room's energy. Examples: *Late Night Thoughts*, *Healing Through Vulnerability*, *Real Talk: Ambition*.
+- Rate limiting for auth, password reset, resend verification, and waitlist endpoints
+- Origin validation for unsafe API requests
+- CSRF protection for authenticated/sensitive routes
+- Honeypot, reCAPTCHA support, validation, and rate limiting for public waitlist forms
+- Content Security Policy, `X-Frame-Options`, `nosniff`, HSTS, and strict referrer policy
+- Password policy requiring at least 8 characters, 1 number, and 1 special character
+- Generic password reset responses to reduce user enumeration
+- Runtime public Supabase config loading instead of committing keys
+- Dedicated documentation for public repository secrets hygiene
 
-**Smart Explore Feed**
-AI-powered discovery matched to the user's mood, interest, and voice style — not just trending content.
+See [SECURITY.md](SECURITY.md) for reporting and security guidance.
 
-**Micro-Circles**
-Private or semi-private communities of 20–100 people built around shared experiences, moods, or missions.
+## Tech Stack
 
-**Anonymous Mode**
-Optional anonymity on every post. Full user control over identity — safe, judgment-free by design.
+| Area | Technology |
+| --- | --- |
+| Frontend | HTML, CSS, JavaScript |
+| Backend | Node.js, Express |
+| Auth | Supabase Auth |
+| Database | Supabase Postgres |
+| Email | Resend / Nodemailer fallback |
+| Security | Helmet, express-rate-limit, express-validator, CSP, CSRF, reCAPTCHA support |
+| Hosting | Static frontend + Node API deployment |
 
-**V2V Chat**
-Direct voice-only private conversations. No text, no typing — just real-time voice.
+## Project Structure
 
-**Text-to-Voice**
-Type a message, hear it spoken aloud in real time — for public spaces without recording.
-
----
-
-## Why Voice?
-
-| | Text | WhisperMe Voice |
-|---|---|---|
-| Speed | ~40 wpm | ~220 wpm natural |
-| Tone | ❌ Lost | ✅ Preserved |
-| Emotional warmth | ❌ Flattened | ✅ Felt |
-| Nuance & hesitation | ❌ Invisible | ✅ Audible |
-| Misinterpretation | High | Low |
-
-> "Text strips away everything that makes you human. Your voice carries tone, warmth, hesitation, joy — things that can never be typed."
-
----
-
-## The Engagement Loop
-
+```text
+.
+├── index.html                     # Main marketing page and auth UI
+├── css/                           # Page and component styles
+├── js/                            # Frontend config, auth, and UI logic
+├── pages/                         # Static content pages
+├── whisper-backend/
+│   ├── server.js                  # Express server and security middleware
+│   ├── routes/                    # Auth, waitlist, profile, admin routes
+│   ├── middleware/                # Rate limit and auth middleware
+│   ├── services/                  # Email service helpers
+│   └── config/                    # Supabase client config
+├── docs/                          # Public repo and operations docs
+├── vercel.json                    # Static deployment redirects, rewrites, headers
+└── supabase-waitlist-pending.sql  # Waitlist verification table migration
 ```
-Listen → Reply → Explore → Go Live → Belong → Daily Habit
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+- A Supabase project
+- Optional: Resend API key or Gmail app password for transactional email
+- Optional: reCAPTCHA v3 key for waitlist bot protection
+
+### Installation
+
+```bash
+npm install
 ```
 
-- **4×** more daily active sessions vs Instagram
-- **87%** of users return within 24 hours
-- **31 min** average daily session time
+### Environment Variables
 
-*(Illustrative figures — not measured data)*
+Create `whisper-backend/.env` locally. Do not commit this file.
 
----
+```env
+PORT=3000
+NODE_ENV=development
 
-## How It Works
+FRONTEND_URL=http://localhost:3000,https://www.whisperme.co,https://whisperme.co
+PUBLIC_SITE_URL=https://www.whisperme.co
+API_URL=https://your-api-host.example.com
 
-1. **Record** — Tap to record a 30–90 second voice note. Add an optional caption and mood tag.
-2. **Share** — Post publicly, privately, or to a circle. Others reply with voice only.
-3. **Explore** — AI surfaces voices matched to your mood and interests.
-4. **Belong** — Join live rooms, start private voice chats, find your micro-community circle.
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
----
+RESEND_API_KEY=your_resend_key
+FROM_EMAIL=WhisperMe <hello@yourdomain.com>
 
-## Tech
+RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
+CSRF_SECRET=replace_with_a_long_random_secret
+```
 
-The site is a **mobile-first** web application optimised for touch and narrow viewports. It includes an interactive in-browser app simulation that lets visitors experience the product flow before downloading.
+For more detail, read [docs/PUBLIC-REPO-SECRETS.md](docs/PUBLIC-REPO-SECRETS.md).
 
-Key technical notes:
-- Fully responsive, mobile-first layout
-- Interactive guided app demo (no real data — simulation only)
-- Waitlist / early access form with mood selection
-- Auth flow: Sign In / Create Account / Profile
+### Run Locally
 
----
+```bash
+npm start
+```
 
-## Privacy & Safety
+Then open:
 
-- Optional anonymous mode on every post
-- End-to-end encrypted chats
-- No behavioural tracking
-- User-controlled visibility on all content
-- Judgment-free, moderated safe space
+```text
+http://localhost:3000
+```
 
----
+## Database Setup
 
-## Status
+Run the waitlist verification migration in Supabase SQL Editor:
 
-| | |
-|---|---|
-| Stage | Private Beta |
-| Access | Waitlist (free, no credit card) |
-| App | Coming soon (iOS + Android) |
-| Community | Founding members — limited spots |
+```sql
+create table if not exists waitlist_pending (
+  email text primary key,
+  name text,
+  mood text,
+  token_hash text not null unique,
+  expires_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
 
----
+create index if not exists waitlist_pending_expires_at_idx
+  on waitlist_pending (expires_at);
+```
 
-## Getting Early Access
+The same SQL is stored in [supabase-waitlist-pending.sql](supabase-waitlist-pending.sql).
 
-Visit [whisperme.co/join-beta](https://www.whisperme.co/join-beta), select a mood, and request access. Onboarding is intentionally limited — the founding community is being built thoughtfully.
+## Useful Scripts
 
----
+```bash
+npm start
+```
 
-## Links
+This starts the Express backend and serves the static site.
 
-- Website: [whisperme.co](https://www.whisperme.co)
-- Features: [whisperme.co/features](https://www.whisperme.co/features)
-- How It Works: [whisperme.co/how-it-works](https://www.whisperme.co/how-it-works)
-- Community: [whisperme.co/community](https://www.whisperme.co/community)
-- Join Beta: [whisperme.co/join-beta](https://www.whisperme.co/join-beta)
+Additional validation commands used during maintenance:
 
----
+```bash
+node --check whisper-backend/server.js
+npx --yes htmlhint index.html pages/avinash-blog.html
+```
 
-© WhisperMe. All rights reserved.
+## Open Source Maintenance
+
+This project welcomes focused contributions that improve security, reliability, accessibility, documentation, and production readiness.
+
+Good first contribution areas:
+
+- Improve documentation and setup clarity
+- Add tests for auth and waitlist routes
+- Improve accessibility on public pages
+- Harden security middleware and deployment headers
+- Add safer error handling and observability
+- Improve email templates and transactional email reliability
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+## Roadmap
+
+- Add automated backend route tests
+- Add accessibility audit fixes across static pages
+- Add clearer deployment guides for Vercel/Render/Railway/AWS-style setups
+- Improve waitlist analytics without invasive tracking
+- Add stronger email delivery documentation
+- Expand profile and app preview scaffolding
+- Prepare mobile app architecture separately
+
+## Responsible Use
+
+WhisperMe touches sensitive areas: voice, emotion, identity, anonymity, and social interaction. Contributions should prioritize user safety, privacy, consent, moderation readiness, and clear failure modes over growth hacks or engagement dark patterns.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
